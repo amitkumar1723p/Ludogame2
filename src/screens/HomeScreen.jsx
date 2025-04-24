@@ -31,21 +31,30 @@ const HomeScreen = () => {
           Animated.delay(3000), // 3 seconds delay ,
 
           Animated.parallel([
-
+            Animated.timing(witchAnim, {
+              toValue: deviceWidth * 2,
+              duration: 8000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleXAnim, {
+              toValue: -1,
+              duration: 0,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
             Animated.timing(witchAnim, {
               toValue: deviceWidth * 0.05,
               duration: 3000,
               useNativeDriver: true,
-            }) ,
+            }),
             Animated.timing(scaleXAnim, {
               toValue: 1,
               duration: 0,
               useNativeDriver: true,
             }),
-            
           ]),
-          Animated.delay(3000),
-          
+          Animated.delay(3000), // 3 seconds delay ,
           Animated.parallel([
             Animated.timing(witchAnim, {
               toValue: -deviceWidth * 2,
@@ -59,17 +68,14 @@ const HomeScreen = () => {
             }),
           ]),
         ]),
-    
-
-
       ).start();
     };
-
+  
     const cleanupAnimation = () => {
       witchAnim.stopAnimation();
       scaleXAnim.stopAnimation();
     };
-
+  
     loopAnimation();
     return cleanupAnimation;
   }, []);
