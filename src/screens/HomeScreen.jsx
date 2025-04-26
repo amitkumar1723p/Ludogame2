@@ -1,25 +1,19 @@
-import {
-  View,
-  Text,
-  Image,
-  Animated,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, Image, Animated, Pressable, StyleSheet} from 'react-native';
 import Witch from '../assets/animation/witch.json';
-import React, {useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {useDispatch} from 'react-redux';
 import Wrapper from '../components/Wrapper';
 import Logo from '../assets/images/logo.png';
 import LottieView from 'lottie-react-native';
 import {deviceHeight, deviceWidth} from '../constants/Scaling';
-
+import GradientButton from '../components/GradienthButton';
 const HomeScreen = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
 
+  console.log(witchAnim, 'witchAnim');
+  console.log(scaleXAnim, 'scaleXAnim');
   useEffect(() => {
     const loopAnimation = () => {
       Animated.loop(
@@ -78,30 +72,39 @@ const HomeScreen = () => {
         ]),
       ).start();
     };
-  
+
     const cleanupAnimation = () => {
       witchAnim.stopAnimation();
       scaleXAnim.stopAnimation();
     };
-  
+
     loopAnimation();
     return cleanupAnimation;
   }, []);
 
+  const renderButton = useCallback(
+    (title ,onPress) => <GradientButton title={title} onPress={onPress} />,
+    [],
+  );
+
+  const handleResumePress = useCallback(() => {}, []);
+  //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>
       <View style={styles.imgContainer}>
         <Image source={Logo} style={styles.img} />
       </View>
 
+      {renderButton('RESUME', handleResumePress)}
+      {renderButton('NEW GAME', handleResumePress)}
+      {renderButton('VS CPU', handleResumePress)}
+      {renderButton('2 Vs 2', handleResumePress)}
+      {renderButton('RESUME', handleResumePress)}
       <Animated.View
         style={[
           styles.witchcontainer,
           {
-            transform: [
-              {translateX: witchAnim},
-              {scaleX: scaleXAnim},
-],
+            transform: [{translateX: witchAnim}, {scaleX: scaleXAnim}],
           },
         ]}>
         <Pressable>
@@ -114,8 +117,7 @@ const HomeScreen = () => {
           />
         </Pressable>
       </Animated.View>
-
-      <Text style={styles.artist}>Made By - Amit</Text>
+      <Text style={styles.artist}> Made By - Amit </Text>
     </Wrapper>
   );
 };
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
+
   artist: {
     position: 'absolute',
     bottom: 40,
@@ -146,6 +149,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     fontStyle: 'italic',
   },
+
   witchcontainer: {
     position: 'absolute',
     top: '70%',
