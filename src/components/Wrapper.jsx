@@ -5,8 +5,8 @@ import {deviceHeight, deviceWidth} from '../constants/Scaling.js';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Wrapper = ({children, style}) => {
-  console.log('children', children);
-  console.log('style', style);
+   
+ 
   return (
     <ImageBackground source={BG} resizeMode="cover" style={styles.container}>
       <SafeAreaView style={[styles.SafeAreaView, style]}>

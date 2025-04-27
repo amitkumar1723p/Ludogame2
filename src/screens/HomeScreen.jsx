@@ -1,4 +1,12 @@
-import {View, Text, Image, Animated, Pressable, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Animated,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import Witch from '../assets/animation/witch.json';
 import React, {useCallback, useEffect, useRef} from 'react';
 import {useDispatch} from 'react-redux';
@@ -7,13 +15,13 @@ import Logo from '../assets/images/logo.png';
 import LottieView from 'lottie-react-native';
 import {deviceHeight, deviceWidth} from '../constants/Scaling';
 import GradientButton from '../components/GradienthButton';
+import { navigate } from '../helpers/NavigationUtil';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
 
-  console.log(witchAnim, 'witchAnim');
-  console.log(scaleXAnim, 'scaleXAnim');
+ 
   useEffect(() => {
     const loopAnimation = () => {
       Animated.loop(
@@ -83,11 +91,26 @@ const HomeScreen = () => {
   }, []);
 
   const renderButton = useCallback(
-    (title ,onPress) => <GradientButton title={title} onPress={onPress} />,
+    (title, onPress) => <GradientButton title={title} onPress={onPress} />,
     [],
   );
 
   const handleResumePress = useCallback(() => {}, []);
+
+  const handleNewGamePress = useCallback(() => {
+    startGame(true);
+  
+    
+  }, []);
+
+    // Start new Game 
+    const startGame =async(isNew =false)=>{
+       if(isNew){
+
+       }
+      
+       navigate('LudoBoardScreen')
+    }
   //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>
@@ -96,10 +119,11 @@ const HomeScreen = () => {
       </View>
 
       {renderButton('RESUME', handleResumePress)}
-      {renderButton('NEW GAME', handleResumePress)}
-      {renderButton('VS CPU', handleResumePress)}
+      {renderButton('NEW GAME', handleNewGamePress)}
+      {renderButton('VS CPU', () => {
+        Alert.alert('Comming Soon! Click New Game');
+      })}
       {renderButton('2 Vs 2', handleResumePress)}
-      {renderButton('RESUME', handleResumePress)}
       <Animated.View
         style={[
           styles.witchcontainer,

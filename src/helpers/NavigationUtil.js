@@ -3,7 +3,7 @@ import {CommonActions} from '@react-navigation/native';
 
 export const navigationRef = createNavigationContainerRef();
 
-export async function navigation(routeName, params) {
+export async function navigate(routeName, params) {
   await navigationRef.isReady();
 
   if (navigationRef.isReady) {
@@ -12,9 +12,9 @@ export async function navigation(routeName, params) {
 }
 
 export async function resetAndNavigate(routeName) {
-     console.log("routeName" ,routeName)
+    
   await navigationRef.isReady();  
-   console.log(navigationRef.isReady() ,"navigationRef.isReady()")
+  
 
   if (navigationRef.isReady()) {
     navigationRef.dispatch(

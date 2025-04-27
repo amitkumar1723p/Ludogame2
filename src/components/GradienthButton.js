@@ -8,9 +8,10 @@ const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
   const iconSize = RFValue(18);
 
   return (
-    <View style={styles.mainContainer} onPress={onPress}>
-      <TouchableOpacity activeOpacity={0.8} style={styles.btnContainer}>
-        <LinearGradient
+    <View style={styles.mainContainer} >
+      <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.btnContainer}>
+        <LinearGradient 
+        style={styles.button}
           colors={['#4c669f', '#3b5998', '#192f6a']}
           start={{x: 0, y: 0}}
           end={{x: 0, y: 1}}>
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
 
   btnContainer: {
     borderWidth: 2,
+    borderWidth: 2,
     borderRadius: 10,
     elevation: 5,
     backgroundColor: 'white',
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
     borderWidth: 2,
+
     height: '45',
     borderColor: '#000',
     flexDirection: 'row',
