@@ -1,12 +1,65 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-
-const MenuModal = () => {
+import React from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Modal from 'react-native-modal';
+import GradientButton from './GradientButton';
+const MenuModal = ({onPressHide, visible}) => {
   return (
-    <View>
-      <Text>MenuModal</Text>
-    </View>
-  )
-}
+    <Modal
+      style={styles.bottomModalView}
+      isVisible={visible}
+      onBackdropPress={onPressHide}
+      onRequestClose={onPressHide}
+      backdropColor="black"
+      backdropOpacity={0.8}
+      animationIn={'zoomIn'}
+      animationOut={'zoomOut'}>
+      <View style={styles.modalContainer}>
+        <LinearGradient
+          colors={['#0f0c29', '#302b63', '#24243e']}
+          style={styles.gradientContainer}>
+          <View style={styles.subView}>
+            
+            <GradientButton title={'RESUME'} />
+            <GradientButton title={'NEW GAME'} />
+            <GradientButton title={'HOME'} />
+            
+             </View>
+        </LinearGradient>
+      </View>
+    </Modal>
+  );
+};
 
-export default MenuModal
+export default MenuModal;
+
+const styles = StyleSheet.create({
+  bottomModalView: {
+    justifyContent: 'center',
+    width: '95%',
+    alignSelf: 'center',
+  },
+
+  modalContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+
+  gradientContainer: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    width: '96%',
+    borderWidth: 2,
+    borderColor: 'gold',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  subView: {
+    width: '100%',
+    marginVertical: 20,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
