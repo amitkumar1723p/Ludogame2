@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Android Emulator",
+            "type": "shell",
+            "command": "\"C:\\Users\\Hp\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_API_35",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "timeout": 60000  // 60 seconds timeout (adjust as necessary)
+        }
+    ]
+}
