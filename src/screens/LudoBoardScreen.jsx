@@ -84,9 +84,9 @@ const LudoBoardScreen = () => {
             <Pocket layer={3} color={Colors.yellow} />
           </View>
           <View style={styles.pathContainer}>
-            <HorizontalPath />
+            <HorizontalPath color={Colors.green}   cells={Plot1Data} />
             <FourTriangles />
-            <HorizontalPath />
+            <HorizontalPath color={Colors.blue}  cells={Plot3Data}  />
           </View>
           <View style={styles.plotContainer}>
             <Pocket color={Colors.red} />
