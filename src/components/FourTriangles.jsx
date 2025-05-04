@@ -4,7 +4,7 @@ import React from 'react'
 const FourTriangles = () => {
   return (
     <View>
-      <Text>FourTriangles</Text>
+      {/* <Text>FourTriangles</Text> */}
     </View>
   )
 }
