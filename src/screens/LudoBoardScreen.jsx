@@ -6,19 +6,19 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Wrapper from '../components/Wrapper';
 import MenuIcon from '../assets/images/menu.png';
 import MenuModal from '../components/MenuModal';
-import { deviceHeight, deviceWidth } from '../constants/Scaling';
+import {deviceHeight, deviceWidth} from '../constants/Scaling';
 import Dice from '../components/Dice';
 import Pocket from '../components/Pocket';
 import VerticalPath from '../components/path/VerticalPath';
 import HorizontalPath from '../components/path/HorizontalPath';
 import FourTriangles from '../components/FourTriangles';
 import StartGame from '../assets/images/start.png';
-import { useIsFocused } from '@react-navigation/native';
-import { Colors } from '../constants/Colors';
+import {useIsFocused} from '@react-navigation/native';
+import {Colors} from '../constants/Colors';
 import {Plot1Data, Plot2Data, Plot3Data, Plot4Data} from '../helpers/PlotData';
 const LudoBoardScreen = () => {
   const opacity = useRef(new Animated.Value(1)).current;
@@ -69,33 +69,31 @@ const LudoBoardScreen = () => {
       {/* <LudoBoad Screen Start  */}
 
       <View style={styles.container}>
-        <View>
-          <Dice />
-          <Dice />
+        <View  style={styles.flexRow}>
+          <Dice  color={Colors.green} player={2}  />
+          <Dice color={Colors.yellow} player={3}  />
         </View>
-
-
         <View style={styles.ludoBoard}>
           {' '}
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
             <Pocket color={Colors.green} player={2} />
-            <VerticalPath color={Colors.yellow} cells={Plot2Data}  />
+            <VerticalPath color={Colors.yellow} cells={Plot2Data} />
             <Pocket layer={3} color={Colors.yellow} />
           </View>
           <View style={styles.pathContainer}>
-            <HorizontalPath color={Colors.green}   cells={Plot1Data} />
+            <HorizontalPath color={Colors.green} cells={Plot1Data} />
             <FourTriangles />
-            <HorizontalPath color={Colors.blue}  cells={Plot3Data}  />
+            <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>
             <Pocket color={Colors.red} />
-            <VerticalPath player={1} cells={Plot4Data} />
+            <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
             <Pocket color={Colors.blue} player={4} />
           </View>
-          <View style={styles.flexRow} >
-            <Dice />
-            <Dice />
+          <View style={styles.flexRow}>
+            <Dice color={Colors.green} player={1} />
+            <Dice  color={Colors.yellow} player={4}/>
           </View>
         </View>{' '}
         {/* // ludobard end */}

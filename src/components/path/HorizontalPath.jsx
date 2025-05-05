@@ -20,24 +20,18 @@ const HorizontalPath = ({cells = [], color}) => {
         width: '40%',
         height: '100%',
       }}>
-     {groupedCells.map((group, groupIndex) => (
-          <View key={`group-${groupIndex}`} 
-          
-          style={{flexDirection: 'column', width: '33.3%', height: '16.7%'}}  >
+      <View style={{flexDirection: 'column', width: '100%', height: '100%'}}>
+        {groupedCells.map((group, groupIndex) => (
+          <View
+            key={`group-${groupIndex}`}
+            style={{flexDirection: 'row', height: '33.3%', width: '16.7%'}}>
             {group.map((id, cellIndex) => (
-              <Cell  
-              key={`cell-${id}`}
-              cell={true}
-              id={id}
-              color={color}
-              
-              
-              />
+              <Cell key={`cell-${id}`} cell={true} id={id} color={color} />
               // <Text key={cellIndex}>{cell}</Text>
-
             ))}
           </View>
-        ))}
+        ))}{' '}
+      </View>
     </View>
   );
 };
