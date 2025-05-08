@@ -1,12 +1,54 @@
-import {View, Text, StyleSheet} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Image,
+  Easing,
+} from 'react-native';
+import React, {useEffect, useRef} from 'react';
 import DiceRoll from '../assets/animation/diceroll.json';
 import LinearGradient from 'react-native-linear-gradient';
+import Arrow from '../assets/images/arrow.png';
+import {BackgroundImage} from '../helpers/GetIcons';
+import LottieView from 'lottie-react-native';
+const Dice = React.memo(({color}) => {
+  const arrowAnim = useRef(new Animated.Value(0)).current;
 
-const Dice = React.memo(() => {
+  const pileIcon = BackgroundImage.GetImage(color);
+  const diceIcon = BackgroundImage.GetImage(4);
+
+  useEffect(() => {
+    const animateArrow = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(arrowAnim, {
+            toValue: 10,
+            duration: 600,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }),
+
+          Animated.timing(arrowAnim, {
+            toValue: -10,
+            duration: 400,
+            easing: Easing.in(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    };
+
+    animateArrow();
+
+    //  return () => {
+    //    second
+    //  }
+  }, []);
+
   return (
-    <View>
-      <Text style={{color: 'green'}}>Dice</Text>
+    <View style={[styles.flexRow]}>
       <View style={styles.border1}>
         <LinearGradient
           style={styles.linearGradient}
@@ -14,25 +56,32 @@ const Dice = React.memo(() => {
           start={{x: 0, y: 0.5}}
           end={{x: 1, y: 0.5}}>
           <View style={styles.pileContainer}>
-            {/* <Image   style={styles.pileIcon} /> */}
-
-            <View style={styles.pileIcon}>
-              <Text>Diece Image </Text>
-            </View>
+            <Image source={pileIcon} style={styles.pileIcon} />
           </View>
         </LinearGradient>
       </View>
 
       <View style={styles.border2}>
         <View style={styles.diceGradient}>
-
- <View style={styles.diceContainer}>
-
- </View>
-
-
+          <View style={styles.diceContainer}>
+            <TouchableOpacity disabled={true} activeOpacity={0.4}>
+              <Image source={diceIcon} style={styles.dice} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
+
+      <Animated.View style={{transform: [{translateX: arrowAnim}]}}>
+        <Image source={Arrow} style={{width: 30, height: 30}} />
+      </Animated.View>
+
+      <LottieView 
+       source={DiceRoll} 
+       style={styles.rollingDice} 
+       loop={true}
+       autoPlay
+       hardwareAccelerationAndroid
+       />
     </View>
   );
 });
@@ -96,5 +145,17 @@ const styles = StyleSheet.create({
     padding: 4,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  dice: {
+    height: 45,
+    width: 45,
+  },
+  rollingDice: {
+    height: 80,
+    width: 80,
+    zIndex: 99,
+    top: -25,
+    right: 25,
+    position: 'absolute',
   },
 });

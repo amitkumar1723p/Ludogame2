@@ -1,10 +1,11 @@
 import {View, Text, StyleSheet} from 'react-native';
 import React, {memo} from 'react';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import Pile from './Pile';
 
 const Pocket = ({color, player}) => {
   return (
-    <View style={[styles.container ,{backgroundColor: color}]}>
+    <View style={[styles.container, {backgroundColor: color}]}>
       <View style={styles.childFrame}>
         <View style={styles.flexRow}>
           <Plot pieceNo={0} player={player} color={color} />
@@ -25,10 +26,10 @@ export default memo(Pocket);
   /* <Plot /> Component  */
 }
 
-const Plot = ({pieceNo, player, color,}) => {
+const Plot = ({pieceNo, player, color}) => {
   return (
-    <View style={[styles.plot, {backgroundColor:color}]}>
-      <Text style={{fontSize:29}}>{player}</Text>
+    <View style={[styles.plot, {backgroundColor: color}]}>
+      <Pile player={player} color={color} />
     </View>
   );
 };
@@ -59,10 +60,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 
-  plot :{
-    backgroundColor :Colors.green ,
+  plot: {
+    backgroundColor: Colors.green,
     height: '80%',
     width: '36%',
     borderRadius: 50,
-  }
+  },
 });
