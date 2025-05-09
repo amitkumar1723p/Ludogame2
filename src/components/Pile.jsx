@@ -1,36 +1,47 @@
-import {View, Text, TouchableOpacity, Animated, Easing} from 'react-native';
-import React, { useEffect } from 'react';
-import {Svg ,Circle} from 'react-native-svg'
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  StyleSheet,
+} from 'react-native';
+import React, {useEffect, useMemo, useRef} from 'react';
+import {Svg, Circle, Image} from 'react-native-svg';
 const Pile = () => {
-    const rotation = useRef(new Animated.Value(0)).current;
+  const rotation = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    const rotateAnimation = Animated.loop(
+      Animated.timing(rotation, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    rotateAnimation.start();
+    return () => rotateAnimation.stop();
+  }, [rotation]);
 
-    useEffect(()=>{
+  const rotateInterpolate = useMemo(
+    () =>
+      rotation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '360deg'],
+      }),
 
-        const rotateAnimation = Animated.loop(
-            Animated.timing(rotation,{
-                toValue:1 ,
-                duration :1000,
-                easing :Easing.linear  ,
-                useNativeDriver: true,
-            })
-        )
-        rotateAnimation.start();
-        return () => rotateAnimation.stop();
-    },[rotation])
-
-    const rotateInterpolate = useMemo(() =>
-        rotation.interpolate({
-          inputRange: [0, 1],
-          outputRange: ['0deg', '360deg'],
-        }),
-       
-       [rotation])  
+    [rotation],
+  );
   return (
     <TouchableOpacity activeOpacity={0.5} style={styles.container}>
       <View style={styles.holloCircle}>
         <View style={styles.dashedCircleContainer}>
-          <Animated.View style={[styles.dashedCircle ,{transform:[{rotate:rotateInterpolate}]}]}>
+          <Animated.View
+            style={[
+              styles.dashedCircle,
+              {transform: [{rotate: rotateInterpolate}]},
+            ]}>
             <Svg height={'18'} width={'18'}>
               <Circle
                 cx="9"
@@ -46,6 +57,8 @@ const Pile = () => {
           </Animated.View>
         </View>
       </View>
+
+      <Image source={getPileImage} />
     </TouchableOpacity>
   );
 };
