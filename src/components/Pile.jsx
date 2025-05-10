@@ -5,22 +5,19 @@ import {
   Animated,
   Easing,
   StyleSheet,
-  Image
+  Image,
 } from 'react-native';
 import React, {useEffect, useMemo, useRef} from 'react';
 import {Svg, Circle} from 'react-native-svg';
-import { Colors } from '../constants/Colors';
+import {Colors} from '../constants/Colors';
 
 import PileGreen from '../assets/images/piles/green.png';
 import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
-import PileYellow from '../assets/images/piles/yellow.png'
+import PileYellow from '../assets/images/piles/yellow.png';
 
-const Pile = ({color ,player}) => {
+const Pile = ({color, player}) => {
   const rotation = useRef(new Animated.Value(0)).current;
-
-
-
 
   const getPileImage = useMemo(() => {
     switch (color) {
@@ -37,7 +34,6 @@ const Pile = ({color ,player}) => {
     }
   }, [color]);
 
-
   useEffect(() => {
     const rotateAnimation = Animated.loop(
       Animated.timing(rotation, {
@@ -48,12 +44,11 @@ const Pile = ({color ,player}) => {
       }),
     );
 
-
     rotateAnimation.start();
     return () => rotateAnimation.stop();
   }, [rotation]);
 
-  const rotateInterpolate = useMemo(
+   const rotateInterpolate = useMemo(
     () =>
       rotation.interpolate({
         inputRange: [0, 1],
@@ -62,6 +57,7 @@ const Pile = ({color ,player}) => {
 
     [rotation],
   );
+
   return (
     <TouchableOpacity activeOpacity={0.5} style={styles.container}>
       <View style={styles.holloCircle}>
@@ -85,18 +81,18 @@ const Pile = ({color ,player}) => {
             </Svg>
           </Animated.View>
         </View>
-      </View> 
-   
-          <Image
+      </View>
+
+      <Image
         source={getPileImage}
         style={{width: 32, height: 32, position: 'absolute', top: -16}}
       />
-
     </TouchableOpacity>
   );
 };
 
 export default React.memo(Pile);
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -104,7 +100,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'center',
   },
-
   holloCircle: {
     width: 15,
     height: 15,

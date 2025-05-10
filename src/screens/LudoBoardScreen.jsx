@@ -83,7 +83,11 @@ const LudoBoardScreen = () => {
           </View>
           <View style={styles.pathContainer}>
             <HorizontalPath color={Colors.green} cells={Plot1Data} />
-            <FourTriangles />
+            <FourTriangles    
+             player1={1}
+              player2={2}
+              player3={3}
+              player4={4} />
             <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>
