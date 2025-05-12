@@ -6,7 +6,7 @@ const HorizontalPath = ({cells = [], color}) => {
   const groupedCells = useMemo(() => {
     const groups = [];
 
-    for (let index = 0; index < cells.length; index += 6) {
+    for (let index = 0; index < cells?.length; index += 6) {
       groups.push(cells.slice(index, index + 6));
     }
     return groups;

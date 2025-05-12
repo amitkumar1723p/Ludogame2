@@ -13,6 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Arrow from '../assets/images/arrow.png';
 import {BackgroundImage} from '../helpers/GetIcons';
 import LottieView from 'lottie-react-native';
+import {playSound} from '../helpers/SoundUtility';
 const Dice = React.memo(({color}) => {
   const arrowAnim = useRef(new Animated.Value(0)).current;
 
@@ -47,6 +48,11 @@ const Dice = React.memo(({color}) => {
     //  }
   }, []);
 
+  const handleDicePress = async () => {
+
+     playSound('dice_roll');
+  };
+
   return (
     <View style={[styles.flexRow]}>
       <View style={styles.border1}>
@@ -64,24 +70,29 @@ const Dice = React.memo(({color}) => {
       <View style={styles.border2}>
         <View style={styles.diceGradient}>
           <View style={styles.diceContainer}>
-            <TouchableOpacity disabled={true} activeOpacity={0.4}>
+            <TouchableOpacity
+              disabled={true}
+              activeOpacity={0.4}
+              onPress={handleDicePress}>
               <Image source={diceIcon} style={styles.dice} />
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
+      {/* Arrow Icon 
       <Animated.View style={{transform: [{translateX: arrowAnim}]}}>
         <Image source={Arrow} style={{width: 30, height: 30}} />
-      </Animated.View>
+      </Animated.View> */}
 
-      <LottieView 
+      {/* Rolling Dice  */}
+      {/* <LottieView 
        source={DiceRoll} 
        style={styles.rollingDice} 
        loop={true}
        autoPlay
        hardwareAccelerationAndroid
-       />
+       /> */}
     </View>
   );
 });

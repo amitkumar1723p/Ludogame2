@@ -1,10 +1,10 @@
 import {View, Text} from 'react-native';
 import React, {useMemo} from 'react';
 import Cell from './Cell';
-const VerticalPath = ({cells, color}) => {
+const VerticalPath = ({cells , color}) => {
   const groupedCells = useMemo(() => {
     const groups = [];
-    for (let index = 0; index < cells.length; index += 3) {
+    for (let index = 0; index < cells?.length; index += 3) {
       groups.push(cells.slice(index, index + 3));  // 'i' ko 'index' se replace kiya
       console.log(index, 'index');
     }
