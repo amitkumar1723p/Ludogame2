@@ -50,7 +50,8 @@ const Dice = React.memo(({color}) => {
 
   const handleDicePress = async () => {
 
-     playSound('dice_roll');
+     console.log("dice roling ........")
+     playSound('dice_roll');  
   };
 
   return (
@@ -71,7 +72,7 @@ const Dice = React.memo(({color}) => {
         <View style={styles.diceGradient}>
           <View style={styles.diceContainer}>
             <TouchableOpacity
-              disabled={true}
+              // disabled={false}
               activeOpacity={0.4}
               onPress={handleDicePress}>
               <Image source={diceIcon} style={styles.dice} />
