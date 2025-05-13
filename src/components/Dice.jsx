@@ -7,19 +7,23 @@ import {
   Image,
   Easing,
 } from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import DiceRoll from '../assets/animation/diceroll.json';
 import LinearGradient from 'react-native-linear-gradient';
 import Arrow from '../assets/images/arrow.png';
 import {BackgroundImage} from '../helpers/GetIcons';
 import LottieView from 'lottie-react-native';
 import {playSound} from '../helpers/SoundUtility';
+import { updateDiceNo } from '../redux/reducers/gameSlice';
+import { useDispatch } from 'react-redux';
 const Dice = React.memo(({color}) => {
+  const [diceRolling, setDiceRolling] = useState(false);
   const arrowAnim = useRef(new Animated.Value(0)).current;
 
   const pileIcon = BackgroundImage.GetImage(color);
   const diceIcon = BackgroundImage.GetImage(4);
 
+  const dispatch =useDispatch();
   useEffect(() => {
     const animateArrow = () => {
       Animated.loop(
@@ -49,9 +53,15 @@ const Dice = React.memo(({color}) => {
   }, []);
 
   const handleDicePress = async () => {
+    //  playSound('dice_roll');
+    const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    console.log(newDiceNo, 'newDiceNo');
+    // setDiceRolling(true);
 
-     console.log("dice roling ........")
-     playSound('dice_roll');  
+    // await delay(1000); // simulate dice roll animation
+    dispatch(updateDiceNo({diceNo: newDiceNo}));
+
+    // setDiceRolling(false);
   };
 
   return (
@@ -87,13 +97,17 @@ const Dice = React.memo(({color}) => {
       </Animated.View> */}
 
       {/* Rolling Dice  */}
-      {/* <LottieView 
-       source={DiceRoll} 
-       style={styles.rollingDice} 
-       loop={true}
-       autoPlay
-       hardwareAccelerationAndroid
-       /> */}
+
+      {/* diceRolling */}
+      {diceRolling ? (
+        <LottieView
+          source={DiceRoll}
+          style={styles.rollingDice}
+          loop={true}
+          autoPlay
+          hardwareAccelerationAndroid
+        />
+      ) : null}
     </View>
   );
 });
