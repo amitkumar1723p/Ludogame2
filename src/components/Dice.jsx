@@ -6,6 +6,7 @@ import {
   Animated,
   Image,
   Easing,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import DiceRoll from '../assets/animation/diceroll.json';
@@ -14,16 +15,18 @@ import Arrow from '../assets/images/arrow.png';
 import {BackgroundImage} from '../helpers/GetIcons';
 import LottieView from 'lottie-react-native';
 import {playSound} from '../helpers/SoundUtility';
-import { updateDiceNo } from '../redux/reducers/gameSlice';
-import { useDispatch } from 'react-redux';
-const Dice = React.memo(({color}) => {
+import {updateDiceNo} from '../redux/reducers/gameSlice';
+import {useDispatch} from 'react-redux';
+const Dice = React.memo(({color, data}) => {
   const [diceRolling, setDiceRolling] = useState(false);
   const arrowAnim = useRef(new Animated.Value(0)).current;
 
   const pileIcon = BackgroundImage.GetImage(color);
   const diceIcon = BackgroundImage.GetImage(4);
 
-  const dispatch =useDispatch();
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const dispatch = useDispatch();
   useEffect(() => {
     const animateArrow = () => {
       Animated.loop(
@@ -55,13 +58,26 @@ const Dice = React.memo(({color}) => {
   const handleDicePress = async () => {
     //  playSound('dice_roll');
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    console.log(newDiceNo, 'newDiceNo');
-    // setDiceRolling(true);
 
-    // await delay(1000); // simulate dice roll animation
+    setDiceRolling(true);
+
+    await delay(1000); // simulate dice roll animation
     dispatch(updateDiceNo({diceNo: newDiceNo}));
 
-    // setDiceRolling(false);
+    setDiceRolling(false);
+
+    const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
+
+    if (isAnyPieceALive == -1) {
+      console.log(newDiceNo, 'newDiceNo');
+      if (newDiceNo == 6) {
+        Alert('enablePileSelection');
+      } else {
+        let chancePlayer = player + 1;
+        console.log(chancePlayer);
+      }
+    } else {
+    }
   };
 
   return (

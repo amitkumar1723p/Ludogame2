@@ -1,21 +1,21 @@
 
-import {createSlice} from '@reduxjs/toolkit';
-import {initialState} from './initialState';
+import { createSlice } from '@reduxjs/toolkit';
+import { initialState } from './initialState';
 
 export const gameSlice = createSlice({
-  name: 'game',
+    name: 'game',
 
-  initialState: initialState,
+    initialState: initialState,
 
-  reducers: {
-    updateDiceNo: (state, action) => {
-      console.log('reducer', action.payload);
+    reducers: {
+        updateDiceNo: (state, action) => {
+            console.log('reducer', action.payload);
 
-      state.diceNo = action.payload.diceNo;
-      state.isDiceRolled = true;
+            state.diceNo = action.payload.diceNo;
+            state.isDiceRolled = true;
+        },
     },
-  },
 });
 
-export const {updateDiceNo} = gameSlice.actions;
+export const { updateDiceNo } = gameSlice.actions;
 export default gameSlice.reducer;

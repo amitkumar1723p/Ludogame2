@@ -20,8 +20,24 @@ import StartGame from '../assets/images/start.png';
 import {useIsFocused} from '@react-navigation/native';
 import {Colors} from '../constants/Colors';
 import {Plot1Data, Plot2Data, Plot3Data, Plot4Data} from '../helpers/PlotData';
+import { useSelector } from 'react-redux';
+import {
+  selectDiceTouch,
+  selectPlayer1,
+  selectPlayer2,
+  selectPlayer3,
+  selectPlayer4,
+  // selectPlayer4,
+} from '../redux/reducers/gameSelectors';
 const LudoBoardScreen = () => {
-  const opacity = useRef(new Animated.Value(1)).current;
+
+  const player1 = useSelector(selectPlayer1);
+  const player2 = useSelector(selectPlayer2);
+  const player3 = useSelector(selectPlayer3);
+  const player4 = useSelector(selectPlayer4);
+ const isDiceTouch = useSelector(selectDiceTouch);
+    // const isDiceTouch = useSelector(selectDiceTouch);
+   const opacity = useRef(new Animated.Value(1)).current;
   const [menuVisible, setMenuVisible] = useState(false);
   const handleMenuPress = useCallback(() => {
     setMenuVisible(true);
@@ -70,8 +86,8 @@ const LudoBoardScreen = () => {
 
       <View style={styles.container}>
         <View  style={styles.flexRow}>
-          <Dice  color={Colors.green} player={2}  />
-          <Dice color={Colors.yellow} player={3}  />
+          <Dice  color={Colors.green} player={2} data={player2}  />
+          <Dice color={Colors.yellow} player={3} data={player3}  />
         </View>
         <View style={styles.ludoBoard}>
           {' '}
@@ -96,8 +112,8 @@ const LudoBoardScreen = () => {
             <Pocket color={Colors.blue} player={4} />
           </View>
           <View style={styles.flexRow}>
-            <Dice color={Colors.green} player={1} />
-            <Dice  color={Colors.yellow} player={4}/>
+            <Dice color={Colors.green} player={1} data={player1} />
+            <Dice  color={Colors.yellow} player={4} data={player4} />
           </View>
         </View>{' '}
         {/* // ludobard end */}
