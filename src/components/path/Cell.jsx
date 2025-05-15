@@ -40,9 +40,9 @@ const Cell = ({id, color}) => {
         />
       )}
 
-      {/* <View style={[styles.pileContainer]}>
-        <Text>{id}</Text>
-      </View> */}
+      <View style={[styles.pileContainer]}>
+       <Text>{id}</Text>
+      </View>
     </View>
   );
 };

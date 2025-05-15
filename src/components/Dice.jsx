@@ -9,15 +9,18 @@ import {
   Alert,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
+import {
+  selectCurrentPlayerChance,
+} from '../redux/reducers/gameSelectors';
 import DiceRoll from '../assets/animation/diceroll.json';
 import LinearGradient from 'react-native-linear-gradient';
 import Arrow from '../assets/images/arrow.png';
 import {BackgroundImage} from '../helpers/GetIcons';
 import LottieView from 'lottie-react-native';
 import {playSound} from '../helpers/SoundUtility';
-import {updateDiceNo} from '../redux/reducers/gameSlice';
+import {updateDiceNo, updatePlayerChance} from '../redux/reducers/gameSlice';
 import {useDispatch} from 'react-redux';
-const Dice = React.memo(({color, data}) => {
+const Dice = React.memo(({color, data, player}) => {
   const [diceRolling, setDiceRolling] = useState(false);
   const arrowAnim = useRef(new Animated.Value(0)).current;
 
@@ -61,7 +64,8 @@ const Dice = React.memo(({color, data}) => {
 
     setDiceRolling(true);
 
-    await delay(1000); // simulate dice roll animation
+    await delay(1000); // simulate dice roll animationnpx react-native start --reset-cache
+
     dispatch(updateDiceNo({diceNo: newDiceNo}));
 
     setDiceRolling(false);
@@ -71,12 +75,19 @@ const Dice = React.memo(({color, data}) => {
     if (isAnyPieceALive == -1) {
       console.log(newDiceNo, 'newDiceNo');
       if (newDiceNo == 6) {
-        Alert('enablePileSelection');
+        Alert.alert('enablePileSelection');
       } else {
         let chancePlayer = player + 1;
-        console.log(chancePlayer);
+        console.log(chancePlayer, 'palyer numbe');
+        if (chancePlayer > 4) {
+          chancePlayer = 1;
+        }
+        await delay(600);
+        dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
       }
     } else {
+      Alert.alert('isAnyPieceALive');
+      // गोटी मूव करने की अनुमति दो
     }
   };
 
@@ -127,6 +138,7 @@ const Dice = React.memo(({color, data}) => {
     </View>
   );
 });
+
 export default Dice;
 
 const styles = StyleSheet.create({
