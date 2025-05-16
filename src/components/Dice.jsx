@@ -70,6 +70,7 @@ const Dice = React.memo(({color, data, player}) => {
   const handleDicePress = async () => {
     //  playSound('dice_roll');
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
+   
 
     setDiceRolling(true);
 
@@ -77,21 +78,23 @@ const Dice = React.memo(({color, data, player}) => {
 
     dispatch(updateDiceNo({diceNo: newDiceNo}));
 
-    setDiceRolling(false);
+    setDiceRolling(false); 
 
     const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
+    
 
     if (isAnyPieceALive == -1) {
-      console.log(newDiceNo, 'newDiceNo');
+  
       if (newDiceNo == 6) {
+         
         Alert.alert('enablePileSelection');
       } else {
         let chancePlayer = player + 1;
-        console.log(chancePlayer, 'palyer numbe');
+       
         if (chancePlayer > 4) {
           chancePlayer = 1;
         }
-        await delay(600);
+        await delay(1000);
         dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
       }
     } else {
@@ -117,10 +120,13 @@ const Dice = React.memo(({color, data, player}) => {
       <View style={styles.border2}>
         <View style={styles.diceGradient}>
           <View style={styles.diceContainer}>
-
+  {/* jis dice per number show ho rhe hai vo vala dice  */}
+    
             {
               currentPlayerChance == player  && !diceRolling ?   <TouchableOpacity
-              disabled={isDiceRolled}
+              disabled={false} // ye remove karna hai
+              // disabled={isDiceRolled}  // ye add karna hai
+              
               activeOpacity={0.4}
               onPress={handleDicePress}>
               <Image source={diceIcon} style={styles.dice} />
@@ -143,8 +149,7 @@ const Dice = React.memo(({color, data, player}) => {
       {/* Rolling Dice  */}
 
       {/* diceRolling */}
-      {console.log(currentPlayerChance, 'currentPlayerChance')}
-      {console.log(player, 'player')}
+     
       {currentPlayerChance === player && diceRolling ? (
         <LottieView
           source={DiceRoll}

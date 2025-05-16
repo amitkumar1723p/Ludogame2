@@ -6,7 +6,7 @@ const VerticalPath = ({cells , color}) => {
     const groups = [];
     for (let index = 0; index < cells?.length; index += 3) {
       groups.push(cells.slice(index, index + 3));  // 'i' ko 'index' se replace kiya
-      console.log(index, 'index');
+    
     }
     return groups;
   }, [cells]);

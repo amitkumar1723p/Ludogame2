@@ -7,6 +7,7 @@ export const gameSlice = createSlice({
   initialState: initialState,
 
   reducers: {
+     resetGame: () => initialState,
     updateDiceNo: (state, action) => {
       state.diceNo = action.payload.diceNo;
       state.isDiceRolled = true;
@@ -16,8 +17,9 @@ export const gameSlice = createSlice({
       state.touchDiceBlock = false;
       state.isDiceRolled = false;
     },
+    
   },
 });
 
-export const {updateDiceNo ,updatePlayerChance} = gameSlice.actions;
+export const {updateDiceNo ,updatePlayerChance ,resetGame} = gameSlice.actions;
 export default gameSlice.reducer;
