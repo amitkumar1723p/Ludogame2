@@ -9,7 +9,7 @@ import 'react-native-gesture-handler';
 // import {persistor, store} from './src/redux/reducers/store';
 import {persistor, store} from './src/redux/reducers/store';
 import {PersistGate} from 'redux-persist/integration/react';
-// import "./global.css"
+import "./global.css"
 const App = () => {
   return (
   <View className="flex-1 items-center justify-center bg-white">
