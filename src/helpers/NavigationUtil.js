@@ -29,3 +29,11 @@ export async function resetAndNavigate(routeName) {
 export async function prepareNavigation() {
   await navigationRef.isReady();
 }
+
+
+export async function goBack(){
+    await navigationRef.isReady();
+    if (navigationRef.isReady()) {
+       navigationRef.dispatch(CommonActions.goBack());
+    }
+}

@@ -15,13 +15,15 @@ import Logo from '../assets/images/logo.png';
 import LottieView from 'lottie-react-native';
 import {deviceHeight, deviceWidth} from '../constants/Scaling';
 import GradientButton from '../components/GradienthButton';
-import { navigate } from '../helpers/NavigationUtil';
+import {navigate} from '../helpers/NavigationUtil';
+import SoundPlayer from 'react-native-sound-player';
+import {playSound} from '../helpers/SoundUtility';
+import {resetGame} from '../redux/reducers/gameSlice';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
 
- 
   useEffect(() => {
     const loopAnimation = () => {
       Animated.loop(
@@ -95,22 +97,24 @@ const HomeScreen = () => {
     [],
   );
 
-  const handleResumePress = useCallback(() => {}, []);
+  const handleResumePress = useCallback(() => {
+    startGame();
+  }, []);
 
   const handleNewGamePress = useCallback(() => {
     startGame(true);
-  
-    
   }, []);
 
-    // Start new Game 
-    const startGame =async(isNew =false)=>{
-       if(isNew){
-
-       }
-      
-       navigate('LudoBoardScreen')
+  // Start new Game
+  const startGame = async (isNew = false) => {
+    SoundPlayer.stop();
+    if (isNew) {
+      dispatch(resetGame());
     }
+
+    navigate('LudoBoardScreen');
+    playSound('game_start');
+  };
   //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>

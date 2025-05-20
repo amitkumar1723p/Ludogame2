@@ -6,18 +6,24 @@ import GradientButton from './GradientButton';
 import {resetGame} from '../redux/reducers/gameSlice';
 import { useDispatch } from 'react-redux';
 import { playSound } from '../helpers/SoundUtility';
+import {goBack} from '../helpers/NavigationUtil';
 const MenuModal = ({onPressHide, visible}) => {
+
 
    const dispatch = useDispatch()
  const handleNewGame =useCallback(()=>{
    console.log(onPressHide)
-  console.log("Reset")
+ 
   
 
    dispatch(resetGame());
        playSound('game_start');
     onPressHide();
  }, [dispatch, onPressHide])
+
+ const handleHome =useCallback(()=>{
+  goBack();
+ } ,[])
 
   return (
     <Modal
@@ -38,9 +44,7 @@ const MenuModal = ({onPressHide, visible}) => {
             <GradientButton title={'RESUME'}   onPress ={onPressHide} />
             <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
 
-            <GradientButton title={'HOME'}  onPress={()=>{
-              Alert.alert("Go Home")
-            }}  />
+            <GradientButton title={'HOME'}  onPress={ handleHome}  />
             
              </View>
         </LinearGradient>
