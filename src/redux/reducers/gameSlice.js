@@ -7,7 +7,7 @@ export const gameSlice = createSlice({
   initialState: initialState,
 
   reducers: {
-     resetGame: () => initialState,
+    resetGame: () => initialState,
     updateDiceNo: (state, action) => {
       state.diceNo = action.payload.diceNo;
       state.isDiceRolled = true;
@@ -17,9 +17,19 @@ export const gameSlice = createSlice({
       state.touchDiceBlock = false;
       state.isDiceRolled = false;
     },
+    enablePileSelection: (state, action) => {
+      state.touchDiceBlock = true;
+      state.pileSelectionPlayer = action.payload.playerNo;
+    },
+
     
   },
 });
 
-export const {updateDiceNo ,updatePlayerChance ,resetGame} = gameSlice.actions;
+export const {
+  updateDiceNo,
+  updatePlayerChance,
+  resetGame,
+  enablePileSelection,
+} = gameSlice.actions;
 export default gameSlice.reducer;

@@ -15,10 +15,12 @@ import PileGreen from '../assets/images/piles/green.png';
 import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
 import PileYellow from '../assets/images/piles/yellow.png';
+import {useSelector} from 'react-redux';
+import {selectPocketPileSelection} from '../redux/reducers/gameSelectors';
 
 const Pile = ({color, player}) => {
   const rotation = useRef(new Animated.Value(0)).current;
-
+  const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
   const getPileImage = useMemo(() => {
     switch (color) {
       case Colors.green:
@@ -48,7 +50,7 @@ const Pile = ({color, player}) => {
     return () => rotateAnimation.stop();
   }, [rotation]);
 
-   const rotateInterpolate = useMemo(
+  const rotateInterpolate = useMemo(
     () =>
       rotation.interpolate({
         inputRange: [0, 1],
@@ -58,6 +60,15 @@ const Pile = ({color, player}) => {
     [rotation],
   );
 
+  const isPileEnabled = useMemo(
+    () => player == currentPlayerPileSelection,
+    [player, currentPlayerPileSelection],
+  ); 
+  console.log(currentPlayerPileSelection ,"currentPlayerPileSelection")
+  console.log(player ,"player" )
+   console.log(isPileEnabled ,"isPileEnabled")
+
+ 
   return (
     <TouchableOpacity activeOpacity={0.5} style={styles.container}>
       <View style={styles.holloCircle}>

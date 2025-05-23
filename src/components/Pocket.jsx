@@ -6,6 +6,7 @@ import Pile from './Pile';
 const Pocket = ({color, player}) => {
   return (
     <View style={[styles.container, {backgroundColor: color}]}>
+     
       <View style={styles.childFrame}>
         <View style={styles.flexRow}>
           <Plot pieceNo={0} player={player} color={color} />
