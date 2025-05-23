@@ -12,11 +12,21 @@ buildscript {
         google()
         mavenCentral()
     }
+
+    // Old Code   ---------start
+    // dependencies {
+    //     classpath("com.android.tools.build:gradle")
+    //     classpath("com.facebook.react:react-native-gradle-plugin")
+    //     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    // }
+
+    // New Code  ---- start
+
     dependencies {
-        classpath("com.android.tools.build:gradle")
-        classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-    }
+    classpath("com.android.tools.build:gradle:7.4.2") // ✅ Version add kiya gaya
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21") // ✅ Version add kiya gaya
+    classpath("com.facebook.react:react-native-gradle-plugin") // ✅ Ye waise ka waise rahega
+}
 }
 
 apply plugin: "com.facebook.react.rootproject"
