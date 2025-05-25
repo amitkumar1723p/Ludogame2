@@ -6,29 +6,30 @@ buildscript {
         targetSdkVersion = 35
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.0.21"
-         flipperVersion = "0.221.0" // ✅ Add this here
-        // flipperVersion = "0.125.0"
- // ✅ Add this here
+        // flipperVersion = "0.221.0"
+         flipperVersion = "0.273.0"  // ✅ Match package.json 
+         
     }
     repositories {
         google()
         mavenCentral()
     }
-
-    // Old Code   ---------start
-    // dependencies {
-    //     classpath("com.android.tools.build:gradle")
-    //     classpath("com.facebook.react:react-native-gradle-plugin")
-    //     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-    // }
-
-    // New Code  ---- start
-
     dependencies {
-    classpath("com.android.tools.build:gradle:7.4.2") // ✅ Version add kiya gaya
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21") // ✅ Version add kiya gaya
-    classpath("com.facebook.react:react-native-gradle-plugin") // ✅ Ye waise ka waise rahega
-}
+        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+    }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// ✅ Yeh add karo neeche buildscript ke baad
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://maven.google.com" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url "https://jitpack.io" }
+    }
+}

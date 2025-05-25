@@ -137,12 +137,13 @@ dependencies {
         implementation jscFlavor
     }
 
-debugImplementation("com.facebook.flipper:flipper:${flipperVersion}")
-debugImplementation("com.facebook.flipper:flipper-network-plugin:${flipperVersion}") {
-    exclude group:'com.squareup.okhttp3', module:'okhttp'
-}
-debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${flipperVersion}")
-debugImplementation("com.facebook.flipper:flipper-databases-plugin:${flipperVersion}")
+// debugImplementation("com.facebook.flipper:flipper:${flipperVersion}")
+//     debugImplementation("com.facebook.flipper:flipper-network-plugin:${flipperVersion}") {
+//         exclude group:'com.squareup.okhttp3', module:'okhttp'
+//     }
+//     // debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${flipperVersion}")
+//     // debugImplementation("com.facebook.flipper:flipper-databases-plugin:${flipperVersion}")
 
-}
+
+// }
 
