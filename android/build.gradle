@@ -7,6 +7,8 @@ buildscript {
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.0.21"
          flipperVersion = "0.221.0" // ✅ Add this here
+        // flipperVersion = "0.125.0"
+ // ✅ Add this here
     }
     repositories {
         google()

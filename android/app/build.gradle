@@ -142,6 +142,7 @@ debugImplementation("com.facebook.flipper:flipper-network-plugin:${flipperVersio
     exclude group:'com.squareup.okhttp3', module:'okhttp'
 }
 debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${flipperVersion}")
+debugImplementation("com.facebook.flipper:flipper-databases-plugin:${flipperVersion}")
 
 }
 
