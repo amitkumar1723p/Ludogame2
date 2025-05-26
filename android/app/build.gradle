@@ -121,4 +121,21 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+ debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
 }
+debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
+// Optional for React Native debugging
+// debugImplementation("com.facebook.flipper:flipper-react-native-plugin:${FLIPPER_VERSION}")
+}
+
+
+
+ 
+
+
+
+
+
