@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet} from 'react-native';
 import React, {memo} from 'react';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from '../constants/Colors';
 import Pile from './Pile';
 
 const Pocket = ({color, player}) => {

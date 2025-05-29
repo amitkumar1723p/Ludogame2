@@ -4,7 +4,7 @@ import {Colors} from '../../constants/Colors';
 import {ArrowSpot, SafeSpots, StarSpots} from '../../helpers/PlotData';
 import Iconicons from 'react-native-vector-icons/Ionicons';
 import {RFValue} from 'react-native-responsive-fontsize';
-const Cell = ({id, color}) => {
+const Cell = ({id, color = 'black'}) => {
   const isSafeSpot = useMemo(() => SafeSpots.includes(id), [id]);
   const isStartSpot = useMemo(() => StarSpots.includes(id), [id]);
   const isArrowSpot = useMemo(() => ArrowSpot.includes(id), [id]);
