@@ -83,14 +83,14 @@ const LudoBoardScreen = () => {
       </TouchableOpacity>
 
       {/* <LudoBoad Screen Start  */}
-
+ 
       <View style={styles.container}>
         <View  style={styles.flexRow}>
           <Dice  color={Colors.green} player={2} data={player2}  />
           <Dice color={Colors.yellow} player={3} data={player3} rotate={false}  />
         </View>
         <View style={styles.ludoBoard}>
-          {' '}
+          
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
             <Pocket color={Colors.green} player={2} />
@@ -116,7 +116,7 @@ const LudoBoardScreen = () => {
             <Dice  color={Colors.yellow} player={4} data={player4} />
           </View>
         </View>{' '}
-        {/* // ludobard end */}
+        {/* // ludobard end */} 
       </View>
       {/* <LudoBoad Screen  End */}
 
