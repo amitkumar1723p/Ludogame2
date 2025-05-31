@@ -14,6 +14,7 @@ const Cell = ({id, color = 'black'}) => {
         styles.container,
         {backgroundColor: isSafeSpot ? color : 'white'},
       ]}>
+        <Text>{id}</Text>
       {isStartSpot && (
         <Iconicons name="star-outline" size={RFValue()} color="grey" />
       )}
@@ -40,9 +41,9 @@ const Cell = ({id, color = 'black'}) => {
         />
       )}
 
-      <View style={[styles.pileContainer]}>
-       <Text>{id}</Text>
-      </View>
+      {/* <View style={[styles.pileContainer]}>
+       
+      </View> */}
     </View>
   );
 };

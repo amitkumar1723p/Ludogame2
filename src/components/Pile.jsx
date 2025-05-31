@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {Svg, Circle} from 'react-native-svg';
 import {Colors} from '../constants/Colors';
 
@@ -16,11 +16,17 @@ import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
 import PileYellow from '../assets/images/piles/yellow.png';
 import {useSelector} from 'react-redux';
-import {selectPocketPileSelection} from '../redux/reducers/gameSelectors';
+import {selectPocketPileSelection , selectCellSelection, selectDiceNo} from '../redux/reducers/gameSelectors';
+ 
 
-const Pile = ({color, player}) => {
+const Pile = ({cell, pieceId, color, player, onPress}) => {
+  
   const rotation = useRef(new Animated.Value(0)).current;
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
+    const currentPlayerCellSelection = useSelector(selectCellSelection);
+  const diceNo = useSelector(selectDiceNo);
+  const playerPieces =useSelector(state=>state.game[`player ${player}`]);
+
   const getPileImage = useMemo(() => {
     switch (color) {
       case Colors.green:
@@ -59,20 +65,40 @@ const Pile = ({color, player}) => {
 
     [rotation],
   );
+  
+  //  console.log(player , currentPlayerPileSelection ,"player and currentPlayerPileSelection");
 
   const isPileEnabled = useMemo(
     () => player == currentPlayerPileSelection,
     [player, currentPlayerPileSelection],
   ); 
-  console.log(currentPlayerPileSelection ,"currentPlayerPileSelection")
-  console.log(player ,"player" )
-   console.log(isPileEnabled ,"isPileEnabled")
+    const isCellEnabled = useMemo(
+    () => player === currentPlayerCellSelection,
+    [player, currentPlayerCellSelection]
+  );
+
+  const isForwardable =useCallback(()=>{
+  const piece = playerPieces.find(item=>item.id===pieceId)
+     return piece && piece.travelCount + diceNo<=57;
+  },[playerPieces ,diceNo ,pieceId])
+
+   
+ 
+
 
  
   return (
-    <TouchableOpacity activeOpacity={0.5} style={styles.container}>
+    <TouchableOpacity 
+    activeOpacity={0.5}
+    style={styles.container}
+      onPress={onPress} 
+      disabled={!(cell? isCellEnabled && isForwardable():isPileEnabled)}
+    
+    >
       <View style={styles.holloCircle}>
-        <View style={styles.dashedCircleContainer}>
+  
+  
+      {cell? isCellEnabled && isForwardable():isPileEnabled &&   <View style={styles.dashedCircleContainer}>
           <Animated.View
             style={[
               styles.dashedCircle,
@@ -91,7 +117,8 @@ const Pile = ({color, player}) => {
               />
             </Svg>
           </Animated.View>
-        </View>
+        </View>}
+      
       </View>
 
       <Image

@@ -93,9 +93,9 @@ const LudoBoardScreen = () => {
           
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
-            <Pocket color={Colors.green} player={2} />
+           <Pocket color={Colors.green} player={2} data={player2} />
             <VerticalPath color={Colors.yellow} cells={Plot2Data} />
-            <Pocket layer={3} color={Colors.yellow} />
+            <Pocket color={Colors.yellow} player={3} data={player3} />
           </View>
           <View style={styles.pathContainer}>
             <HorizontalPath color={Colors.green} cells={Plot1Data} />
@@ -107,9 +107,9 @@ const LudoBoardScreen = () => {
             <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>
-            <Pocket color={Colors.red} />
+           <Pocket color={Colors.red} data={player1} player={1} />
             <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
-            <Pocket color={Colors.blue} player={4} />
+          <Pocket color={Colors.blue} data={player4} player={4} />
           </View>
           <View style={styles.flexRow}>
             <Dice color={Colors.green} player={1} data={player1} />

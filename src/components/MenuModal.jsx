@@ -12,7 +12,7 @@ const MenuModal = ({onPressHide, visible}) => {
 
    const dispatch = useDispatch()
  const handleNewGame =useCallback(()=>{
-   console.log(onPressHide)
+   
  
   
 

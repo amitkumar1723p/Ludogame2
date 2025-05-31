@@ -8,7 +8,7 @@ import {
   Easing,
   Alert,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   selectCurrentPlayerChance,
   selectDiceRolled,
@@ -17,16 +17,16 @@ import {
 import DiceRoll from '../assets/animation/diceroll.json';
 import LinearGradient from 'react-native-linear-gradient';
 import Arrow from '../assets/images/arrow.png';
-import {BackgroundImage} from '../helpers/GetIcons';
+import { BackgroundImage } from '../helpers/GetIcons';
 import LottieView from 'lottie-react-native';
-import {playSound} from '../helpers/SoundUtility';
+import { playSound } from '../helpers/SoundUtility';
 import {
   updateDiceNo,
   updatePlayerChance,
   enablePileSelection,
 } from '../redux/reducers/gameSlice';
-import {useDispatch, useSelector} from 'react-redux';
-const Dice = React.memo(({color, data, player}) => {
+import { useDispatch, useSelector } from 'react-redux';
+const Dice = React.memo(({ color, data, player }) => {
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
   const playerPieces = useSelector(
@@ -73,14 +73,14 @@ const Dice = React.memo(({color, data, player}) => {
 
   const handleDicePress = async () => {
     //  playSound('dice_roll');
-    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-   const  newDiceNo =6
+    const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    //  const  newDiceNo =6
 
     setDiceRolling(true);
 
     await delay(1000); // simulate dice roll animationnpx react-native start --reset-cache
 
-    dispatch(updateDiceNo({diceNo: newDiceNo}));
+    dispatch(updateDiceNo({ diceNo: newDiceNo }));
 
     setDiceRolling(false);
 
@@ -88,8 +88,10 @@ const Dice = React.memo(({color, data, player}) => {
 
     if (isAnyPieceALive == -1) {
       if (newDiceNo == 6) {
-        Alert.alert('enablePileSelection');
-        dispatch(enablePileSelection({playerNo: player}));
+        // Alert.alert({`playerNo:${player}`});
+
+
+        dispatch(enablePileSelection({ playerNo: player }));
       } else {
         let chancePlayer = player + 1;
 
@@ -97,7 +99,7 @@ const Dice = React.memo(({color, data, player}) => {
           chancePlayer = 1;
         }
         await delay(1000);
-        dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+        dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
       }
     } else {
       Alert.alert('isAnyPieceALive');
@@ -111,8 +113,8 @@ const Dice = React.memo(({color, data, player}) => {
         <LinearGradient
           style={styles.linearGradient}
           colors={['#0052be', '#5f9fcb', '#97c6c9']}
-          start={{x: 0, y: 0.5}}
-          end={{x: 1, y: 0.5}}>
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}>
           <View style={styles.pileContainer}>
             <Image source={pileIcon} style={styles.pileIcon} />
           </View>
@@ -140,8 +142,8 @@ const Dice = React.memo(({color, data, player}) => {
 
       {/* Arrow Icon  */}
       {currentPlayerChance === player && !isDiceRolled ? (
-        <Animated.View style={{transform: [{translateX: arrowAnim}]}}>
-          <Image source={Arrow} style={{width: 30, height: 30}} />
+        <Animated.View style={{ transform: [{ translateX: arrowAnim }] }}>
+          <Image source={Arrow} style={{ width: 30, height: 30 }} />
         </Animated.View>
       ) : null}
 

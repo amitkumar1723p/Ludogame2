@@ -1,4 +1,4 @@
-import {current} from '@reduxjs/toolkit';
+ 
 
 const player1InitialState = [
   {id: 'A1', pos: 0, travelCount: 0},

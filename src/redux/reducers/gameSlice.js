@@ -1,5 +1,5 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {initialState} from './initialState';
+import { createSlice } from '@reduxjs/toolkit';
+import { initialState } from './initialState';
 
 export const gameSlice = createSlice({
   name: 'game',
@@ -21,8 +21,20 @@ export const gameSlice = createSlice({
       state.touchDiceBlock = true;
       state.pileSelectionPlayer = action.payload.playerNo;
     },
+    unfreezeDice: (state) => {
+      state.touchDiceBlock = false;
+      state.isDiceRolled = false;
+    },
+    updatePlayerPieceValue: (state, action) => {
+    const { playerNo, pieceId, pos, travelCount } = action.payload;
+     
+    console.log(state[playerNo][0])
 
+      
     
+    }
+
+
   },
 });
 
@@ -31,5 +43,7 @@ export const {
   updatePlayerChance,
   resetGame,
   enablePileSelection,
+  updatePlayerPieceValue,
+  unfreezeDice
 } = gameSlice.actions;
 export default gameSlice.reducer;

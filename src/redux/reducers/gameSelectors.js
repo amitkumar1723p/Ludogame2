@@ -9,3 +9,7 @@ export const selectDiceRolled = state => state.game.isDiceRolled;
 export const selectDiceNo = state => state.game.diceNo;
 
 export const selectPocketPileSelection = state =>state.game.pileSelectionPlayer;
+
+
+
+export const selectCellSelection =state => state.game.cellSelectionPlayer;
