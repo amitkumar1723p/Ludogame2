@@ -12,7 +12,7 @@ import {
 
 import rootReducer from '../rootReducer';
 import {configureStore} from '@reduxjs/toolkit';
-
+import { composeWithDevTools } from 'redux-devtools-extension';
 const persistConfig = {
   key: 'root',
   storage: reduxStorage,

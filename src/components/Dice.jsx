@@ -22,15 +22,18 @@ import LottieView from 'lottie-react-native';
 import { playSound } from '../helpers/SoundUtility';
 import {
   updateDiceNo,
-  updatePlayerChance,
+  updatePlayerChance, 
   enablePileSelection,
+  enableCellSelection ,
 } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 const Dice = React.memo(({ color, data, player }) => {
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
+  console.log(currentPlayerChance, "currentPlayerChance")
+
   const playerPieces = useSelector(
-    state => state.game[`player ${currentPlayerChance}`],
+    state => state.game[`player${currentPlayerChance}`],
   );
   const isDiceRolled = useSelector(selectDiceRolled);
   const diceNo = useSelector(selectDiceNo);
@@ -51,14 +54,14 @@ const Dice = React.memo(({ color, data, player }) => {
             toValue: 10,
             duration: 600,
             easing: Easing.out(Easing.ease),
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
 
           Animated.timing(arrowAnim, {
             toValue: -10,
             duration: 400,
             easing: Easing.in(Easing.ease),
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
         ]),
       ).start();
@@ -86,6 +89,8 @@ const Dice = React.memo(({ color, data, player }) => {
 
     const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
 
+    const isAnyPieceLocked = data?.findIndex(i => i.pos == 0)
+
     if (isAnyPieceALive == -1) {
       if (newDiceNo == 6) {
         // Alert.alert({`playerNo:${player}`});
@@ -102,8 +107,35 @@ const Dice = React.memo(({ color, data, player }) => {
         dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
       }
     } else {
-      Alert.alert('isAnyPieceALive');
-      // गोटी मूव करने की अनुमति दो
+
+      console.log(playerPieces, "playerPieces")
+
+
+
+      const canMove = playerPieces.some(pile => pile.travelCount + newDiceNo <= 57 && pile.pos != 0)
+
+      console.log(canMove, "canMove")
+
+
+      if (
+        (!canMove && newDiceNo == 6 && isAnyPieceLocked == -1) ||
+        (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
+        (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)) {
+        let chancePlayer = player + 1;
+
+        if (chancePlayer > 4) {
+          chancePlayer = 1;
+        }
+
+        await delay(600);
+        dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
+        return;
+      }
+      if (newDiceNo == 6) {
+        dispatch(enablePileSelection({ playerNo: player }));
+      }
+      dispatch(enableCellSelection({ playerNo: player }));
+ 
     }
   };
 
@@ -128,8 +160,8 @@ const Dice = React.memo(({ color, data, player }) => {
 
             {currentPlayerChance == player && !diceRolling ? (
               <TouchableOpacity
-                disabled={false} // ye remove karna hai
-                // disabled={isDiceRolled}  // ye add karna hai
+         
+                disabled={isDiceRolled}  // ye add karna hai
 
                 activeOpacity={0.4}
                 onPress={handleDicePress}>

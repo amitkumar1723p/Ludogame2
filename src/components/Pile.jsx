@@ -25,7 +25,7 @@ const Pile = ({cell, pieceId, color, player, onPress}) => {
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
     const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
-  const playerPieces =useSelector(state=>state.game[`player ${player}`]);
+  const playerPieces =useSelector(state=>state.game[`player${player}`]);
 
   const getPileImage = useMemo(() => {
     switch (color) {
@@ -66,7 +66,7 @@ const Pile = ({cell, pieceId, color, player, onPress}) => {
     [rotation],
   );
   
-  //  console.log(player , currentPlayerPileSelection ,"player and currentPlayerPileSelection");
+ 
 
   const isPileEnabled = useMemo(
     () => player == currentPlayerPileSelection,

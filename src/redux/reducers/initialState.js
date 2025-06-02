@@ -41,4 +41,5 @@ export const initialState = {
   currentPositions: [],
   fireworks: false,
   winner: null,
+  cellSelectionPlayer :-1
 };

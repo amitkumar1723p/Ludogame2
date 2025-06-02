@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initialState } from './initialState';
+ 
+
 
 export const gameSlice = createSlice({
   name: 'game',
@@ -25,13 +27,52 @@ export const gameSlice = createSlice({
       state.touchDiceBlock = false;
       state.isDiceRolled = false;
     },
-    updatePlayerPieceValue: (state, action) => {
-    const { playerNo, pieceId, pos, travelCount } = action.payload;
-     
-    console.log(state[playerNo][0])
 
-      
-    
+    enableCellSelection: (state, action) => {
+      state.touchDiceBlock = true;
+      state.cellSelectionPlayer = action.payload.playerNo;
+    },
+    updatePlayerPieceValue: (state, action) => {
+      const { playerNo, pieceId, pos, travelCount } = action.payload;
+      const playerPieces = state[playerNo];
+      const piece = playerPieces.find(p => p.id === pieceId);
+      state.pileSelectionPlayer = -1;
+
+
+
+      if (piece) {
+        piece.pos = pos;
+        piece.travelCount = travelCount;
+
+
+        const currentPositionIndex = state.currentPositions.findIndex(p => p.id === pieceId)
+
+
+        if (pos == 0) {
+
+          // If the piece is going back to home/start, remove it from current positions
+
+          if (currentPositionIndex !== -1) {
+            state.currentPositions.splice(currentPositionIndex, 1)
+          }
+        } else {
+          // Otherwise, update or add it in the current positions
+
+          if (currentPositionIndex !== -1) {
+            state.currentPositions[currentPositionIndex] = { id: pieceId, pos };
+          } else {
+            state.currentPositions.push({ id: pieceId, pos });
+          }
+        }
+      }
+
+    } ,
+    disableTouch :state=>{
+
+
+      state.touchDiceBlock =true ;
+      state.cellSelectionPlayer =-1 
+      state.pileSelectionPlayer =-1
     }
 
 
@@ -44,6 +85,8 @@ export const {
   resetGame,
   enablePileSelection,
   updatePlayerPieceValue,
-  unfreezeDice
+  unfreezeDice,
+  disableTouch ,
+  enableCellSelection
 } = gameSlice.actions;
 export default gameSlice.reducer;

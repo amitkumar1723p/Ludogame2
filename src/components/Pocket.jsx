@@ -82,8 +82,8 @@ const Plot = ({ pieceNo, player, color, data, handlePress }) => {
     <View style={[styles.plot, { backgroundColor: color }]}>
       <Pile player={player} color={color} onPress={() => {
 
-        // console.log(data[pieceNo])
-        //   console.log(`data[pieceNo] : ${data[pieceNo]}`);
+       
+       
         //  Alert.alert(`Player${player} pieceNo ${pieceNo},`)
         handlePress(data[pieceNo])
         // Alert.alert(`PiceNO : ${pieceNo} && 
