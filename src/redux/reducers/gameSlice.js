@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initialState } from './initialState';
- 
+
 
 
 export const gameSlice = createSlice({
@@ -66,13 +66,13 @@ export const gameSlice = createSlice({
         }
       }
 
-    } ,
-    disableTouch :state=>{
+    },
+    disableTouch: state => {
 
 
-      state.touchDiceBlock =true ;
-      state.cellSelectionPlayer =-1 
-      state.pileSelectionPlayer =-1
+      state.touchDiceBlock = true;
+      state.cellSelectionPlayer = -1
+      state.pileSelectionPlayer = -1
     }
 
 
@@ -86,7 +86,7 @@ export const {
   enablePileSelection,
   updatePlayerPieceValue,
   unfreezeDice,
-  disableTouch ,
+  disableTouch,
   enableCellSelection
 } = gameSlice.actions;
 export default gameSlice.reducer;
