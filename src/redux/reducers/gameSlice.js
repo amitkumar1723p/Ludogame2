@@ -36,7 +36,7 @@ export const gameSlice = createSlice({
       const { playerNo, pieceId, pos, travelCount } = action.payload;
       const playerPieces = state[playerNo];
       const piece = playerPieces.find(p => p.id === pieceId);
-      state.pileSelectionPlayer = -1;
+      state.pileSelectionPlayer = -1; //pile disable
 
 
 

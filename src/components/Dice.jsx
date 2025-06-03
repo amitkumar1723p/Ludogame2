@@ -22,9 +22,9 @@ import LottieView from 'lottie-react-native';
 import { playSound } from '../helpers/SoundUtility';
 import {
   updateDiceNo,
-  updatePlayerChance, 
+  updatePlayerChance,
   enablePileSelection,
-  enableCellSelection ,
+  enableCellSelection,
 } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 const Dice = React.memo(({ color, data, player }) => {
@@ -78,17 +78,17 @@ const Dice = React.memo(({ color, data, player }) => {
     //  playSound('dice_roll');
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
     //  const  newDiceNo =6
-
+    playSound("dice_roll")
     setDiceRolling(true);
 
-    await delay(1000); // simulate dice roll animationnpx react-native start --reset-cache
+    await delay(800); // simulate dice roll animationnpx react-native start --reset-cache
 
     dispatch(updateDiceNo({ diceNo: newDiceNo }));
 
     setDiceRolling(false);
 
-    const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
 
+    const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
     const isAnyPieceLocked = data?.findIndex(i => i.pos == 0)
 
     if (isAnyPieceALive == -1) {
@@ -103,7 +103,7 @@ const Dice = React.memo(({ color, data, player }) => {
         if (chancePlayer > 4) {
           chancePlayer = 1;
         }
-        await delay(1000);
+        await delay(600);
         dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
       }
     } else {
@@ -135,7 +135,7 @@ const Dice = React.memo(({ color, data, player }) => {
         dispatch(enablePileSelection({ playerNo: player }));
       }
       dispatch(enableCellSelection({ playerNo: player }));
- 
+
     }
   };
 
@@ -158,16 +158,42 @@ const Dice = React.memo(({ color, data, player }) => {
           <View style={styles.diceContainer}>
             {/* jis dice per number show ho rhe hai vo vala dice  */}
 
-            {currentPlayerChance == player && !diceRolling ? (
+            {/* {currentPlayerChance == player && !diceRolling ? (
               <TouchableOpacity
-         
+
                 disabled={isDiceRolled}  // ye add karna hai
 
                 activeOpacity={0.4}
                 onPress={handleDicePress}>
                 <Image source={diceIcon} style={styles.dice} />
               </TouchableOpacity>
-            ) : null}
+            ) : null} */}
+
+            {currentPlayerChance == player ?
+
+              diceRolling ? null : <TouchableOpacity
+
+                disabled={isDiceRolled}  // ye add karna hai
+
+                activeOpacity={0.4}
+                onPress={handleDicePress}>
+                <Image source={diceIcon} style={styles.dice} />
+              </TouchableOpacity>
+
+
+              : null}
+
+
+            {/* {currentPlayerChance == player && !diceRolling ? (
+              <TouchableOpacity
+
+                disabled={isDiceRolled}  // ye add karna hai
+
+                activeOpacity={0.4}
+                onPress={handleDicePress}>
+                <Image source={diceIcon} style={styles.dice} />
+              </TouchableOpacity>
+            ) : null} */}
           </View>
         </View>
       </View>

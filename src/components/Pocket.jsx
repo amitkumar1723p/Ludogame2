@@ -6,13 +6,8 @@ import { startingPoints } from '../helpers/PlotData';
 import { unfreezeDice, updatePlayerPieceValue } from '../redux/reducers/gameSlice';
 import { useDispatch } from 'react-redux';
 const Pocket = ({ color, player, data }) => {
- const dispatch = useDispatch();
-  const handlePress = (value) => {
-
-    //     Value == {id: "D4"
-    // pos: 0
-    // travelCount: 0}  
-
+  const dispatch = useDispatch();
+  const handlePress = async (value) => {
 
     let playerNo = value?.id?.slice(0, 1);
     console.log(playerNo)
@@ -42,7 +37,7 @@ const Pocket = ({ color, player, data }) => {
     }))
 
     dispatch(unfreezeDice())
-    
+
 
   }
   return (
@@ -80,15 +75,18 @@ export default memo(Pocket);
 const Plot = ({ pieceNo, player, color, data, handlePress }) => {
   return (
     <View style={[styles.plot, { backgroundColor: color }]}>
-      <Pile player={player} color={color} onPress={() => {
 
-       
-       
+
+      {data && data[pieceNo]?.pos == 0 && <Pile player={player} color={color} onPress={() => {
+
+
+
         //  Alert.alert(`Player${player} pieceNo ${pieceNo},`)
         handlePress(data[pieceNo])
         // Alert.alert(`PiceNO : ${pieceNo} && 
         //   data[pieceNo] : ${data[pieceNo]}`)
-      }} />
+      }} />}
+
     </View>
   );
 };

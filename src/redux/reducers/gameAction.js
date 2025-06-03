@@ -1,47 +1,53 @@
-import { Alert } from "react-native"
-import { selectCurrentPosition, selectDiceNo } from "./gameSelectors"
-import {   announceWinner,
+import {
+  SafeSpots,
+  StarSpots,
+  startingPoints,
+  turningPoints,
+  victoryStart,
+} from '../../helpers/PlotData';
+import {playSound} from '../../helpers/SoundUtility';
+import {selectCurrentPosition, selectDiceNo} from './gameSelectors';
+import {
+  announceWinner,
   disableTouch,
   unfreezeDice,
   updateFireworks,
   updatePlayerChance,
-  updatePlayerPieceValue, } from './gameSlice'
-import { turningPoints, victoryStart, startingPoints } from '../../helpers/PlotData'
-export const handleForwardThunk = (playerNo, id, pos) => {
+  updatePlayerPieceValue,
+} from './gameSlice';
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+function checkWinningCriterial(pieces) {
+  for (const piece of pieces) {
+    if (piece.travelCount < 57) {
+      return false; // if any piece has travelCount less than 57 , return false
+    }
+    return true; // if all pieces have travelCont >=57 , return true
+  }
+}
 
-  return async (dispatch, getState) => {
-    const state = getState()
-    const plottedPieces = selectCurrentPosition(state)
+export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getState) => {
+    const state = getState();
+    const plottedPieces = selectCurrentPosition(state);
     const diceNo = selectDiceNo(state);
+
     const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
 
-    console.log(piecesAtPosition, "piecesAtPosition")
     let alpha = playerNo == 1 ? 'A' : playerNo == 2 ? 'B' : playerNo == 3 ? 'C' : 'D';
-
-
-
-
     const piece =
       piecesAtPosition[
-      piecesAtPosition.findIndex(item => item.id.slice(0, 1) == alpha)
+        piecesAtPosition.findIndex(item => item.id.slice(0, 1) == alpha)
       ];
-
-    console.log(piece, "PIECE")
 
     dispatch(disableTouch());
     let finalPath = piece.pos;
+
     const beforePlayerPieces = state.game[`player${playerNo}`].find(
       item => item.id == id,
     );
-    console.log(beforePlayerPieces, "beforePlayerPieces")
-    console.log(finalPath, "FinalPath")
-    //  let finalPath = piece.pos;
 
     let travelCont = beforePlayerPieces.travelCont;
-
-    console.log(diceNo, "diceNo")
 
     for (let i = 0; i < diceNo; i++) {
       const updatePosition = getState();
@@ -74,10 +80,12 @@ export const handleForwardThunk = (playerNo, id, pos) => {
       await delay(200); // consider reducing delay if possible
     }
 
+    // Ensure state is updated after movement
     const updateState = getState();
-    const updatePlottedPieces = selectCurrentPosition(updateState)
-    const finalPlot = updatePlayerPieceValue.filter(item => item.pos == finalPath);
+    const updatePlottedPieces = selectCurrentPosition(updateState);
 
+    // CheckColliding
+    const finalPlot = updatePlayerPieceValue.filter(item => item.pos == finalPath);
     const ids = finalPlot?.map(item => item.id[0]);
     const uniqueIds = new Set(ids);
     const areDifferentIds = uniqueIds.size > 1;
@@ -85,8 +93,6 @@ export const handleForwardThunk = (playerNo, id, pos) => {
     if (SafeSpots.includes(finalPath) || StarSpots.includes(finalPath)) {
       playSound('safe_spot');
     }
-
-
     if (
       areDifferentIds &&
       !SafeSpots.includes(finalPlot[0].pos) &&
@@ -133,7 +139,7 @@ export const handleForwardThunk = (playerNo, id, pos) => {
       return;
     }
 
-       // Check Six Dice
+    // Check Six Dice
 
     if (diceNo == 6 || travelCont == 57) {
       dispatch(updatePlayerChance({chancePlayer: playerNo}));
@@ -152,16 +158,11 @@ export const handleForwardThunk = (playerNo, id, pos) => {
         dispatch(unfreezeDice());
         return;
       }
-    } else {
+    }  
       let chancePlayer = playerNo + 1;
       if (chancePlayer > 4) {
         chancePlayer = 1;
-      }
+       
       dispatch(updatePlayerChance({chancePlayer}));
     }
-
-  }
-
-
-
-}
+  };
