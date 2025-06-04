@@ -10,7 +10,7 @@ const Pocket = ({ color, player, data }) => {
   const handlePress = async (value) => {
 
     let playerNo = value?.id?.slice(0, 1);
-    console.log(playerNo)
+    
 
     switch (playerNo) {
       case 'A':

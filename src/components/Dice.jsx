@@ -30,7 +30,7 @@ import { useDispatch, useSelector } from 'react-redux';
 const Dice = React.memo(({ color, data, player }) => {
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
-  console.log(currentPlayerChance, "currentPlayerChance")
+   
 
   const playerPieces = useSelector(
     state => state.game[`player${currentPlayerChance}`],
@@ -108,13 +108,13 @@ const Dice = React.memo(({ color, data, player }) => {
       }
     } else {
 
-      console.log(playerPieces, "playerPieces")
+      
 
 
 
       const canMove = playerPieces.some(pile => pile.travelCount + newDiceNo <= 57 && pile.pos != 0)
 
-      console.log(canMove, "canMove")
+       
 
 
       if (

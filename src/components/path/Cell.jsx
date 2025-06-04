@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import React, { useCallback, useMemo } from 'react';
 import { Colors } from '../../constants/Colors';
 import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
@@ -20,9 +20,8 @@ const Cell = ({ id, color = 'black' }) => {
     return plottedPieces.filter(item => item.pos == id);
   }, [plottedPieces, id]);
 
-  const handlePress = useCallback(
-    (playerNo, pieceId) => {
-     ;
+  const handlePress = useCallback((playerNo, pieceId) => {
+     Alert.alert("run")
       dispatch(handleForwardThunk(playerNo, pieceId, id));
       // your press handler logic
     },

@@ -6,6 +6,7 @@ import {
   Easing,
   StyleSheet,
   Image,
+  Alert,
 } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Svg, Circle } from 'react-native-svg';
@@ -20,6 +21,7 @@ import { selectPocketPileSelection, selectCellSelection, selectDiceNo } from '..
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
+  //  console.log(cell ,pieceId ,color ,player ,onPress ,"Hello") 
 
   const rotation = useRef(new Animated.Value(0)).current;
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
@@ -77,32 +79,58 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
        [player, currentPlayerPileSelection],
   );
 
+  //  console.log(playerPieces ,"PlayerPieces")
+  // const isForwardable = useCallback(() => {
+  //   const piece = playerPieces.find(item => item.id === pieceId)
+  //   console.log(piece ,"piece")
+ 
+  //   [player, currentPlayerCellSelection]
+  //   return piece && piece.travelCount + diceNo <= 57;
+  // }, [playerPieces, diceNo, pieceId])
+ 
   const isForwardable = useCallback(() => {
-    const piece = playerPieces.find(item => item.id === pieceId)
-    [player, currentPlayerCellSelection]
-    return piece && piece.travelCount + diceNo <= 57;
-  }, [playerPieces, diceNo, pieceId])
+  const piece = playerPieces.find(item => item.id === pieceId);
+  // console.log(piece, "piece");
 
+  return piece && piece.travelCount + diceNo <= 57;
+}, [playerPieces, diceNo, pieceId ]);
+   
+ console.log(playerPieces ,pieceId ,"PlayerPieces" ,"PieceId")
+ const piece = playerPieces.find(item => item.id === pieceId);
+  console.log(piece ,"piece")
+  console.log(piece && piece.travelCount + diceNo <= 57 ,"Pice is Forwardable")
+ 
+  //  console.log(isCellEnabled,'CellEnabled')
 
-   console.log(cell,"cell")
-console.log( isCellEnabled,"isCellEnabled")
- console.log("PlayerNumber" ,player)
-
-
-
+  //   console.log(currentPlayerCellSelection==player,"currentPlayerSelection")
+   
+   if(cell){ 
+    console.log(cell ,"cell") 
+    console.log(isCellEnabled && isForwardable() ,"isCellEnable && isForwardable")
+   }else{
+     console.log(isPileEnabled ,"isPileEnalbe")
+   }
+//  console.log(cell ? isCellEnabled && isForwardable() : isPileEnabled)
+ 
 
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       style={styles.container}
+      //  onPress={()=>{
+      //   Alert.alert("run")
+      //  }}
       onPress={onPress}
-      disabled={!(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
+      // disabled={!(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
+      disabled={ !(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
 
     >
       <View style={styles.holloCircle}>
          
 
-        {cell ? isCellEnabled && isForwardable() : isPileEnabled && <View style={styles.dashedCircleContainer}>
+        {cell ? isCellEnabled && isForwardable() : isPileEnabled && 
+        
+        <View style={styles.dashedCircleContainer}>
           <Animated.View
             style={[
               styles.dashedCircle,
@@ -121,7 +149,9 @@ console.log( isCellEnabled,"isCellEnabled")
               />
             </Svg>
           </Animated.View>
-        </View>}
+        </View>
+        
+          }
 
       </View>
 
