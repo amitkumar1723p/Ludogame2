@@ -51,14 +51,14 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
 
     for (let i = 0; i < diceNo; i++) {
       const updatePosition = getState();
-      const playerPieces = updatePosition.game[`player${playerNo}`].find(
+      const playerPiece = updatePosition.game[`player${playerNo}`].find(
         item => item.id == id,
       );
 
-      let path = playerPieces.pos + 1;
+      let path = playerPiece.pos + 1;
 
       if (turningPoints.includes(path) && turningPoints[playerNo - 1] == path) {
-        path = victoryStart(playerNo - 1);
+        path = victoryStart[playerNo - 1];
       }
       if (path == 53) {
         path = 1;
@@ -70,7 +70,7 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
       dispatch(
         updatePlayerPieceValue({
           playerNo: `player${playerNo}`,
-          pieceId: playerPieces.id,
+          pieceId: playerPiece.id,
           pos: path,
           travelCont: travelCont,
         }),
@@ -80,12 +80,17 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
       await delay(200); // consider reducing delay if possible
     }
 
+
+
+
+
+
     // Ensure state is updated after movement
     const updateState = getState();
     const updatePlottedPieces = selectCurrentPosition(updateState);
 
     // CheckColliding
-    const finalPlot = updatePlayerPieceValue.filter(item => item.pos == finalPath);
+    const finalPlot = updatePlottedPieces.filter(item => item.pos == finalPath);
     const ids = finalPlot?.map(item => item.id[0]);
     const uniqueIds = new Set(ids);
     const areDifferentIds = uniqueIds.size > 1;

@@ -21,6 +21,7 @@ import { selectPocketPileSelection, selectCellSelection, selectDiceNo } from '..
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
+   console.log(cell ,pieceId ,color ,player ,onPress ,"============================cell=========PieceId============color=========player")
   //  console.log(cell ,pieceId ,color ,player ,onPress ,"Hello") 
 
   const rotation = useRef(new Animated.Value(0)).current;
@@ -28,6 +29,30 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
+
+
+
+
+
+  const isPileEnabled = useMemo(
+    () => player == currentPlayerPileSelection,
+    [player, currentPlayerPileSelection],
+  );
+  const isCellEnabled = useMemo( 
+    () => player === currentPlayerCellSelection,
+       [player, currentPlayerPileSelection],
+  );
+
+  
+  const isForwardable = useCallback(() => {
+  const piece = playerPieces?.find(item => item.id === pieceId);
+  // console.log(piece, "piece");
+
+  return piece && piece.travelCount + diceNo <= 57;
+}, [playerPieces, diceNo, pieceId]);
+   
+
+
 
   const getPileImage = useMemo(() => {
     switch (color) {
@@ -69,60 +94,27 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   );
 
 
+  // const rotateInterpolate = useMemo(
+  //   () =>
+  //     rotation.rotateInterpolate({
+  //       inputRange: [0, 1],
+  //       outputRange: ['0deg', '360deg'],
+  //     }),
 
-  const isPileEnabled = useMemo(
-    () => player == currentPlayerPileSelection,
-    [player, currentPlayerPileSelection],
-  );
-  const isCellEnabled = useMemo( 
-    () => player === currentPlayerCellSelection,
-       [player, currentPlayerPileSelection],
-  );
+  //   [rotation],
+  // );
 
-  //  console.log(playerPieces ,"PlayerPieces")
-  // const isForwardable = useCallback(() => {
-  //   const piece = playerPieces.find(item => item.id === pieceId)
-  //   console.log(piece ,"piece")
  
-  //   [player, currentPlayerCellSelection]
-  //   return piece && piece.travelCount + diceNo <= 57;
-  // }, [playerPieces, diceNo, pieceId])
  
-  const isForwardable = useCallback(() => {
-  const piece = playerPieces.find(item => item.id === pieceId);
-  // console.log(piece, "piece");
 
-  return piece && piece.travelCount + diceNo <= 57;
-}, [playerPieces, diceNo, pieceId ]);
-   
- console.log(playerPieces ,pieceId ,"PlayerPieces" ,"PieceId")
- const piece = playerPieces.find(item => item.id === pieceId);
-  console.log(piece ,"piece")
-  console.log(piece && piece.travelCount + diceNo <= 57 ,"Pice is Forwardable")
- 
-  //  console.log(isCellEnabled,'CellEnabled')
 
-  //   console.log(currentPlayerCellSelection==player,"currentPlayerSelection")
-   
-   if(cell){ 
-    console.log(cell ,"cell") 
-    console.log(isCellEnabled && isForwardable() ,"isCellEnable && isForwardable")
-   }else{
-     console.log(isPileEnabled ,"isPileEnalbe")
-   }
-//  console.log(cell ? isCellEnabled && isForwardable() : isPileEnabled)
- 
 
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       style={styles.container}
-      //  onPress={()=>{
-      //   Alert.alert("run")
-      //  }}
-      onPress={onPress}
-      // disabled={!(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
-      disabled={ !(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
+      disabled={!(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
+        onPress={onPress}
 
     >
       <View style={styles.holloCircle}>
@@ -193,7 +185,7 @@ const styles = StyleSheet.create({
   dashedCircle: {
     width: 25,
     height: 25,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },

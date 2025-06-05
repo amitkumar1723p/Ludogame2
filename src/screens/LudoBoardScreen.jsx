@@ -6,20 +6,20 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
 import MenuIcon from '../assets/images/menu.png';
 import MenuModal from '../components/MenuModal';
-import {deviceHeight, deviceWidth} from '../constants/Scaling';
+import { deviceHeight, deviceWidth } from '../constants/Scaling';
 import Dice from '../components/Dice';
 import Pocket from '../components/Pocket';
 import VerticalPath from '../components/path/VerticalPath';
 import HorizontalPath from '../components/path/HorizontalPath';
 import FourTriangles from '../components/FourTriangles';
 import StartGame from '../assets/images/start.png';
-import {useIsFocused} from '@react-navigation/native';
-import {Colors} from '../constants/Colors';
-import {Plot1Data, Plot2Data, Plot3Data, Plot4Data} from '../helpers/PlotData';
+import { useIsFocused } from '@react-navigation/native';
+import { Colors } from '../constants/Colors';
+import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
 import { useSelector } from 'react-redux';
 import {
   selectDiceTouch,
@@ -35,9 +35,9 @@ const LudoBoardScreen = () => {
   const player2 = useSelector(selectPlayer2);
   const player3 = useSelector(selectPlayer3);
   const player4 = useSelector(selectPlayer4);
- const isDiceTouch = useSelector(selectDiceTouch);
-    // const isDiceTouch = useSelector(selectDiceTouch);
-   const opacity = useRef(new Animated.Value(1)).current;
+  const isDiceTouch = useSelector(selectDiceTouch);
+  // const isDiceTouch = useSelector(selectDiceTouch);
+  const opacity = useRef(new Animated.Value(1)).current;
   const [menuVisible, setMenuVisible] = useState(false);
   const handleMenuPress = useCallback(() => {
     setMenuVisible(true);
@@ -83,14 +83,14 @@ const LudoBoardScreen = () => {
       </TouchableOpacity>
 
       {/* <LudoBoad Screen Start  */}
- 
+
       <View style={styles.container}>
         <View  style={styles.flexRow}>
           <Dice  color={Colors.green} player={2} data={player2}  />
           <Dice color={Colors.yellow} player={3} data={player3} rotate={false}  />
         </View>
         <View style={styles.ludoBoard}>
-          
+
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
            <Pocket color={Colors.green} player={2} data={player2} />
@@ -115,8 +115,8 @@ const LudoBoardScreen = () => {
             <Dice color={Colors.green} player={1} data={player1} />
             <Dice  color={Colors.yellow} player={4} data={player4} />
           </View>
-        </View>{' '}
-        {/* // ludobard end */} 
+        </View>
+        {/* // ludobard end */}
       </View>
       {/* <LudoBoad Screen  End */}
 

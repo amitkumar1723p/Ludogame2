@@ -21,7 +21,7 @@ const Cell = ({ id, color = 'black' }) => {
   }, [plottedPieces, id]);
 
   const handlePress = useCallback((playerNo, pieceId) => {
-     Alert.alert("run")
+    //  Alert.alert("run")
       dispatch(handleForwardThunk(playerNo, pieceId, id));
       // your press handler logic
     },
@@ -60,7 +60,7 @@ const Cell = ({ id, color = 'black' }) => {
           color={color}
         />
       )}
-
+ 
       {
         piecesAtPosition.map((piece, index) => {
           const playerNo =

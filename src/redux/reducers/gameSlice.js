@@ -69,7 +69,6 @@ export const gameSlice = createSlice({
     },
     disableTouch: state => {
 
-
       state.touchDiceBlock = true;
       state.cellSelectionPlayer = -1
       state.pileSelectionPlayer = -1

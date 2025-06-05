@@ -30,7 +30,7 @@ const HorizontalPath = ({cells = [], color}) => {
               // <Text key={cellIndex}>{cell}</Text>
             ))}
           </View>
-        ))}{' '}
+        ))}
       </View>
     </View>
   );

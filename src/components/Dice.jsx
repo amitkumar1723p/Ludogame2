@@ -68,7 +68,7 @@ const Dice = React.memo(({ color, data, player }) => {
     };
 
     animateArrow();
-
+    
     //  return () => {
     //    second
     //  }
@@ -77,7 +77,7 @@ const Dice = React.memo(({ color, data, player }) => {
   const handleDicePress = async () => {
     //  playSound('dice_roll');
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    //  const  newDiceNo =6
+    //  const  newDiceNo =5  
     playSound("dice_roll")
     setDiceRolling(true);
 

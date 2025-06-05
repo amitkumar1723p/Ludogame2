@@ -10,7 +10,7 @@ const Pocket = ({ color, player, data }) => {
   const handlePress = async (value) => {
 
     let playerNo = value?.id?.slice(0, 1);
-    
+
 
     switch (playerNo) {
       case 'A':
@@ -47,8 +47,9 @@ const Pocket = ({ color, player, data }) => {
         <View style={styles.flexRow}>
           <Plot
             handlePress={handlePress}
-            pieceNo={0} player={player} color={color}
-
+            pieceNo={0}
+            player={player}
+            color={color}
 
             data={data}
           />
@@ -77,7 +78,7 @@ const Plot = ({ pieceNo, player, color, data, handlePress }) => {
     <View style={[styles.plot, { backgroundColor: color }]}>
 
 
-      {data && data[pieceNo]?.pos == 0 && <Pile player={player} color={color} onPress={() => {
+      {data && data[pieceNo]?.pos === 0 && <Pile player={player} color={color} onPress={() => {
 
 
 
