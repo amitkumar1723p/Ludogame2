@@ -33,7 +33,8 @@ export const gameSlice = createSlice({
       state.cellSelectionPlayer = action.payload.playerNo;
     },
     updatePlayerPieceValue: (state, action) => {
-      const { playerNo, pieceId, pos, travelCount } = action.payload;
+      const { playerNo, pieceId, pos, travelCount   } = action.payload;
+        console.log(playerNo ,pieceId ,pos ,travelCount,"piececd" ,"pos" ,"Player")
       const playerPieces = state[playerNo];
       const piece = playerPieces.find(p => p.id === pieceId);
       state.pileSelectionPlayer = -1; //pile disable

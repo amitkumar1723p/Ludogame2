@@ -85,7 +85,7 @@ const LudoBoardScreen = () => {
       {/* <LudoBoad Screen Start  */}
 
       <View style={styles.container}>
-        <View  style={styles.flexRow}>
+        <View  style={styles.flexRow}  pointerEvents={isDiceTouch ? 'none' : 'auto'}>
           <Dice  color={Colors.green} player={2} data={player2}  />
           <Dice color={Colors.yellow} player={3} data={player3} rotate={false}  />
         </View>

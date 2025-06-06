@@ -22,9 +22,9 @@ const Cell = ({ id, color = 'black' }) => {
 
   const handlePress = useCallback((playerNo, pieceId) => {
     //  Alert.alert("run")
-      dispatch(handleForwardThunk(playerNo, pieceId, id));
-      // your press handler logic
-    },
+    dispatch(handleForwardThunk(playerNo, pieceId, id));
+    // your press handler logic
+  },
     [dispatch, id],
   );
 
@@ -60,7 +60,7 @@ const Cell = ({ id, color = 'black' }) => {
           color={color}
         />
       )}
- 
+
       {
         piecesAtPosition.map((piece, index) => {
           const playerNo =
@@ -90,7 +90,7 @@ const Cell = ({ id, color = 'black' }) => {
 
 
 
-          return (<>
+          return (
 
             <View key={piece.id}
 
@@ -129,7 +129,7 @@ const Cell = ({ id, color = 'black' }) => {
 
             </View>
 
-          </>)
+          )
 
 
 

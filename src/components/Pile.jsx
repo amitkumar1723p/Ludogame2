@@ -21,7 +21,7 @@ import { selectPocketPileSelection, selectCellSelection, selectDiceNo } from '..
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
-   console.log(cell ,pieceId ,color ,player ,onPress ,"============================cell=========PieceId============color=========player")
+  //  console.log(cell ,pieceId ,color ,player ,onPress ,"============================cell=========PieceId====S========color=========player")
   //  console.log(cell ,pieceId ,color ,player ,onPress ,"Hello") 
 
   const rotation = useRef(new Animated.Value(0)).current;
@@ -30,7 +30,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
 
-
+  //  console.log(playerPieces)
 
 
 
@@ -38,19 +38,28 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     () => player == currentPlayerPileSelection,
     [player, currentPlayerPileSelection],
   );
-  const isCellEnabled = useMemo( 
-    () => player === currentPlayerCellSelection,
-       [player, currentPlayerPileSelection],
-  );
+  // const isCellEnabled = useMemo( 
+  //   () => player === currentPlayerCellSelection,
+  //      [player, currentPlayerPileSelection],
+  // );
 
-  
+  const isCellEnabled = useMemo(() => player === currentPlayerCellSelection, [player, currentPlayerCellSelection]);
+
+
+  //   console.log(pieceId)
+  // console.log(playerPieces ,"player")
+
   const isForwardable = useCallback(() => {
-  const piece = playerPieces?.find(item => item.id === pieceId);
-  // console.log(piece, "piece");
+    const piece = playerPieces?.find(item => item.id === pieceId);
+    return piece && piece.travelCount + diceNo <= 57;
+  }, [playerPieces, diceNo, pieceId]);
 
-  return piece && piece.travelCount + diceNo <= 57;
-}, [playerPieces, diceNo, pieceId]);
-   
+  // const isForwardable = useCallback(() => {
+  //   const piece = playerPieces?.find(item => item.id === pieceId);
+  //   if (!piece) return false;
+  //   return piece.travelCount + diceNo <= 57;
+  // }, [playerPieces, diceNo, pieceId]);
+  // console.log(isForwardable() ,isCellEnabled ,"isCellEnabled && isForwadable")
 
 
 
@@ -104,8 +113,8 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   //   [rotation],
   // );
 
- 
- 
+
+
 
 
 
@@ -113,37 +122,36 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     <TouchableOpacity
       activeOpacity={0.5}
       style={styles.container}
-      disabled={!(cell ? isCellEnabled && isForwardable() : isPileEnabled)}
-        onPress={onPress}
+      disabled={!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)}
+      onPress={onPress}
 
     >
       <View style={styles.holloCircle}>
-         
 
-        {cell ? isCellEnabled && isForwardable() : isPileEnabled && 
-        
-        <View style={styles.dashedCircleContainer}>
-          <Animated.View
-            style={[
-              styles.dashedCircle,
-              { transform: [{ rotate: rotateInterpolate }] },
-            ]}>
-            <Svg height={'18'} width={'18'}>
-              <Circle
-                cx="9"
-                cy="9"
-                r="8"
-                stroke="white"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-                strokeDashoffset="0"
-                fill="transparent"
-              />
-            </Svg>
-          </Animated.View>
-        </View>
-        
-          }
+
+        {(cell ? (isCellEnabled && isForwardable()) : isPileEnabled) ? (
+          <View style={styles.dashedCircleContainer}>
+            <Animated.View
+              style={[
+                styles.dashedCircle,
+                { transform: [{ rotate: rotateInterpolate }] },
+              ]}>
+              <Svg height={'18'} width={'18'}>
+                <Circle
+                  cx="9"
+                  cy="9"
+                  r="8"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeDasharray="4 4"
+                  strokeDashoffset="0"
+                  fill="transparent"
+                />
+              </Svg>
+            </Animated.View>
+          </View>
+        ) : null}
+
 
       </View>
 

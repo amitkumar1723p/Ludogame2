@@ -77,7 +77,8 @@ const Dice = React.memo(({ color, data, player }) => {
   const handleDicePress = async () => {
     //  playSound('dice_roll');
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    //  const  newDiceNo =5  
+    //  const  newDiceNo =5
+
     playSound("dice_roll")
     setDiceRolling(true);
 
@@ -92,6 +93,8 @@ const Dice = React.memo(({ color, data, player }) => {
     const isAnyPieceLocked = data?.findIndex(i => i.pos == 0)
 
     if (isAnyPieceALive == -1) {
+      
+      
       if (newDiceNo == 6) {
         // Alert.alert({`playerNo:${player}`});
 

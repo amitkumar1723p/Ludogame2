@@ -23,7 +23,7 @@ function checkWinningCriterial(pieces) {
     if (piece.travelCount < 57) {
       return false; // if any piece has travelCount less than 57 , return false
     }
-    return true; // if all pieces have travelCont >=57 , return true
+    return true; // if all pieces have travelCount >=57 , return true
   }
 }
 
@@ -47,7 +47,7 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
       item => item.id == id,
     );
 
-    let travelCont = beforePlayerPieces.travelCont;
+    let travelCount = beforePlayerPieces.travelCount;
 
     for (let i = 0; i < diceNo; i++) {
       const updatePosition = getState();
@@ -65,14 +65,14 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
       }
 
       finalPath = path;
-      travelCont += 1;
+      travelCount += 1;
 
       dispatch(
         updatePlayerPieceValue({
           playerNo: `player${playerNo}`,
           pieceId: playerPiece.id,
           pos: path,
-          travelCont: travelCont,
+          travelCount: travelCount,
         }),
       );
 
@@ -120,7 +120,7 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
             playerNo: `player${no}`,
             pieceId: enemyPiece.id,
             pos: i,
-            travelCont: 0,
+            travelCount: 0,
           }),
         );
 
@@ -136,7 +136,7 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
           playerNo: `player${no}`,
           pieceId: enemyPiece.id,
           pos: 0,
-          travelCont: 0,
+          travelCount: 0,
         }),
       );
 
@@ -146,10 +146,10 @@ export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getStat
 
     // Check Six Dice
 
-    if (diceNo == 6 || travelCont == 57) {
+    if (diceNo == 6 || travelCount == 57) {
       dispatch(updatePlayerChance({chancePlayer: playerNo}));
 
-      if (travelCont == 57) {
+      if (travelCount == 57) {
         playSound('home_win');
         const finalPlayerState = getState();
         const playerAllPieces = finalPlayerState.game[`player${playerNo}`];
