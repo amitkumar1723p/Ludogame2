@@ -5,8 +5,8 @@ import {
   turningPoints,
   victoryStart,
 } from '../../helpers/PlotData';
-import {playSound} from '../../helpers/SoundUtility';
-import {selectCurrentPosition, selectDiceNo} from './gameSelectors';
+import { playSound } from '../../helpers/SoundUtility';
+import { selectCurrentPosition, selectDiceNo } from './gameSelectors';
 import {
   announceWinner,
   disableTouch,
@@ -18,156 +18,153 @@ import {
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+// ✅ travelCount check fix — don't return true inside loop
 function checkWinningCriterial(pieces) {
   for (const piece of pieces) {
     if (piece.travelCount < 57) {
-      return false; // if any piece has travelCount less than 57 , return false
+      return false;
     }
-    return true; // if all pieces have travelCount >=57 , return true
   }
+  return true;
 }
 
-export const handleForwardThunk =(playerNo, id, pos) => async (dispatch, getState) => {
-    const state = getState();
-    const plottedPieces = selectCurrentPosition(state);
-    const diceNo = selectDiceNo(state);
+export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getState) => {
+  const state = getState();
+  const plottedPieces = selectCurrentPosition(state);
+  const diceNo = selectDiceNo(state);
 
-    const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
+  const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
 
-    let alpha = playerNo == 1 ? 'A' : playerNo == 2 ? 'B' : playerNo == 3 ? 'C' : 'D';
-    const piece =
-      piecesAtPosition[
-        piecesAtPosition.findIndex(item => item.id.slice(0, 1) == alpha)
-      ];
+  let alpha = playerNo == 1 ? 'A' : playerNo == 2 ? 'B' : playerNo == 3 ? 'C' : 'D';
+  const piece =
+    piecesAtPosition[
+      piecesAtPosition.findIndex(item => item.id.slice(0, 1) == alpha)
+    ];
 
-    dispatch(disableTouch());
-    let finalPath = piece.pos;
+  dispatch(disableTouch());
+  let finalPath = piece.pos;
 
-    const beforePlayerPieces = state.game[`player${playerNo}`].find(
+  const beforePlayerPieces = state.game[`player${playerNo}`].find(
+    item => item.id == id,
+  );
+
+  let travelCount = beforePlayerPieces.travelCount;
+
+  for (let i = 0; i < diceNo; i++) {
+    const updatePosition = getState();
+    const playerPiece = updatePosition.game[`player${playerNo}`].find(
       item => item.id == id,
     );
 
-    let travelCount = beforePlayerPieces.travelCount;
+    let path = playerPiece.pos + 1;
 
-    for (let i = 0; i < diceNo; i++) {
-      const updatePosition = getState();
-      const playerPiece = updatePosition.game[`player${playerNo}`].find(
-        item => item.id == id,
-      );
-
-      let path = playerPiece.pos + 1;
-
-      if (turningPoints.includes(path) && turningPoints[playerNo - 1] == path) {
-        path = victoryStart[playerNo - 1];
-      }
-      if (path == 53) {
-        path = 1;
-      }
-
-      finalPath = path;
-      travelCount += 1;
-
-      dispatch(
-        updatePlayerPieceValue({
-          playerNo: `player${playerNo}`,
-          pieceId: playerPiece.id,
-          pos: path,
-          travelCount: travelCount,
-        }),
-      );
-
-      playSound('pile_move');
-      await delay(200); // consider reducing delay if possible
+    if (turningPoints.includes(path) && turningPoints[playerNo - 1] == path) {
+      path = victoryStart[playerNo - 1];
+    }
+    if (path == 53) {
+      path = 1;
     }
 
+    finalPath = path;
+    travelCount += 1;
 
+    dispatch(
+      updatePlayerPieceValue({
+        playerNo: `player${playerNo}`,
+        pieceId: playerPiece.id,
+        pos: path,
+        travelCount: travelCount,
+      }),
+    );
 
+    playSound('pile_move');
+    await delay(200); // ✅ FIXED: valid delay
+  }
 
+  // ✅ Update state after movement
+  const updateState = getState();
+  const updatePlottedPieces = selectCurrentPosition(updateState);
 
+  const finalPlot = updatePlottedPieces.filter(item => item.pos == finalPath);
+  const ids = finalPlot?.map(item => item.id[0]);
+  const uniqueIds = new Set(ids);
+  const areDifferentIds = uniqueIds.size > 1;
 
-    // Ensure state is updated after movement
-    const updateState = getState();
-    const updatePlottedPieces = selectCurrentPosition(updateState);
+  if (SafeSpots.includes(finalPath) || StarSpots.includes(finalPath)) {
+    playSound('safe_spot');
+  }
 
-    // CheckColliding
-    const finalPlot = updatePlottedPieces.filter(item => item.pos == finalPath);
-    const ids = finalPlot?.map(item => item.id[0]);
-    const uniqueIds = new Set(ids);
-    const areDifferentIds = uniqueIds.size > 1;
+  if (
+    areDifferentIds &&
+    !SafeSpots.includes(finalPlot[0].pos) &&
+    !StarSpots.includes(finalPlot[0].pos)
+  ) {
+    const enemyPiece = finalPlot.find(piece => piece.id[0] !== id[0]);
 
-    if (SafeSpots.includes(finalPath) || StarSpots.includes(finalPath)) {
-      playSound('safe_spot');
-    }
-    if (
-      areDifferentIds &&
-      !SafeSpots.includes(finalPlot[0].pos) &&
-      !StarSpots.includes(finalPlot[0].pos)
-    ) {
-      const enemyPiece = finalPlot.find(piece => piece.id[0] !== id[0]);
+    const enemyId = enemyPiece.id[0];
+    let no = enemyId == `A` ? 1 : enemyId == `B` ? 2 : enemyId == 'C' ? 3 : 4;
 
-      const enemyId = enemyPiece.id[0];
-      let no = enemyId == `A` ? 1 : enemyId == `B` ? 2 : enemyId == 'C' ? 3 : 4;
+    let backwardPath = startingPoints[no - 1];
+    let i = enemyPiece.pos;
 
-      let backwardPath = startingPoints[no - 1];
+    playSound('collide');
 
-      let i = enemyPiece.pos;
-
-      playSound('collide');
-
-      while (i !== backwardPath) {
-        dispatch(
-          updatePlayerPieceValue({
-            playerNo: `player${no}`,
-            pieceId: enemyPiece.id,
-            pos: i,
-            travelCount: 0,
-          }),
-        );
-
-        await delay(0, 4);
-        i--;
-        if (i == 0) {
-          i = 52; // Reset i to 52 if it reaches 0
-        }
-      }
-
+    while (i !== backwardPath) {
       dispatch(
         updatePlayerPieceValue({
           playerNo: `player${no}`,
           pieceId: enemyPiece.id,
-          pos: 0,
+          pos: i,
           travelCount: 0,
         }),
       );
 
-      dispatch(unfreezeDice());
-      return;
+      await delay(200); // ✅ FIXED: valid delay
+      i--;
+      if (i == 0) {
+        i = 52;
+      }
     }
 
-    // Check Six Dice
+    dispatch(
+      updatePlayerPieceValue({
+        playerNo: `player${no}`,
+        pieceId: enemyPiece.id,
+        pos: 0,
+        travelCount: 0,
+      }),
+    );
 
-    if (diceNo == 6 || travelCount == 57) {
-      dispatch(updatePlayerChance({chancePlayer: playerNo}));
+    dispatch(unfreezeDice());
+    return;
+  }
 
-      if (travelCount == 57) {
-        playSound('home_win');
-        const finalPlayerState = getState();
-        const playerAllPieces = finalPlayerState.game[`player${playerNo}`];
+  // ✅ Dice 6 or Reached home
+  if (diceNo == 6 || travelCount == 57) {
+    dispatch(updatePlayerChance({ chancePlayer: playerNo }));
 
-        if (checkWinningCriterial(playerAllPieces)) {
-          dispatch(announceWinner(playerNo));
-          playSound('cheer', true);
-          return;
-        }
-        dispatch(updateFireworks(true));
-        dispatch(unfreezeDice());
+    if (travelCount == 57) {
+      playSound('home_win');
+      const finalPlayerState = getState();
+      const playerAllPieces = finalPlayerState.game[`player${playerNo}`];
+
+      if (checkWinningCriterial(playerAllPieces)) {
+        dispatch(announceWinner(playerNo));
+        playSound('cheer', true);
         return;
       }
-    }  
-      let chancePlayer = playerNo + 1;
-      if (chancePlayer > 4) {
-        chancePlayer = 1;
-       
-      dispatch(updatePlayerChance({chancePlayer}));
+
+      dispatch(updateFireworks(true));
     }
-  };
+
+    dispatch(unfreezeDice());
+    return;
+  }
+
+  // ✅ FIXED: turn rotation working for 1 → 2 → 3 → 4 → 1
+  let chancePlayer = playerNo + 1;
+  if (chancePlayer > 4) {
+    chancePlayer = 1;
+  }
+  dispatch(updatePlayerChance({ chancePlayer }));
+};
