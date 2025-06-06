@@ -29,6 +29,9 @@ function checkWinningCriterial(pieces) {
 }
 
 export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getState) => {
+
+
+
   const state = getState();
   const plottedPieces = selectCurrentPosition(state);
   const diceNo = selectDiceNo(state);
@@ -38,7 +41,7 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
   let alpha = playerNo == 1 ? 'A' : playerNo == 2 ? 'B' : playerNo == 3 ? 'C' : 'D';
   const piece =
     piecesAtPosition[
-      piecesAtPosition.findIndex(item => item.id.slice(0, 1) == alpha)
+    piecesAtPosition.findIndex(item => item.id.slice(0, 1) == alpha)
     ];
 
   dispatch(disableTouch());
@@ -119,7 +122,7 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
         }),
       );
 
-      await delay(200); // ✅ FIXED: valid delay
+      await delay(0.4); // ✅ FIXED: valid delay
       i--;
       if (i == 0) {
         i = 52;
@@ -155,16 +158,19 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
       }
 
       dispatch(updateFireworks(true));
+      dispatch(unfreezeDice());
+      return;
     }
 
-    dispatch(unfreezeDice());
-    return;
+
+  }
+  else {
+    // ✅ FIXED: turn rotation working for 1 → 2 → 3 → 4 → 1
+    let chancePlayer = playerNo + 1;
+    if (chancePlayer > 4) {
+      chancePlayer = 1;
+    }
+    dispatch(updatePlayerChance({ chancePlayer }));
   }
 
-  // ✅ FIXED: turn rotation working for 1 → 2 → 3 → 4 → 1
-  let chancePlayer = playerNo + 1;
-  if (chancePlayer > 4) {
-    chancePlayer = 1;
-  }
-  dispatch(updatePlayerChance({ chancePlayer }));
 };

@@ -17,7 +17,7 @@ import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
 import PileYellow from '../assets/images/piles/yellow.png';
 import { useSelector } from 'react-redux';
-import { selectPocketPileSelection, selectCellSelection, selectDiceNo } from '../redux/reducers/gameSelectors';
+import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDiceRolled } from '../redux/reducers/gameSelectors';
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
@@ -31,7 +31,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   const playerPieces = useSelector(state => state.game[`player${player}`]);
 
   //  console.log(playerPieces)
-
+const isDiceRolled = useSelector(selectDiceRolled);
 
 
   const isPileEnabled = useMemo(
@@ -43,7 +43,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   //      [player, currentPlayerPileSelection],
   // );
 
-  const isCellEnabled = useMemo(() => player === currentPlayerCellSelection, [player, currentPlayerCellSelection]);
+  const isCellEnabled = useMemo(() => player === currentPlayerCellSelection&&isDiceRolled==true, [ isDiceRolled,player,  currentPlayerCellSelection]);
 
 
   //   console.log(pieceId)
@@ -53,7 +53,8 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     const piece = playerPieces?.find(item => item.id === pieceId);
     return piece && piece.travelCount + diceNo <= 57;
   }, [playerPieces, diceNo, pieceId]);
-
+ 
+   console.log(playerPieces)
   // const isForwardable = useCallback(() => {
   //   const piece = playerPieces?.find(item => item.id === pieceId);
   //   if (!piece) return false;

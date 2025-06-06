@@ -42,6 +42,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
   const pileIcon = BackgroundImage.GetImage(color);
   const diceIcon = BackgroundImage.GetImage(diceNo);
+ 
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -73,6 +74,8 @@ const Dice = React.memo(({ color, data, player }) => {
     //    second
     //  }
   }, [currentPlayerChance, isDiceRolled]);
+
+ console.log(isDiceRolled ,"IsDiceRolling" ,currentPlayerChance ,"currentPlahyer")
 
   const handleDicePress = async () => {
     //  playSound('dice_roll');

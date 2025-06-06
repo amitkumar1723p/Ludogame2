@@ -5,7 +5,7 @@ import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
 import Iconicons from 'react-native-vector-icons/Ionicons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentPosition } from '../../redux/reducers/gameSelectors';
+import { selectCellSelection, selectCurrentPosition, selectDiceNo, selectDiceRolled } from '../../redux/reducers/gameSelectors';
 
 import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import Pile from '../Pile';
@@ -19,6 +19,20 @@ const Cell = ({ id, color = 'black' }) => {
   const piecesAtPosition = useMemo(() => {
     return plottedPieces.filter(item => item.pos == id);
   }, [plottedPieces, id]);
+  const currentPlayerCellSelection = useSelector(selectCellSelection);
+
+
+  const playerPieces = useSelector(state => state.game[`player${playerNo}`])
+  const isDiceRolled = useSelector(selectDiceRolled);
+  const diceNo = useSelector(selectDiceNo);
+  ;
+
+
+  //   console.log(pieceId)
+  // console.log(playerPieces ,"player")
+
+
+
 
   const handlePress = useCallback((playerNo, pieceId) => {
     //  Alert.alert("run")
@@ -34,7 +48,6 @@ const Cell = ({ id, color = 'black' }) => {
         styles.container,
         { backgroundColor: isSafeSpot ? color : 'white' },
       ]}>
-      <Text>{id}</Text>
       {isStartSpot && (
         <Iconicons name="star-outline" size={RFValue()} color="grey" />
       )}
@@ -63,6 +76,10 @@ const Cell = ({ id, color = 'black' }) => {
 
       {
         piecesAtPosition.map((piece, index) => {
+
+
+
+
           const playerNo =
             piece.id.slice(0, 1) === 'A'
               ? 1
@@ -85,7 +102,8 @@ const Cell = ({ id, color = 'black' }) => {
 
 
 
-
+ const isCellEnabled = playerNo === currentPlayerCellSelection && isDiceRolled;
+  const forwardable = isForwardable(piece, currentPlayerPieces);
 
 
 
@@ -100,7 +118,7 @@ const Cell = ({ id, color = 'black' }) => {
 
                 {
                   transform: [
-                    { scale: piecesAtPosition?.length === 1 ? 1 : 0.7 },
+                    { scale: piecesAtPosition?.length === 1 ? 1 : isCellEnabled && isForwardable() ? 1 : 0.7 },
                     {
                       translateX:
                         piecesAtPosition.length === 1
