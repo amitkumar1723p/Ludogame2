@@ -14,6 +14,15 @@ export const gameSlice = createSlice({
       state.diceNo = action.payload.diceNo;
       state.isDiceRolled = true;
     },
+
+    //  Winner code  
+    announceWinner: (state, action) => {
+      state.winner = action.payload;
+    },
+    updateFireworks :()=>{
+
+    }
+       ,
     updatePlayerChance: (state, action) => {
       state.chancePlayer = action.payload.chancePlayer;
       state.touchDiceBlock = false;

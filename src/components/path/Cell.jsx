@@ -1,17 +1,29 @@
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Colors } from '../../constants/Colors';
 import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
 import Iconicons from 'react-native-vector-icons/Ionicons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCellSelection, selectCurrentPosition, selectDiceNo, selectDiceRolled } from '../../redux/reducers/gameSelectors';
+import {
+  selectCellSelection,
+  selectCurrentPosition,
+  selectDiceNo,
+  selectDiceRolled
+} from '../../redux/reducers/gameSelectors';
 
 import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import Pile from '../Pile';
+
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();
+
   const plottedPieces = useSelector(selectCurrentPosition);
+  const currentPlayerCellSelection = useSelector(selectCellSelection);
+  const isDiceRolled = useSelector(selectDiceRolled);
+  const diceNo = useSelector(selectDiceNo);
+  const allPlayersPieces = useSelector(state => state.game);
+
   const isSafeSpot = useMemo(() => SafeSpots.includes(id), [id]);
   const isStartSpot = useMemo(() => StarSpots.includes(id), [id]);
   const isArrowSpot = useMemo(() => ArrowSpot.includes(id), [id]);
@@ -19,37 +31,25 @@ const Cell = ({ id, color = 'black' }) => {
   const piecesAtPosition = useMemo(() => {
     return plottedPieces.filter(item => item.pos == id);
   }, [plottedPieces, id]);
-  const currentPlayerCellSelection = useSelector(selectCellSelection);
 
-
-  const playerPieces = useSelector(state => state.game[`player${playerNo}`])
-  const isDiceRolled = useSelector(selectDiceRolled);
-  const diceNo = useSelector(selectDiceNo);
-  ;
-
-
-  //   console.log(pieceId)
-  // console.log(playerPieces ,"player")
-
-
-
-
-  const handlePress = useCallback((playerNo, pieceId) => {
-    //  Alert.alert("run")
+  const handlePress = (playerNo, pieceId) => {
     dispatch(handleForwardThunk(playerNo, pieceId, id));
-    // your press handler logic
-  },
-    [dispatch, id],
-  );
+  };
+
+  const isForwardable = (piece, playerPieces) => {
+    const foundPiece = playerPieces?.find(item => item.id === piece.id);
+    return foundPiece && foundPiece.travelCount + diceNo <= 57;
+  };
 
   return (
     <View
       style={[
         styles.container,
         { backgroundColor: isSafeSpot ? color : 'white' },
-      ]}>
+      ]}
+    >
       {isStartSpot && (
-        <Iconicons name="star-outline" size={RFValue()} color="grey" />
+        <Iconicons name="star-outline" size={RFValue(12)} color="grey" />
       )}
 
       {isArrowSpot && (
@@ -74,95 +74,60 @@ const Cell = ({ id, color = 'black' }) => {
         />
       )}
 
-      {
-        piecesAtPosition.map((piece, index) => {
+      {piecesAtPosition.map((piece, index) => {
+        const playerNo =
+          piece.id.startsWith('A') ? 1 :
+          piece.id.startsWith('B') ? 2 :
+          piece.id.startsWith('C') ? 3 : 4;
 
+        const playerPieces = allPlayersPieces[`player${playerNo}`];
 
+        const pieceColor =
+          piece.id.startsWith('A') ? Colors.red :
+          piece.id.startsWith('B') ? Colors.green :
+          piece.id.startsWith('C') ? Colors.yellow : Colors.blue;
 
+        const isCellEnabled = playerNo === currentPlayerCellSelection && isDiceRolled;
+        const forwardable = isForwardable(piece, playerPieces);
 
-          const playerNo =
-            piece.id.slice(0, 1) === 'A'
-              ? 1
-              : piece.id.slice(0, 1) === 'B'
-                ? 2
-                : piece.id.slice(0, 1) === 'C'
-                  ? 3
-                  : 4;
-
-
-
-          const pieceColor =
-            piece.id.slice(0, 1) === 'A'
-              ? Colors.red
-              : piece.id.slice(0, 1) === 'B'
-                ? Colors.green
-                : piece.id.slice(0, 1) === 'C'
-                  ? Colors.yellow
-                  : Colors.blue;
-
-
-
- const isCellEnabled = playerNo === currentPlayerCellSelection && isDiceRolled;
-  const forwardable = isForwardable(piece, currentPlayerPieces);
-
-
-
-
-          return (
-
-            <View key={piece.id}
-
-              style={[
-
-                styles.pileContainer,
-
-                {
-                  transform: [
-                    { scale: piecesAtPosition?.length === 1 ? 1 : isCellEnabled && isForwardable() ? 1 : 0.7 },
-                    {
-                      translateX:
-                        piecesAtPosition.length === 1
-                          ? 0
-                          : index % 2 === 0
-                            ? -6
-                            : 6,
-                    },
-
-                    {
-                      translateY:
-                        piecesAtPosition.length === 1 ? 0 : index < 2 ? -6 : 6,
-                    },
-                  ]
-                }
-              ]}
-
-            >
-              <Pile
-                cell={true}
-                player={playerNo}
-                onPress={() => handlePress(playerNo, piece.id)}
-                pieceId={piece.id}
-                color={pieceColor}
-              />
-
-            </View>
-
-          )
-
-
-
-
-
-        })
-
-
-
-
-
-
-
-      }
-
+        return (
+          <View
+            key={piece.id}
+            style={[
+              styles.pileContainer,
+              {
+                transform: [
+                  { scale: piecesAtPosition.length === 1 ? 1 : isCellEnabled && forwardable ? 1 : 0.7 },
+                  {
+                    translateX:
+                      piecesAtPosition.length === 1
+                        ? 0
+                        : index % 2 === 0
+                          ? -6
+                          : 6,
+                  },
+                  {
+                    translateY:
+                      piecesAtPosition.length === 1
+                        ? 0
+                        : index < 2
+                          ? -6
+                          : 6,
+                  },
+                ],
+              },
+            ]}
+          >
+            <Pile
+              cell={true}
+              player={playerNo}
+              onPress={() => handlePress(playerNo, piece.id)}
+              pieceId={piece.id}
+              color={pieceColor}
+            />
+          </View>
+        );
+      })}
     </View>
   );
 };
@@ -176,7 +141,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   pileContainer: {
     position: 'absolute',
     top: 0,
@@ -184,4 +148,5 @@ const styles = StyleSheet.create({
     zIndex: 99,
   },
 });
+
 export default Cell;
