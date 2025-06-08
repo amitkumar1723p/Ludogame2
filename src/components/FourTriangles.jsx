@@ -1,123 +1,110 @@
 import { View, Text, StyleSheet } from 'react-native';
-
-import { Colors } from '../constants/Colors';
-
-
-
-import { useDispatch, useSelector } from 'react-redux';
- 
-
-
-
-
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Colors } from '../constants/Colors';
 import { deviceHeight, deviceWidth } from '../constants/Scaling';
- 
-
+import { useDispatch, useSelector } from 'react-redux';
 import { selectFireworks } from '../redux/reducers/gameSelectors';
 import { updateFireworks } from '../redux/reducers/gameSlice';
- 
 import Pile from './Pile';
 import LottieView from 'lottie-react-native';
 import Svg, { Polygon } from 'react-native-svg';
-import Fireworks from '../assets/animation/firework.json'
+import Fireworks from '../assets/animation/firework.json';
+
 const FourTriangles = ({
   player1,
   player2,
   player3,
-  player4 }) => {
+  player4
+}) => {
   const size = 300;
-  const isFirework = useSelector(selectFireworks)
-  const [blast, setBlast] = useState(false)
-  const dispatch = useDispatch()
-
-
+  const isFirework = useSelector(selectFireworks); 
+  const [blast, setBlast] = useState(false);
+      useSelector((state)=>{ console.log(state)})
+  const dispatch = useDispatch();
+ 
   useEffect(() => {
     if (isFirework) {
-      setBlast(true)
+      setBlast(true);
       const timer = setTimeout(() => {
-        setBlast(false)
-        dispatch(updateFireworks(false))
+        setBlast(false);
+        dispatch(updateFireworks(false));
       }, 5000);
 
-      return () => clearInterval(timer)
-
+      return () => clearTimeout(timer); // ✅ fixed
     }
-
-  }, [dispatch, isFirework])
-
-
+  }, [dispatch, isFirework]);
 
   const playersData = useMemo(() => [
-      {
-        player: player1,
-        top: 55,
-        left: 15,
-        pieceColor: Colors.red,
-        translate: 'translateX',
-      },
-      {
-        player: player3,
-        top: 52,
-        left: 15,
-        pieceColor: Colors.yellow,
-        translate: 'translateX',
-      },
-      {
-        player: player2,
-        top: 20,
-        left: -2,
-        pieceColor: Colors.green,
-        translate: 'translateY',
-      },
-      {
-        player: player4,
-        top: 20,
-        left: -2,
-        pieceColor: Colors.blue,
-        translate: 'translateY',
-      },
-    ],
-    [player1, player2, player3, player4],
-  );
-
-
+    {
+      player: player1,
+      top: 55,
+      left: 15,
+      pieceColor: Colors.red,
+      translate: 'translateX',
+    },
+    {
+      player: player3,
+      top: 52,
+      left: 15,
+      pieceColor: Colors.yellow,
+      translate: 'translateX',
+    },
+    {
+      player: player2,
+      top: 20,
+      left: -2,
+      pieceColor: Colors.green,
+      translate: 'translateY',
+    },
+    {
+      player: player4,
+      top: 20,
+      left: -2,
+      pieceColor: Colors.blue,
+      translate: 'translateY',
+    },
+  ], [player1, player2, player3, player4]);
 
   const renderPlayerPieces = useCallback((data, index) => {
-      
-    <PlayerPieces
-      key={index}
-      player={data?.player?.filter(item => item.travelcount === 57)}
-      style={{
-        top: data.top,
-        bottom: data.bottom,
-        left: data.left,
-        right: data.right,
-      }}
-      pieceColor={data.pieceColor}
-      translate={data.translate}
-    />;
+     console.log(data ,'data')
+    // // console.log(data?.player?.filter(item => item.travelcount === 57))
+    // console.log(data.player.filter(item=>{return item.travelcount==57})) 
+  
+    
+    return (
+      <PlayerPieces
+        key={index}
+        player={data?.player?.filter(item => item.travelCount === 57)}
+        style={{
+          top: data.top,
+          bottom: data.bottom,
+          left: data.left,
+          right: data.right,
+        }}
+        pieceColor={data.pieceColor}
+        translate={data.translate}
+      />
+    );
   }, []);
-
 
   return (
     <View style={styles.mainContainer}>
-      <LottieView
-        source={Fireworks}
-        autoPlay
-        loop
-        hardwareAccelerationAndroid
-        speed={1}
-        style={styles.lottieView}
-      />
+
+      {
+        blast && <LottieView
+          source={Fireworks}
+          autoPlay
+          loop
+          hardwareAccelerationAndroid
+          speed={1}
+          style={styles.lottieView} // ✅ fixed width
+        />
+      }
+
       <Svg height={size} width={size - 5}>
         <Polygon
           points={`0,0 ${size / 2},${size / 2} ${size},0`}
           fill={Colors.yellow}
-        />
-        <Polygon
-          points={`${size},0 ${size},${size} ${size / 2},${size / 2}`}
-          fill={Colors.blue}
         />
         <Polygon
           points={`${size},0 ${size},${size} ${size / 2},${size / 2}`}
@@ -131,26 +118,29 @@ const FourTriangles = ({
           points={`0,0 ${size / 2},${size / 2} 0,${size}`}
           fill={Colors.green}
         />
-
       </Svg>
 
-{playersData.map(renderPlayerPieces)}
+
+       
+      {playersData.map(renderPlayerPieces)}
     </View>
   );
 };
 
-
 const PlayerPieces = React.memo(({ player, style, pieceColor, translate }) => {
+   console.log(player,"Player")
+  
   return (
-    <View style={[style.container, style]}>
-      {player.map((piece, index) => (
-        <View
+    <View style={[styles.container, style]}>
+      {player.map((piece, index) => {
+          
+        return <View 
           key={piece.id}
           style={{
             top: 0,
             zIndex: 99,
             position: 'absolute',
-            bottom: 0,
+            bottom: 10,
             transform: [{ scale: 0.5 }, { [translate]: 14 * index }],
           }}>
           <Pile
@@ -161,11 +151,15 @@ const PlayerPieces = React.memo(({ player, style, pieceColor, translate }) => {
             color={pieceColor}
           />
         </View>
-      ))}
+
+      }
+
+
+
+      )}
     </View>
   );
 });
-
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -179,15 +173,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderColor,
   },
   lottieView: {
-    width: '`100%',
+    width: '100%', // ✅ fixed
     height: '100%',
     position: 'absolute',
     zIndex: 1,
   },
-
-
-
-    container: {
+  container: {
     width: deviceWidth * 0.063,
     height: deviceHeight * 0.032,
     justifyContent: 'center',
@@ -195,6 +186,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
-
 
 export default React.memo(FourTriangles);

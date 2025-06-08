@@ -21,6 +21,8 @@ import { useIsFocused } from '@react-navigation/native';
 import { Colors } from '../constants/Colors';
 import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
 import { useSelector } from 'react-redux';
+
+import WinModal from '../components/WinModal';
 import {
   selectDiceTouch,
   selectPlayer1,
@@ -78,6 +80,9 @@ const LudoBoardScreen = () => {
 
   return (
     <Wrapper>
+
+<WinModal winner={1}/>
+
       <TouchableOpacity style={styles.menuIcon} onPress={handleMenuPress}>
         <Image source={MenuIcon} style={styles.menuIconImage} />
       </TouchableOpacity>
@@ -100,10 +105,10 @@ const LudoBoardScreen = () => {
           <View style={styles.pathContainer}>
             <HorizontalPath color={Colors.green} cells={Plot1Data} />
             <FourTriangles    
-              player1={1}
-              player2={2}
-              player3={3}
-              player4={4} />
+              player1={player1}
+              player2={player2}
+              player3={player3}
+              player4={player4} />
             <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>

@@ -21,16 +21,14 @@ import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDic
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
-  //  console.log(cell ,pieceId ,color ,player ,onPress ,"============================cell=========PieceId====S========color=========player")
-  //  console.log(cell ,pieceId ,color ,player ,onPress ,"Hello") 
+ 
 
   const rotation = useRef(new Animated.Value(0)).current;
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
-
-  //  console.log(playerPieces)
+ 
 const isDiceRolled = useSelector(selectDiceRolled);
 
 
@@ -46,22 +44,15 @@ const isDiceRolled = useSelector(selectDiceRolled);
   const isCellEnabled = useMemo(() => player === currentPlayerCellSelection&&isDiceRolled==true, [ isDiceRolled,player,  currentPlayerCellSelection]);
 
 
-  //   console.log(pieceId)
-  // console.log(playerPieces ,"player")
+  
 
   const isForwardable = useCallback(() => {
     const piece = playerPieces?.find(item => item.id === pieceId);
     return piece && piece.travelCount + diceNo <= 57;
   }, [playerPieces, diceNo, pieceId]);
  
-   console.log(playerPieces)
-  // const isForwardable = useCallback(() => {
-  //   const piece = playerPieces?.find(item => item.id === pieceId);
-  //   if (!piece) return false;
-  //   return piece.travelCount + diceNo <= 57;
-  // }, [playerPieces, diceNo, pieceId]);
-  // console.log(isForwardable() ,isCellEnabled ,"isCellEnabled && isForwadable")
-
+   
+ 
 
 
   const getPileImage = useMemo(() => {
