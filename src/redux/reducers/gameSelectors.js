@@ -13,3 +13,4 @@ export const selectCellSelection =state => state.game.cellSelectionPlayer;
 // export const = disableTouch  
 
 export const selectCurrentPosition =state =>state.game.currentPositions;
+ export const selectFireworks =state=> state.game.fireworks ;

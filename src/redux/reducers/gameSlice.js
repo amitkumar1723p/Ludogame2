@@ -20,6 +20,7 @@ export const gameSlice = createSlice({
       state.winner = action.payload;
     },
     updateFireworks :()=>{
+      state.fireworks =action.payload
 
     }
        ,
@@ -43,7 +44,7 @@ export const gameSlice = createSlice({
     },
     updatePlayerPieceValue: (state, action) => {
       const { playerNo, pieceId, pos, travelCount   } = action.payload;
-        console.log(playerNo ,pieceId ,pos ,travelCount,"piececd" ,"pos" ,"Player")
+         
       const playerPieces = state[playerNo];
       const piece = playerPieces.find(p => p.id === pieceId);
       state.pileSelectionPlayer = -1; //pile disable
@@ -96,6 +97,7 @@ export const {
   updatePlayerPieceValue,
   unfreezeDice,
   disableTouch,
-  enableCellSelection
+  enableCellSelection ,
+  updateFireworks ,
 } = gameSlice.actions;
 export default gameSlice.reducer;
