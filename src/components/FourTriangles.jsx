@@ -19,7 +19,7 @@ const FourTriangles = ({
   const size = 300;
   const isFirework = useSelector(selectFireworks); 
   const [blast, setBlast] = useState(false);
-      useSelector((state)=>{ console.log(state)})
+       
   const dispatch = useDispatch();
  
   useEffect(() => {
@@ -66,11 +66,7 @@ const FourTriangles = ({
   ], [player1, player2, player3, player4]);
 
   const renderPlayerPieces = useCallback((data, index) => {
-     console.log(data ,'data')
-    // // console.log(data?.player?.filter(item => item.travelcount === 57))
-    // console.log(data.player.filter(item=>{return item.travelcount==57})) 
-  
-    
+ 
     return (
       <PlayerPieces
         key={index}
@@ -128,7 +124,7 @@ const FourTriangles = ({
 };
 
 const PlayerPieces = React.memo(({ player, style, pieceColor, translate }) => {
-   console.log(player,"Player")
+ 
   
   return (
     <View style={[styles.container, style]}>

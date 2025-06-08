@@ -99,5 +99,6 @@ export const {
   disableTouch,
   enableCellSelection ,
   updateFireworks ,
+  announceWinner,
 } = gameSlice.actions;
 export default gameSlice.reducer;

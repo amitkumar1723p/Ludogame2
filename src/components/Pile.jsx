@@ -70,7 +70,26 @@ const isDiceRolled = useSelector(selectDiceRolled);
     }
   }, [color]);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const rotateAnimation = Animated.loop(
+  //     Animated.timing(rotation, {
+  //       toValue: 1,
+  //       duration: 1000,
+  //       easing: Easing.linear,
+  //       useNativeDriver: true,
+  //     }),
+  //   );
+
+  //   rotateAnimation.start();
+  //   return () => rotateAnimation.stop();
+  // }, [rotation]);
+
+
+const isHighlighted = cell ? (isCellEnabled && isForwardable()) : isPileEnabled;
+
+useEffect(() => {
+  if (isHighlighted) {
+    rotation.setValue(0); // Reset
     const rotateAnimation = Animated.loop(
       Animated.timing(rotation, {
         toValue: 1,
@@ -79,10 +98,10 @@ const isDiceRolled = useSelector(selectDiceRolled);
         useNativeDriver: true,
       }),
     );
-
     rotateAnimation.start();
     return () => rotateAnimation.stop();
-  }, [rotation]);
+  }
+}, [rotation, isHighlighted]);
 
   const rotateInterpolate = useMemo(
     () =>
@@ -91,7 +110,7 @@ const isDiceRolled = useSelector(selectDiceRolled);
         outputRange: ['0deg', '360deg'],
       }),
 
-    [rotation],
+    [rotation ],
   );
 
 
@@ -142,7 +161,7 @@ const isDiceRolled = useSelector(selectDiceRolled);
               </Svg>
             </Animated.View>
           </View>
-        ) : null}
+         ) : null}
 
 
       </View>
@@ -172,7 +191,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'black',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center', 
+    
   },
   dashedCircleContainer: {
     position: 'absolute',

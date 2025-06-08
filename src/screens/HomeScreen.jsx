@@ -19,11 +19,12 @@ import {navigate} from '../helpers/NavigationUtil';
 import SoundPlayer from 'react-native-sound-player';
 import {playSound} from '../helpers/SoundUtility';
 import {resetGame} from '../redux/reducers/gameSlice';
+import { useIsFocused } from '@react-navigation/native';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
-
+   const Focoused = useIsFocused()
   useEffect(() => {
     const loopAnimation = () => {
       Animated.loop(
@@ -115,6 +116,12 @@ const HomeScreen = () => {
     navigate('LudoBoardScreen');
     playSound('game_start');
   };
+
+    useEffect(()=>{
+     if(Focoused){
+      playSound('home')
+     }
+  },[Focoused])
   //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>
@@ -127,7 +134,7 @@ const HomeScreen = () => {
       {renderButton('VS CPU', () => {
         Alert.alert('Comming Soon! Click New Game');
       })}
-      {renderButton('2 Vs 2', handleResumePress)}
+      {/* {renderButton('2 Vs 2', handleResumePress)} */}
       <Animated.View
         style={[
           styles.witchcontainer,
@@ -135,7 +142,13 @@ const HomeScreen = () => {
             transform: [{translateX: witchAnim}, {scaleX: scaleXAnim}],
           },
         ]}>
-        <Pressable>
+        <Pressable  onPress={()=>{
+          const random =Math.floor(Math.random() *3) +1;
+          playSound(`girl${random}`)
+          
+
+           
+        }}>
           <LottieView
             hardwareAccelerationAndroid
             source={Witch}

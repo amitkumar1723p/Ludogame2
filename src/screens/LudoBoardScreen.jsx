@@ -31,8 +31,9 @@ import {
   selectPlayer4,
   // selectPlayer4,
 } from '../redux/reducers/gameSelectors';
+import { playSound } from '../helpers/SoundUtility';
 const LudoBoardScreen = () => {
-
+ const winner = useSelector(state => state.game.winner);
   const player1 = useSelector(selectPlayer1);
   const player2 = useSelector(selectPlayer2);
   const player3 = useSelector(selectPlayer3);
@@ -42,6 +43,7 @@ const LudoBoardScreen = () => {
   const opacity = useRef(new Animated.Value(1)).current;
   const [menuVisible, setMenuVisible] = useState(false);
   const handleMenuPress = useCallback(() => {
+    playSound('ui');
     setMenuVisible(true);
   }, []);
 
@@ -81,7 +83,8 @@ const LudoBoardScreen = () => {
   return (
     <Wrapper>
 
-<WinModal winner={1}/>
+      {winner != null && <WinModal winner={winner} />}
+        {/* <WinModal winner={1} />  */}
 
       <TouchableOpacity style={styles.menuIcon} onPress={handleMenuPress}>
         <Image source={MenuIcon} style={styles.menuIconImage} />
@@ -90,21 +93,21 @@ const LudoBoardScreen = () => {
       {/* <LudoBoad Screen Start  */}
 
       <View style={styles.container}>
-        <View  style={styles.flexRow}  pointerEvents={isDiceTouch ? 'none' : 'auto'}>
-          <Dice  color={Colors.green} player={2} data={player2}  />
-          <Dice color={Colors.yellow} player={3} data={player3} rotate={false}  />
+        <View style={styles.flexRow} pointerEvents={isDiceTouch ? 'none' : 'auto'}>
+          <Dice color={Colors.green} player={2} data={player2} />
+          <Dice color={Colors.yellow} player={3} data={player3} rotate={false} />
         </View>
         <View style={styles.ludoBoard}>
 
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
-           <Pocket color={Colors.green} player={2} data={player2} />
+            <Pocket color={Colors.green} player={2} data={player2} />
             <VerticalPath color={Colors.yellow} cells={Plot2Data} />
             <Pocket color={Colors.yellow} player={3} data={player3} />
           </View>
           <View style={styles.pathContainer}>
             <HorizontalPath color={Colors.green} cells={Plot1Data} />
-            <FourTriangles    
+            <FourTriangles
               player1={player1}
               player2={player2}
               player3={player3}
@@ -112,13 +115,13 @@ const LudoBoardScreen = () => {
             <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>
-           <Pocket color={Colors.red} data={player1} player={1} />
+            <Pocket color={Colors.red} data={player1} player={1} />
             <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
-          <Pocket color={Colors.blue} data={player4} player={4} />
+            <Pocket color={Colors.blue} data={player4} player={4} />
           </View>
           <View style={styles.flexRow}>
             <Dice color={Colors.green} player={1} data={player1} />
-            <Dice  color={Colors.yellow} player={4} data={player4} />
+            <Dice color={Colors.yellow} player={4} data={player4} />
           </View>
         </View>
         {/* // ludobard end */}
