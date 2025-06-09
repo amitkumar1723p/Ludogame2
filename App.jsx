@@ -1,6 +1,5 @@
 import {Provider} from 'react-redux';
 import React from 'react';
-import './global.css';
 import Navigation from './src/navigation/Navigation';
 // Only import react-native-gesture-handler on native platforms
 import 'react-native-gesture-handler';
