@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fullscreen Lock</title>
+  <style>
+    /* Poore page ka background black, text white, aur center aligned */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+      color: white;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Start button ke style */
+    #start-btn {
+      font-size: 20px;
+      padding: 12px 24px;
+      background: white;
+      color: black;
+      cursor: pointer;
+      border-radius: 8px;
+      position: absolute;
+    }
+
+    /* Fullscreen ke message ka style */
+    #message {
+      display: none;
+      position: absolute;
+    }
+
+    /* Agar mouse cursor chhupana ho fullscreen me */
+    .fullscreen-cursor-hide {
+      cursor: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Start button -->
+  <div id="start-btn">Click to Enter Fullscreen</div>
+
+  <!-- Fullscreen ke time dikhega -->
+  <div id="message">You are in fullscreen. Press ESC to exit.</div>
+
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const message = document.getElementById("message");
+
+    // Fullscreen chalu karne ka function
+    const enterFullscreen = () => {
+      const el = document.documentElement; // <html> ko fullscreen me bhejna hai
+
+      // Alag-alag browsers ke support ke liye
+      if (el.requestFullscreen) {
+        el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+      }
+
+      // Fullscreen mode ke baad button chhupao aur message dikhao
+      startBtn.style.display = "none";
+      message.style.display = "block";
+
+      // Agar cursor fullscreen me chhupana hai to ye line uncomment karo
+      // document.documentElement.classList.add("fullscreen-cursor-hide");
+
+      // Keyboard aur mouse inputs ko disable karna
+      document.addEventListener("keydown", blockKeys);
+      document.addEventListener("mousedown", blockMouse);
+      document.addEventListener("mouseup", blockMouse);
+      document.addEventListener("click", blockMouse);
+      document.addEventListener("contextmenu", blockMouse);
+    };
+
+    // Keyboard inputs rokne ka function
+    const blockKeys = (e) => {
+      if (e.key === "Escape") {
+        alert("ESC key pressed!"); // Sirf ESC allow hai
+      } else {
+        e.preventDefault(); // Baki sab keys disable
+        e.stopPropagation();
+      }
+    };
+
+    // Mouse inputs rokne ka function
+    const blockMouse = (e) => e.preventDefault();
+
+    // Jab fullscreen mode se bahar aayein to sab restore karo
+    const removeBlockers = () => {
+      document.removeEventListener("keydown", blockKeys);
+      document.removeEventListener("mousedown", blockMouse);
+      document.removeEventListener("mouseup", blockMouse);
+      document.removeEventListener("click", blockMouse);
+      document.removeEventListener("contextmenu", blockMouse);
+
+      // Agar cursor chhupaya tha to usse wapas dikhane ke liye
+      // document.documentElement.classList.remove("fullscreen-cursor-hide");
+    };
+
+    // Fullscreen se bahar aate hi UI aur inputs restore karo
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        removeBlockers();
+        startBtn.style.display = "block";
+        message.style.display = "none";
+      }
+    });
+
+    // Start button pe click karte hi fullscreen mode chalu karo
+    startBtn.addEventListener("click", enterFullscreen);
+  </script>
+</body>
+</html>

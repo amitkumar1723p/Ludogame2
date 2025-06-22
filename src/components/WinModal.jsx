@@ -19,6 +19,7 @@ import Pile from './Pile';
 import GradientButton from './GradientButton';
 
 const WinModal = ({ winner }) => {
+     const PlayerActive = useSelector(state => state.game?.activePlayer)
     const dispatch = useDispatch();
     const [visible, setVisible] = useState(!!winner);
 
@@ -27,7 +28,7 @@ const WinModal = ({ winner }) => {
     }, [winner]);
 
     const handleNewGame = () => {
-        dispatch(resetGame());
+        dispatch(resetGame({}));
         dispatch(announceWinner(null));
         playSound('game_start');
     };

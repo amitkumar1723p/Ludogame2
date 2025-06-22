@@ -18,7 +18,7 @@ import GradientButton from '../components/GradienthButton';
 import {navigate} from '../helpers/NavigationUtil';
 import SoundPlayer from 'react-native-sound-player';
 import {playSound} from '../helpers/SoundUtility';
-import {resetGame} from '../redux/reducers/gameSlice';
+import {PlayActivePlayer, resetGame} from '../redux/reducers/gameSlice';
 import { useIsFocused } from '@react-navigation/native';
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -103,14 +103,22 @@ const HomeScreen = () => {
   }, []);
 
   const handleNewGamePress = useCallback(() => {
-    startGame(true);
+    startGame({isNew:true , PlayerActive:[1,2,3,4]});
+      // dispatch(PlayActivePlayer({PlayingActivePlayer:[1,2,3,4] ,gameType:"default" }))
+    
   }, []);
 
+   const UserVsComputerGameStart =useCallback(()=>{
+ startGame({isNew:true , PlayerActive:[1,3] ,gameType:"UserVsComp"});
+  
+    //  dispatch(PlayActivePlayer({PlayingActivePlayer:[1,3] ,gameType:"UserVsComp"}))
+   },[])
+
   // Start new Game
-  const startGame = async (isNew = false) => {
+  const startGame = async ({isNew = false ,PlayerActive={} ,gameType="default"}) => {
     SoundPlayer.stop();
     if (isNew) {
-      dispatch(resetGame());
+      dispatch(resetGame({PlayerActive ,gameType}));
     }
 
     navigate('LudoBoardScreen');
@@ -131,9 +139,7 @@ const HomeScreen = () => {
 
       {renderButton('RESUME', handleResumePress)}
       {renderButton('NEW GAME', handleNewGamePress)}
-      {renderButton('VS CPU', () => {
-        Alert.alert('Comming Soon! Click New Game');
-      })}
+      {renderButton('VS CPU',  UserVsComputerGameStart)}
       {/* {renderButton('2 Vs 2', handleResumePress)} */}
       <Animated.View
         style={[

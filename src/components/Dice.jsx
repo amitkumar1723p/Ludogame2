@@ -30,11 +30,18 @@ import { useDispatch, useSelector } from 'react-redux';
 const Dice = React.memo(({ color, data, player }) => {
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
-   
+
 
   const playerPieces = useSelector(
     state => state.game[`player${currentPlayerChance}`],
   );
+  const gameType = useSelector(state => state.game?.gameType
+  );
+  const PlayerActive = useSelector(state => state.game?.activePlayer
+  );
+
+
+
   const isDiceRolled = useSelector(selectDiceRolled);
   const diceNo = useSelector(selectDiceNo);
   const [diceRolling, setDiceRolling] = useState(false);
@@ -42,7 +49,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
   const pileIcon = BackgroundImage.GetImage(color);
   const diceIcon = BackgroundImage.GetImage(diceNo);
- 
+
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -69,18 +76,21 @@ const Dice = React.memo(({ color, data, player }) => {
     };
 
     animateArrow();
-    
+
     //  return () => {
     //    second
     //  }
   }, [currentPlayerChance, isDiceRolled]);
 
- 
+  const hasComputerRolledRef = useRef(false);
+  const isRunningRef = useRef(false);
 
   const handleDicePress = async () => {
-    //  playSound('dice_roll');
-    const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    //  const  newDiceNo = 2
+
+
+    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    const newDiceNo = 3;
+
 
     playSound("dice_roll")
     setDiceRolling(true);
@@ -96,42 +106,36 @@ const Dice = React.memo(({ color, data, player }) => {
     const isAnyPieceLocked = data?.findIndex(i => i.pos == 0)
 
     if (isAnyPieceALive == -1) {
-      
-      
+
       if (newDiceNo == 6) {
-        // Alert.alert({`playerNo:${player}`});
-
-
         dispatch(enablePileSelection({ playerNo: player }));
       } else {
-        let chancePlayer = player + 1;
-
-        if (chancePlayer > 4) {
-          chancePlayer = 1;
-        }
+        let currentIndex = PlayerActive.indexOf(player);
+        // Move to next index (with loop back)
+        let nextIndex = (currentIndex + 1) % PlayerActive.length;
+        let chancePlayer = PlayerActive[nextIndex];
         await delay(600);
         dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
       }
-    } else {
-
-      
+    }
 
 
 
+
+
+
+    else {
       const canMove = playerPieces.some(pile => pile.travelCount + newDiceNo <= 57 && pile.pos != 0)
-
-       
-
-
       if (
         (!canMove && newDiceNo == 6 && isAnyPieceLocked == -1) ||
         (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
         (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)) {
-        let chancePlayer = player + 1;
+        let currentIndex = PlayerActive.indexOf(player);
+        // Move to next index (with loop back)
 
-        if (chancePlayer > 4) {
-          chancePlayer = 1;
-        }
+        let nextIndex = (currentIndex + 1) % PlayerActive.length;
+
+        let chancePlayer = PlayerActive[nextIndex];
 
         await delay(600);
         dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
@@ -143,9 +147,64 @@ const Dice = React.memo(({ color, data, player }) => {
       dispatch(enableCellSelection({ playerNo: player }));
 
     }
+
+
   };
 
+const hasComputerPlayedRef = useRef(false);
+  const [stopComputerhandleDicePress, setComputerhandleDicePress] = useState(false)
+  const ComputerhandleDicePress = async () => {
+  const newDiceNo = 3;
+
+  playSound('dice_roll');
+  setDiceRolling(true);
+  await delay(800);
+
+  dispatch(updateDiceNo({ diceNo: newDiceNo }));
+  setDiceRolling(false);
+
+  const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
+  const isAnyPieceLocked = data?.findIndex(i => i.pos == 0);
+
+  if (isAnyPieceALive === -1) {
+    if (newDiceNo === 6) {
+      dispatch(enablePileSelection({ playerNo: player }));
+    } else {
+      let currentIndex = PlayerActive.indexOf(player);
+      let nextIndex = (currentIndex + 1) % PlayerActive.length;
+      let chancePlayer = PlayerActive[nextIndex];
+
+      await delay(600);
+      dispatch(updatePlayerChance({ chancePlayer })); // ✅ no loop now
+    }
+  } else {
+    // 👇 Add your normal logic here (if needed)
+    dispatch(enableCellSelection({ playerNo: player }));
+  }
+};
+
+
+
+
+useEffect(() => {
+  if (
+    gameType === 'UserVsComp' &&
+    currentPlayerChance === 3 &&
+    !hasComputerPlayedRef.current
+  ) {
+    hasComputerPlayedRef.current = true; // ✅ Prevent further auto runs
+    ComputerhandleDicePress();
+  }
+}, [gameType, currentPlayerChance]);
+
+
+useEffect(() => {
+  hasComputerPlayedRef.current = false; // ✅ Ready for next turn
+}, [currentPlayerChance]);
+
+
   return (
+
     <View style={[styles.flexRow]}>
       <View style={styles.border1}>
         <LinearGradient
@@ -164,25 +223,19 @@ const Dice = React.memo(({ color, data, player }) => {
           <View style={styles.diceContainer}>
             {/* jis dice per number show ho rhe hai vo vala dice  */}
 
-            {/* {currentPlayerChance == player && !diceRolling ? (
-              <TouchableOpacity
 
-                disabled={isDiceRolled}  // ye add karna hai
-
-                activeOpacity={0.4}
-                onPress={handleDicePress}>
-                <Image source={diceIcon} style={styles.dice} />
-              </TouchableOpacity>
-            ) : null} */}
 
             {currentPlayerChance == player ?
 
               diceRolling ? null : <TouchableOpacity
 
+                // disabled={isDiceRolled || gameType == "UserVsComp" && currentPlayerChance == 3}  // ye add karna hai
                 disabled={isDiceRolled}  // ye add karna hai
 
                 activeOpacity={0.4}
-                onPress={handleDicePress}>
+                onPress={() => {
+                  handleDicePress()
+                }}>
                 <Image source={diceIcon} style={styles.dice} />
               </TouchableOpacity>
 
@@ -190,16 +243,7 @@ const Dice = React.memo(({ color, data, player }) => {
               : null}
 
 
-            {/* {currentPlayerChance == player && !diceRolling ? (
-              <TouchableOpacity
 
-                disabled={isDiceRolled}  // ye add karna hai
-
-                activeOpacity={0.4}
-                onPress={handleDicePress}>
-                <Image source={diceIcon} style={styles.dice} />
-              </TouchableOpacity>
-            ) : null} */}
           </View>
         </View>
       </View>
@@ -228,7 +272,7 @@ const Dice = React.memo(({ color, data, player }) => {
   );
 });
 
-export default Dice;
+export default React.memo(Dice);
 
 const styles = StyleSheet.create({
   flexRow: {

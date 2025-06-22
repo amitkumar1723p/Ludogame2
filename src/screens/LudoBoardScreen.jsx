@@ -21,6 +21,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Colors } from '../constants/Colors';
 import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
 import { useSelector } from 'react-redux';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import WinModal from '../components/WinModal';
 import {
@@ -33,7 +34,8 @@ import {
 } from '../redux/reducers/gameSelectors';
 import { playSound } from '../helpers/SoundUtility';
 const LudoBoardScreen = () => {
- const winner = useSelector(state => state.game.winner);
+  const insets = useSafeAreaInsets();
+  const winner = useSelector(state => state.game.winner);
   const player1 = useSelector(selectPlayer1);
   const player2 = useSelector(selectPlayer2);
   const player3 = useSelector(selectPlayer3);
@@ -76,17 +78,22 @@ const LudoBoardScreen = () => {
 
       return () => {
         blinkAnimation.stop();
-      };
+      };Re
     }
   }, []);
 
   return (
     <Wrapper>
 
-      {winner != null && <WinModal winner={winner} />}
-        {/* <WinModal winner={1} />  */}
 
-      <TouchableOpacity style={styles.menuIcon} onPress={handleMenuPress}>
+      {winner != null && <WinModal winner={winner} />}
+      {/* <WinModal winner={1} />  */}
+
+      <TouchableOpacity 
+      
+       style={[styles.menuIcon, { top: insets.top+10 }]}
+      
+      onPress={handleMenuPress}>
         <Image source={MenuIcon} style={styles.menuIconImage} />
       </TouchableOpacity>
 
@@ -119,10 +126,12 @@ const LudoBoardScreen = () => {
             <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
             <Pocket color={Colors.blue} data={player4} player={4} />
           </View>
-          <View style={styles.flexRow}>
-            <Dice color={Colors.green} player={1} data={player1} />
-            <Dice color={Colors.yellow} player={4} data={player4} />
-          </View>
+
+        </View>
+
+        <View style={styles.flexRow}>
+          <Dice color={Colors.green} player={1} data={player1} />
+          <Dice color={Colors.yellow} player={4} data={player4} />
         </View>
         {/* // ludobard end */}
       </View>
@@ -146,6 +155,7 @@ const LudoBoardScreen = () => {
           visible={menuVisible}
         />
       )}
+
     </Wrapper>
   );
 };
@@ -158,12 +168,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: deviceHeight * 0.5,
     width: deviceWidth,
+    marginTop: deviceHeight * 0.08,
+
   },
   // LudoBoad Css end
 
   menuIcon: {
     position: 'absolute',
-    top: 60,
+    // top: 50,
+    // top: deviceHeight * 0.07,
+  //  top: insets.top, // ✅ safe & responsive
+
     left: 20,
   },
   menuIconImage: {
@@ -195,6 +210,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
   },
 });

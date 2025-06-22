@@ -4,8 +4,11 @@ import { Colors } from '../constants/Colors';
 import Pile from './Pile';
 import { startingPoints } from '../helpers/PlotData';
 import { unfreezeDice, updatePlayerPieceValue } from '../redux/reducers/gameSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { activePlayer } from '../redux/reducers/gameSelectors';
 const Pocket = ({ color, player, data }) => {
+ 
+    
   const dispatch = useDispatch();
   const handlePress = async (value) => {
 
@@ -74,11 +77,13 @@ export default memo(Pocket);
 }
 
 const Plot = ({ pieceNo, player, color, data, handlePress }) => {
+     const activePlayPlayers = useSelector(activePlayer);
   return (
     <View style={[styles.plot, { backgroundColor: color }]}>
 
 
-      {data && data[pieceNo]?.pos === 0 && <Pile player={player} color={color} onPress={() => {
+      {data && data[pieceNo]?.pos === 0 &&activePlayPlayers?.includes(player) &&<Pile player={player} color={color} onPress={() => {
+      {/* {data && data[pieceNo]?.pos === 0  &&<Pile player={player} color={color} onPress={() => { */}
 
 
 

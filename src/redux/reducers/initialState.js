@@ -41,5 +41,8 @@ export const initialState = {
   currentPositions: [],
   fireworks: false,
   winner: null,
-  cellSelectionPlayer :-1
+  cellSelectionPlayer :-1,
+  activePlayer:[1,2,3,4] 
+  // gameType =
+  
 };

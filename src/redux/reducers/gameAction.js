@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import {
   SafeSpots,
   StarSpots,
@@ -17,6 +18,7 @@ import {
 } from './gameSlice';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+  
 
 // ✅ travelCount check fix — don't return true inside loop
 function checkWinningCriterial(pieces) {
@@ -32,9 +34,12 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
 
 
 
+
   const state = getState();
   const plottedPieces = selectCurrentPosition(state);
   const diceNo = selectDiceNo(state);
+ const PlayerActive =state.game.activePlayer
+  
 
   const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
 
@@ -141,7 +146,8 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
     dispatch(unfreezeDice());
     return;
   }
-
+ 
+   
   // ✅ Dice 6 or Reached home
   if (diceNo == 6 || travelCount == 57) {
     dispatch(updatePlayerChance({ chancePlayer: playerNo }));
@@ -166,10 +172,19 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
   }
   else {
     // ✅ FIXED: turn rotation working for 1 → 2 → 3 → 4 → 1
-    let chancePlayer = playerNo + 1;
-    if (chancePlayer > 4) {
-      chancePlayer = 1;
-    }
+    // let chancePlayer = playerNo + 1;
+    // if (chancePlayer > 4) {
+    //   chancePlayer = 1;
+    // }
+
+
+
+ let currentIndex = PlayerActive.indexOf(playerNo);
+     let nextIndex = (currentIndex + 1) % PlayerActive.length;
+
+        let chancePlayer = PlayerActive[nextIndex];
+
+
     dispatch(updatePlayerChance({ chancePlayer }));
   }
 

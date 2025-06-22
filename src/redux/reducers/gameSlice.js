@@ -9,7 +9,13 @@ export const gameSlice = createSlice({
   initialState: initialState,
 
   reducers: {
-    resetGame: () => initialState,
+    // resetGame: () => initialState,
+
+    resetGame: (state, action) => {
+      const { PlayerActive ,gameType } = action.payload || {};
+    
+      return { ...initialState, activePlayer:PlayerActive ||[1,2,3,4] ,gameType:gameType||"default"};
+    },
     updateDiceNo: (state, action) => {
       state.diceNo = action.payload.diceNo;
       state.isDiceRolled = true;
@@ -19,11 +25,11 @@ export const gameSlice = createSlice({
     announceWinner: (state, action) => {
       state.winner = action.payload;
     },
-    updateFireworks :()=>{
-      state.fireworks =action.payload
+    updateFireworks: () => {
+      state.fireworks = action.payload
 
     }
-       ,
+    ,
     updatePlayerChance: (state, action) => {
       state.chancePlayer = action.payload.chancePlayer;
       state.touchDiceBlock = false;
@@ -43,8 +49,8 @@ export const gameSlice = createSlice({
       state.cellSelectionPlayer = action.payload.playerNo;
     },
     updatePlayerPieceValue: (state, action) => {
-      const { playerNo, pieceId, pos, travelCount   } = action.payload;
-         
+      const { playerNo, pieceId, pos, travelCount } = action.payload;
+
       const playerPieces = state[playerNo];
       const piece = playerPieces.find(p => p.id === pieceId);
       state.pileSelectionPlayer = -1; //pile disable
@@ -83,7 +89,20 @@ export const gameSlice = createSlice({
       state.touchDiceBlock = true;
       state.cellSelectionPlayer = -1
       state.pileSelectionPlayer = -1
-    }
+    },
+
+
+    PlayActivePlayer: (state, action) => {
+    
+      state.activePlayer = action.payload.PlayingActivePlayer
+      state.gameType = action.payload.gameType
+    },
+
+
+
+
+
+
 
 
   },
@@ -97,8 +116,9 @@ export const {
   updatePlayerPieceValue,
   unfreezeDice,
   disableTouch,
-  enableCellSelection ,
-  updateFireworks ,
+  enableCellSelection,
+  updateFireworks,
   announceWinner,
+  PlayActivePlayer,
 } = gameSlice.actions;
 export default gameSlice.reducer;

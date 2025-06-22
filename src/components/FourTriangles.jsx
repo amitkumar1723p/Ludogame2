@@ -44,7 +44,7 @@ const FourTriangles = ({
     },
     {
       player: player3,
-      top: 52,
+      top: 2,
       left: 15,
       pieceColor: Colors.yellow,
       translate: 'translateX',
@@ -59,7 +59,7 @@ const FourTriangles = ({
     {
       player: player4,
       top: 20,
-      left: -2,
+      left:45,
       pieceColor: Colors.blue,
       translate: 'translateY',
     },
@@ -128,7 +128,7 @@ const PlayerPieces = React.memo(({ player, style, pieceColor, translate }) => {
   
   return (
     <View style={[styles.container, style]}>
-      {player.map((piece, index) => {
+    {player.map((piece, index) => {
           
         return <View 
           key={piece.id}

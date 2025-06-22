@@ -1,3 +1,4 @@
+
 export const selectPlayer1 = state => state.game.player1;
 
 export const selectPlayer2 = state => state.game.player2;
@@ -14,3 +15,4 @@ export const selectCellSelection =state => state.game.cellSelectionPlayer;
 
 export const selectCurrentPosition =state =>state.game.currentPositions;
  export const selectFireworks =state=> state.game.fireworks ;
+export const activePlayer =state=>state.game.activePlayer
