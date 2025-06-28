@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Colors } from '../../constants/Colors';
 import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
 import Iconicons from 'react-native-vector-icons/Ionicons';
@@ -33,6 +33,7 @@ const Cell = ({ id, color = 'black' }) => {
   }, [plottedPieces, id]);
 
   const handlePress = (playerNo, pieceId) => {
+ 
     dispatch(handleForwardThunk(playerNo, pieceId, id));
   };
 
@@ -40,6 +41,9 @@ const Cell = ({ id, color = 'black' }) => {
     const foundPiece = playerPieces?.find(item => item.id === piece.id);
     return foundPiece && foundPiece.travelCount + diceNo <= 57;
   };
+
+ 
+
 
   return (
     <View

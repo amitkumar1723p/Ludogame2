@@ -11,7 +11,8 @@ import {goBack} from '../helpers/NavigationUtil';
   
 const MenuModal = ({onPressHide, visible}) => {
 
-const gameType =useSelector((state)=>{ state.game.gameType})
+ 
+ const gameType = useSelector(state => state.game.gameType)
  const PlayerActive = useSelector(state => state.game?.activePlayer)
    const dispatch = useDispatch()
  const handleNewGame =useCallback(()=>{
@@ -19,7 +20,7 @@ const gameType =useSelector((state)=>{ state.game.gameType})
    
 
 
-   dispatch(resetGame({PlayerActive}));
+   dispatch(resetGame({PlayerActive ,gameType}));
     
        playSound('game_start');
     onPressHide();

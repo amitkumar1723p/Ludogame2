@@ -27,6 +27,7 @@ import {
   enableCellSelection,
 } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
+
 const Dice = React.memo(({ color, data, player }) => {
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
@@ -43,6 +44,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
   const isDiceRolled = useSelector(selectDiceRolled);
+   
   const diceNo = useSelector(selectDiceNo);
   const [diceRolling, setDiceRolling] = useState(false);
   const arrowAnim = useRef(new Animated.Value(0)).current;
@@ -82,14 +84,33 @@ const Dice = React.memo(({ color, data, player }) => {
     //  }
   }, [currentPlayerChance, isDiceRolled]);
 
-  const hasComputerRolledRef = useRef(false);
-  const isRunningRef = useRef(false);
+
+
+
+
+
+  useEffect(() => {
+     
+    const isComputerTurn = gameType === 'UserVsComp' && currentPlayerChance === 3 && player === 3&& !isDiceRolled;
+
+
+    if (isComputerTurn ) {
+
+
+       handleDicePress() 
+    }
+  }, [currentPlayerChance, gameType, player ,isDiceRolled]);
+
+
+
 
   const handleDicePress = async () => {
 
 
-    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    const newDiceNo = 3;
+    const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    // const newDiceNo = ComputerTrun == true ? 6 : 4;
+    // const newDiceNo = 6
+
 
 
     playSound("dice_roll")
@@ -141,66 +162,17 @@ const Dice = React.memo(({ color, data, player }) => {
         dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
         return;
       }
+
       if (newDiceNo == 6) {
         dispatch(enablePileSelection({ playerNo: player }));
       }
       dispatch(enableCellSelection({ playerNo: player }));
 
     }
-
+    return
 
   };
 
-const hasComputerPlayedRef = useRef(false);
-  const [stopComputerhandleDicePress, setComputerhandleDicePress] = useState(false)
-  const ComputerhandleDicePress = async () => {
-  const newDiceNo = 3;
-
-  playSound('dice_roll');
-  setDiceRolling(true);
-  await delay(800);
-
-  dispatch(updateDiceNo({ diceNo: newDiceNo }));
-  setDiceRolling(false);
-
-  const isAnyPieceALive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
-  const isAnyPieceLocked = data?.findIndex(i => i.pos == 0);
-
-  if (isAnyPieceALive === -1) {
-    if (newDiceNo === 6) {
-      dispatch(enablePileSelection({ playerNo: player }));
-    } else {
-      let currentIndex = PlayerActive.indexOf(player);
-      let nextIndex = (currentIndex + 1) % PlayerActive.length;
-      let chancePlayer = PlayerActive[nextIndex];
-
-      await delay(600);
-      dispatch(updatePlayerChance({ chancePlayer })); // ✅ no loop now
-    }
-  } else {
-    // 👇 Add your normal logic here (if needed)
-    dispatch(enableCellSelection({ playerNo: player }));
-  }
-};
-
-
-
-
-useEffect(() => {
-  if (
-    gameType === 'UserVsComp' &&
-    currentPlayerChance === 3 &&
-    !hasComputerPlayedRef.current
-  ) {
-    hasComputerPlayedRef.current = true; // ✅ Prevent further auto runs
-    ComputerhandleDicePress();
-  }
-}, [gameType, currentPlayerChance]);
-
-
-useEffect(() => {
-  hasComputerPlayedRef.current = false; // ✅ Ready for next turn
-}, [currentPlayerChance]);
 
 
   return (
@@ -229,13 +201,11 @@ useEffect(() => {
 
               diceRolling ? null : <TouchableOpacity
 
-                // disabled={isDiceRolled || gameType == "UserVsComp" && currentPlayerChance == 3}  // ye add karna hai
-                disabled={isDiceRolled}  // ye add karna hai
+                 disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3)}
+                // disabled={isDiceRolled}  // ye add karna hai
 
                 activeOpacity={0.4}
-                onPress={() => {
-                  handleDicePress()
-                }}>
+                onPress={handleDicePress}>
                 <Image source={diceIcon} style={styles.dice} />
               </TouchableOpacity>
 

@@ -35,6 +35,7 @@ import {
 import { playSound } from '../helpers/SoundUtility';
 const LudoBoardScreen = () => {
   const insets = useSafeAreaInsets();
+ 
   const winner = useSelector(state => state.game.winner);
   const player1 = useSelector(selectPlayer1);
   const player2 = useSelector(selectPlayer2);
@@ -78,7 +79,7 @@ const LudoBoardScreen = () => {
 
       return () => {
         blinkAnimation.stop();
-      };Re
+      };
     }
   }, []);
 

@@ -18,7 +18,108 @@ import {
 } from './gameSlice';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-  
+
+
+// ✅ Position calculate करने का helper — नया पॉज़िशन निकालता है
+function getNewPos(pos, steps, playerNo) {
+  let newPos = pos;
+  for (let i = 0; i < steps; i++) {
+    newPos++;
+    
+    // टर्निंग पॉइंट आने पर victory track में redirect कर दो
+    if (turningPoints.includes(newPos) && turningPoints[playerNo - 1] === newPos) {
+      newPos = victoryStart[playerNo - 1];
+    }
+
+    // बोर्ड circular है, इसलिए 52 के बाद वापस 1 से शुरू
+    if (newPos > 52) {
+      newPos -= 52;
+    }
+  }
+  return newPos;
+}
+
+
+
+// ✅ AI helper: findBestMove
+// SMART AI LOGIC
+// ✅ AI का दिमाग: सबसे बेस्ट मूव ढूंढता है
+export function findBestMove({ playerPieces, dice, playerNo, opponentPieces }) {
+  // सिर्फ वही pieces consider करो जो move कर सकते हैं (57 reached ना हो और move वैलिड हो)
+  const movable = playerPieces.filter(p => p.pos !== 57 && p.travelCount + dice <= 57);
+  if (movable.length === 0) return null;
+
+  const isSafe = pos => SafeSpots.includes(pos) || StarSpots.includes(pos);
+
+  let bestScore = -Infinity;
+  let bestMoveId = null;
+
+  for (let p of movable) {
+    const newPos = getNewPos(p.pos, dice, playerNo);
+    let score = 0;
+
+    // 1️⃣ बचाव: अगर piece खतरे में है और move करके safe हो सकता है, तो high score दो
+    const inDanger = opponentPieces.some(op => {
+      if (op.pos === 0 || op.pos === 57) return false;
+      const threatRange = Array.from({ length: 6 }, (_, i) => (op.pos + i + 1) % 53 || 1);
+      return threatRange.includes(p.pos) && !isSafe(p.pos);
+    });
+
+    const isEscapingDanger =
+      inDanger && !opponentPieces.some(op => {
+        const threatRange = Array.from({ length: 6 }, (_, i) => (op.pos + i + 1) % 53 || 1);
+        return threatRange.includes(newPos) && !isSafe(newPos);
+      });
+
+    if (inDanger && isEscapingDanger) score += 150; // 🔴 PRIORITY 1
+
+    // 2️⃣ घर पहुंचाना (travelCount + dice == 57)
+    if (p.travelCount + dice === 57) score += 100; // 🏠 PRIORITY 2
+
+    // 3️⃣ नया piece unlock करना (सिर्फ तब जब ये बेहतर हो)
+    if (dice === 6 && p.pos === 0) score += 90; // 🔓 PRIORITY 3
+
+    // 4️⃣ दुश्मन को काटना (अगर वो safe spot पर ना हो)
+    const willCut = opponentPieces.find(op => op.pos === newPos && !isSafe(newPos));
+    if (willCut) score += 80; // ⚔️ PRIORITY 4
+
+    // 5️⃣ safe या star spot पर जाना
+    if (isSafe(newPos)) score += 60; // ⭐ PRIORITY 5
+
+    // 6️⃣ अपने ही pile के ऊपर stack करना (defense के लिए अच्छा)
+    const ownStack = playerPieces.find(pp => pp.id !== p.id && pp.pos === newPos);
+    if (ownStack) score += 40; // 🌀 PRIORITY 6
+
+    // 7️⃣ ज़्यादा चला हुआ piece को preference दो (fast progress)
+    score += p.travelCount * 0.5; // 🚀 PRIORITY 7
+
+    // 8️⃣ अगर move के बाद piece खतरे में जाएगा तो penalty दो
+    const willBeInDanger = opponentPieces.some(op => {
+      const dangerZone = Array.from({ length: 6 }, (_, i) => (op.pos + i + 1) % 53 || 1);
+      return dangerZone.includes(newPos) && !isSafe(newPos);
+    });
+    if (willBeInDanger) score -= 80; // ⚠️ DANGER PENALTY
+
+    // 🔍 इस move का score compare करो और bestMoveId update करो
+    if (score > bestScore) {
+      bestScore = score;
+      bestMoveId = p.id;
+    }
+  }
+
+  // 🎲 अगर 6 आया है, और कोई piece lock है, तो unlock करो — सिर्फ तब जब बाकी कोई move valuable ना हो
+  if (dice === 6) {
+    const locked = playerPieces.find(p => p.pos === 0);
+    if (locked && bestScore < 80) {
+      return locked.id; // 🔓 Unlock priority only if no smarter option
+    }
+  }
+
+  return bestMoveId;
+}
+
+
+
 
 // ✅ travelCount check fix — don't return true inside loop
 function checkWinningCriterial(pieces) {
@@ -30,6 +131,13 @@ function checkWinningCriterial(pieces) {
   return true;
 }
 
+
+
+
+
+
+
+
 export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getState) => {
 
 
@@ -38,8 +146,8 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
   const state = getState();
   const plottedPieces = selectCurrentPosition(state);
   const diceNo = selectDiceNo(state);
- const PlayerActive =state.game.activePlayer
-  
+  const PlayerActive = state.game.activePlayer
+
 
   const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
 
@@ -146,8 +254,8 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
     dispatch(unfreezeDice());
     return;
   }
- 
-   
+
+
   // ✅ Dice 6 or Reached home
   if (diceNo == 6 || travelCount == 57) {
     dispatch(updatePlayerChance({ chancePlayer: playerNo }));
@@ -179,13 +287,28 @@ export const handleForwardThunk = (playerNo, id, pos) => async (dispatch, getSta
 
 
 
- let currentIndex = PlayerActive.indexOf(playerNo);
-     let nextIndex = (currentIndex + 1) % PlayerActive.length;
+    let currentIndex = PlayerActive.indexOf(playerNo);
+    let nextIndex = (currentIndex + 1) % PlayerActive.length;
 
-        let chancePlayer = PlayerActive[nextIndex];
+    let chancePlayer = PlayerActive[nextIndex];
 
 
     dispatch(updatePlayerChance({ chancePlayer }));
   }
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
