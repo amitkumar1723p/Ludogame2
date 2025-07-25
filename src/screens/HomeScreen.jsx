@@ -6,25 +6,65 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  Button,
 } from 'react-native';
 import Witch from '../assets/animation/witch.json';
-import React, {useCallback, useEffect, useRef} from 'react';
-import {useDispatch} from 'react-redux';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Wrapper from '../components/Wrapper';
 import Logo from '../assets/images/logo.png';
 import LottieView from 'lottie-react-native';
-import {deviceHeight, deviceWidth} from '../constants/Scaling';
+import { deviceHeight, deviceWidth } from '../constants/Scaling';
 import GradientButton from '../components/GradienthButton';
-import {navigate} from '../helpers/NavigationUtil';
+import { navigate } from '../helpers/NavigationUtil';
 import SoundPlayer from 'react-native-sound-player';
-import {playSound} from '../helpers/SoundUtility';
-import {PlayActivePlayer, resetGame} from '../redux/reducers/gameSlice';
+import { playSound } from '../helpers/SoundUtility';
+import { PlayActivePlayer, resetGame } from '../redux/reducers/gameSlice';
 import { useIsFocused } from '@react-navigation/native';
+import socket from '../soket/socket.js'
+import { useNavigation } from '@react-navigation/native';
+import { TextInput } from 'react-native-gesture-handler';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
-   const Focoused = useIsFocused()
+  const Focoused = useIsFocused()
+
+
+
+
+  // Soket Code 
+  const [roomId, setRoomId] = useState('');
+  const navigation = useNavigation();
+
+
+  const handleCreateRoom = () => {
+     
+    socket.emit('createRoom', { isNew: true, maxPlayers: 2 }, (response) => {
+
+      if (response.success) {
+
+         Alert.alert("Room Screen Create Successfully ......")
+        navigation.navigate('RoomScreen', { roomId: response.roomId });
+      } else {
+        Alert.alert(response.error || 'Failed to create room');
+      }
+    });
+  };
+
+
+
+  const handleJoinRoom = () => {
+    socket.emit('joinRoom', { roomId, isNew: false }, (response) => {
+      if (response.success) {
+        Alert.alert("Room Screen Create Successfully ......")
+        navigation.navigate('RoomScreen', { roomId: response.roomId });
+      } else {
+        Alert.alert(response.error || 'Failed to join room');
+      }
+    });
+  };
+
   useEffect(() => {
     const loopAnimation = () => {
       Animated.loop(
@@ -99,37 +139,42 @@ const HomeScreen = () => {
   );
 
   const handleResumePress = useCallback(() => {
-    startGame();
+    
+    startGame({});
   }, []);
 
   const handleNewGamePress = useCallback(() => {
-    startGame({isNew:true , PlayerActive:[1,2,3,4]});
-      // dispatch(PlayActivePlayer({PlayingActivePlayer:[1,2,3,4] ,gameType:"default" }))
-    
+    startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
+    // dispatch(PlayActivePlayer({PlayingActivePlayer:[1,2,3,4] ,gameType:"default" }))
+
   }, []);
 
-   const UserVsComputerGameStart =useCallback(()=>{
- startGame({isNew:true , PlayerActive:[1,3] ,gameType:"UserVsComp"});
-  
+  const UserVsComputerGameStart = useCallback(() => {
+    startGame({ isNew: true, PlayerActive: [1, 3], gameType: "UserVsComp" });
+
     //  dispatch(PlayActivePlayer({PlayingActivePlayer:[1,3] ,gameType:"UserVsComp"}))
-   },[])
+  }, [])
 
   // Start new Game
-  const startGame = async ({isNew = false ,PlayerActive={} ,gameType="default"}) => {
+  const startGame = async ({ isNew = false, PlayerActive = {}, gameType = "default" }) => {
+     
+
     SoundPlayer.stop();
     if (isNew) {
-      dispatch(resetGame({PlayerActive ,gameType}));
+      dispatch(resetGame({ PlayerActive, gameType }));
     }
+
+     
 
     navigate('LudoBoardScreen');
     playSound('game_start');
   };
 
-    useEffect(()=>{
-     if(Focoused){
+  useEffect(() => {
+    if (Focoused) {
       playSound('home')
-     }
-  },[Focoused])
+    }
+  }, [Focoused])
   //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>
@@ -139,21 +184,21 @@ const HomeScreen = () => {
 
       {renderButton('RESUME', handleResumePress)}
       {renderButton('NEW GAME', handleNewGamePress)}
-      {renderButton('VS CPU',  UserVsComputerGameStart)}
+      {renderButton('VS CPU', UserVsComputerGameStart)}
       {/* {renderButton('2 Vs 2', handleResumePress)} */}
       <Animated.View
         style={[
           styles.witchcontainer,
           {
-            transform: [{translateX: witchAnim}, {scaleX: scaleXAnim}],
+            transform: [{ translateX: witchAnim }, { scaleX: scaleXAnim }],
           },
         ]}>
-        <Pressable  onPress={()=>{
-          const random =Math.floor(Math.random() *3) +1;
+        <Pressable onPress={() => {
+          const random = Math.floor(Math.random() * 3) + 1;
           playSound(`girl${random}`)
-          
 
-           
+
+
         }}>
           <LottieView
             hardwareAccelerationAndroid
@@ -165,6 +210,21 @@ const HomeScreen = () => {
         </Pressable>
       </Animated.View>
       <Text style={styles.artist}> Made By - Amit </Text>
+
+ {/* Socket code  ----start */}
+
+      <View style={{ padding: 20 }}>
+        <Text style={{color:"white"}}> Create / Join Room</Text>
+        <Button title="Create Room" onPress={handleCreateRoom} />
+        <TextInput
+          placeholder="Enter Room ID"
+          value={roomId}
+          onChangeText={setRoomId}
+          style={{ borderWidth: 1, marginVertical: 10  , color:"white" }}
+        />
+        <Button title="Join Room" onPress={handleJoinRoom} />
+      </View>
+ {/* Socket code  ----end */}
     </Wrapper>
   );
 };
@@ -205,6 +265,6 @@ const styles = StyleSheet.create({
   witch: {
     height: 240,
     width: 240,
-    transform: [{rotate: '20deg'}],
+    transform: [{ rotate: '20deg' }],
   },
 });

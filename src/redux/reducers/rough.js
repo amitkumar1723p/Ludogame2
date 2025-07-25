@@ -20,135 +20,154 @@ import {
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 
- 
-
 /**
- * 📌 Ludo board पर नया position calculate करता है
- * @param {number} pos - current position (1-52 or 0)
- * @param {number} steps - dice number (1-6)
+ * AI या player के लिए नया position calculate करता है।
+ * @param {number} pos - current position (1-52)
+ * @param {number} steps - dice number
  * @param {number} playerNo - player number (1 to 4)
- * @returns {number} - new position after dice move
+ * @returns {number} new position after dice move
  */
- 
 
  
- 
+// ✅ Piece का नया position calculate करता है (AI और move दोनों के लिए)
 export function getNewPos(pos, steps, playerNo) {
   let newPos = pos;
   for (let i = 0; i < steps; i++) {
+    
     newPos++;
+
+    // ✅ Victory track पर redirect करें अगर turning point पर पहुंचे
     if (turningPoints.includes(newPos) && turningPoints[playerNo - 1] === newPos) {
       newPos = victoryStart[playerNo - 1];
     }
-    if (newPos > 52) newPos -= 52;
+
+    // ✅ Circular board: 52 के बाद फिर से 1
+    if (newPos > 52) {
+      newPos -= 52;
+    }
   }
   return newPos;
 }
 
 
-
-
-
-
 /**
- * 🧠 Final unbeatable Ludo AI move-decider
+ * AI decision maker: सबसे बेहतर move return करता है
+ * @param {Array} playerPieces - current AI player की pieces
+ * @param {number} dice - current dice roll (1-6)
+ * @param {number} playerNo - player number (1 to 4)
+ * @param {Array} opponentPieces - सभी opponents की pieces
+ * @returns {string|null} - best piece ID to move
  */
-export function findBestMoveUnbeatable({
-  playerPieces,
-  dice,
-  playerNo,
-  opponentPieces,
-  allOpponentsActive,
-}) {
-  const isSafe = pos => SafeSpots.includes(pos) || StarSpots.includes(pos);
 
-  const getDangerZone = pos => Array.from({ length: 6 }, (_, i) => (pos - i - 1 + 52) % 52 || 52);
 
+
+// ✅ Main AI Logic – Flowchart के हर step को follow करता है
+export function findBestMove({ playerPieces, dice, playerNo, opponentPieces }) {
+  // const movable = playerPieces.filter(p => p.pos !== 57 && p.travelCount + dice <= 57);
   const movable = playerPieces.filter(p =>
-    p.pos !== 57 &&
-    p.travelCount + dice <= 57 &&
-    (p.pos !== 0 || dice === 6)
-  );
+  p.pos !== 57 && p.travelCount + dice <= 57 && (p.pos !== 0 || dice === 6)
+);
+    
+     
+  if (movable.length === 0) return null;
 
-  if (!movable.length) return null;
-
+  const isSafe = pos => SafeSpots.includes(pos) || StarSpots.includes(pos);
   let bestScore = -Infinity;
-  let bestMove = null;
+  let bestMoveId = null;
 
-  movable.sort((a, b) => b.travelCount - a.travelCount); // सबसे आगे वाली piece पहले
 
-  for (const piece of movable) {
-    const newPos = getNewPos(piece.pos, dice, playerNo);
+  for (let p of movable) {
+     
+    const newPos = getNewPos(p.pos, dice, playerNo);
+     
     let score = 0;
 
-    const dangerBehind = opponentPieces.some(op =>
-      op.pos !== 0 &&
-      op.pos !== 57 &&
-      getDangerZone(piece.pos).includes(op.pos) &&
-      !isSafe(piece.pos)
-    );
+    // ✅ Danger detection
+    const isInDanger = opponentPieces.some(op => {
+      if (op.pos === 0 || op.pos === 57) return false;
+      const threatRange = Array.from({ length: 6 }, (_, i) => (op.pos + i + 1) % 53 || 1);
+      
+      return threatRange.includes(p.pos) && !isSafe(p.pos);
+       
+    });
 
-    const willEscape = !opponentPieces.some(op =>
-      getDangerZone(newPos).includes(op.pos) && !isSafe(newPos)
-    );
+    // ✅ Escape to safe
+    const willBeSafe = !opponentPieces.some(op => {
+      const threatRange = Array.from({ length: 6 }, (_, i) => (op.pos + i + 1) % 53 || 1);
+       
+      return threatRange.includes(newPos) && !isSafe(newPos);
+      
+    });
 
-    // 1️⃣ Reach Home
-    if (piece.travelCount + dice === 57) score += 200;
-
-    // 2️⃣ Continue progressing if safe
-    if (!dangerBehind) score += piece.travelCount * 1.5;
-
-    // 3️⃣ Escape from danger
-    if (dangerBehind && willEscape) score += 150;
-
-    // 4️⃣ Cut opponent
-    const cut = opponentPieces.find(op => op.pos === newPos && !isSafe(newPos));
-    if (cut) score += 100;
-
-    // 5️⃣ Unlock if no danger
-    if (dice === 6 && piece.pos === 0) {
-      const anyUnlockedInDanger = playerPieces.some(p =>
-        p.pos !== 0 && opponentPieces.some(op =>
-          getDangerZone(p.pos).includes(op.pos) && !isSafe(p.pos)
-        )
-      );
-      if (!anyUnlockedInDanger) score += 80;
-      else score -= 80;
+    if (isInDanger && willBeSafe) {
+      score += 150; // 🛡️ PRIORITY 1: Escape Danger
     }
 
-    // 6️⃣ Safe / Star spot
-    if (isSafe(newPos)) score += 60;
-
-    // 7️⃣ Stack with own
-    const stack = playerPieces.find(p => p.id !== piece.id && p.pos === newPos);
-    if (stack) score += 40;
-
-    // 8️⃣ Enemy door danger
-    for (const enemy of allOpponentsActive) {
-      const door = startingPoints[enemy.playerNo - 1];
-      if (newPos === door) score -= 120;
+    // ✅ Home reached
+    if (p.travelCount + dice === 57) {
+      score += 100; // 🏠 PRIORITY 2: Reaching Home
+     
     }
 
-    // 9️⃣ Prioritize escaping progressing piece
-    if (dangerBehind && piece.travelCount > 30) score += 25;
+    // ✅ Unlock new piece
+    if (dice === 6 && p.pos === 0) {
+     
+      score += 90; // 🔓 PRIORITY 3: Unlock
+    }
 
+    // ✅ Cutting opponent
+    const cutEnemy = opponentPieces.find(op => op.pos === newPos && !isSafe(newPos));
+    if (cutEnemy) {
+       
+      score += 80; // ⚔️ PRIORITY 4: Cut Enemy
+    }
+
+    // ✅ Move to Safe or Star
+    if (isSafe(newPos)) {
+        
+      score += 60; // ⭐ PRIORITY 5
+    }
+
+    // ✅ Stack with own
+    const ownStack = playerPieces.find(pp => pp.id !== p.id && pp.pos === newPos);
+    if (ownStack) {
+      
+      score += 40; // 🌀 PRIORITY 6: Stack
+    }
+
+    // ✅ Progress based score
+    score += p.travelCount * 0.5; // 🚀 PRIORITY 7: Progress
+    
+    // ❌ Penalty if newPos is under threat
+    const willBeInDanger = opponentPieces.some(op => {
+      const range = Array.from({ length: 6 }, (_, i) => (op.pos + i + 1) % 53 || 1);
+      return range.includes(newPos) && !isSafe(newPos);
+    });
+  
+    if (willBeInDanger){
+     
+score -= 80; // ⚠️ DANGER ZONE
+    } 
+
+    
+    // 🧠 Select best scored move
     if (score > bestScore) {
       bestScore = score;
-      bestMove = piece.id;
+  
+      bestMoveId = p.id;
     }
   }
 
-  return bestMove;
+  // ✅ If 6 and piece is locked — prefer unlocking only if no better move
+  if (dice === 6) {
+    const locked = playerPieces.find(p => p.pos === 0);
+    if (locked && bestScore < 80) {
+      return locked.id; // Unlock if nothing else is smarter
+    }
+  }
+
+  return bestMoveId;
 }
-
-
-
-
-
-
-
- 
-
 
 
 

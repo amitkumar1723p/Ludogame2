@@ -17,8 +17,8 @@ import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
 import PileYellow from '../assets/images/piles/yellow.png';
 import { useSelector } from 'react-redux';
-import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDiceRolled, selectPlayer3, selectCurrentPosition } from '../redux/reducers/gameSelectors';
-import { findBestMove } from '../redux/reducers/gameAction'; // path adjust करना
+import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDiceRolled, selectPlayer3, selectCurrentPosition, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
+import { findBestMove, findBestMoveAdvanced, findBestMoveUnbeatable } from '../redux/reducers/gameAction'; // path adjust करना
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
@@ -55,9 +55,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     [isDiceRolled, player, currentPlayerCellSelection]
   );
 
-  //  console.log(player ,"Player")
-  //   console.log(currentPlayerCellSelection ,"currentPlayerCellSelection")
-  //    console.log(isDiceRolled ,"isDiceRolled")
+
 
 
   const isForwardable = useCallback(() => {
@@ -126,21 +124,38 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
 
 
 
-
+  const currentPlayerChance = useSelector(selectCurrentPlayerChance);
+  const player1 = useSelector(state => state.game.player1);
+  const player2 = useSelector(state => state.game.player2);
+  const player4 = useSelector(state => state.game.player4);
 
   useEffect(() => {
     if (
       gameType === 'UserVsComp' &&
       player === 3 &&
-      isDiceRolled
-    ) {
-      const opponentPieces = currentPositions.filter(p => !p.id.startsWith('C'));
+      isDiceRolled &&
+      currentPlayerChance == 3
 
-      const bestMove = findBestMove({
-        playerPieces: player3,
-        dice: diceNo,
-        playerNo: 3,
-        opponentPieces,
+    ) {
+      // const opponentPieces = currentPositions.filter(p => !p.id.startsWith('C'));
+
+      // const bestMove = findBestMove({
+      //   playerPieces: player3,
+      //   dice: diceNo,
+      //   playerNo: 3,
+      //   opponentPieces,
+      // });
+
+      const bestMove = findBestMoveUnbeatable({
+        playerPieces: player3,             // ✅ Already declared
+        dice: diceNo,                      // ✅ Dice rolled
+        playerNo: 3,                       // ✅ Computer's player number
+        opponentPieces: [...player1, ...player2, ...player4], // ✅ Flatten all opponents
+        allOpponentsActive: [
+          { playerNo: 1, unlocked: true },
+          { playerNo: 2, unlocked: true },
+          { playerNo: 4, unlocked: true }
+        ]
       });
 
       // ✅ AI move on cell selection
@@ -165,11 +180,10 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     diceNo,
     onPress,
     currentPositions, // ⬅️ Important dependency
+    currentPlayerChance,
   ]);
 
-  //  console.log(cell, "cell")
-  //  console.log(isCellEnabled ,"isCellEnabled")
-  //  console.log(isForwardable() ,"isForwadalb")
+
 
 
   return (

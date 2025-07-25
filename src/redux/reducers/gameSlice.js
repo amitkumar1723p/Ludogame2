@@ -12,20 +12,20 @@ export const gameSlice = createSlice({
     // resetGame: () => initialState,
 
     resetGame: (state, action) => {
-      const { PlayerActive ,gameType } = action.payload || {};
-    
-      return { ...initialState, activePlayer:PlayerActive ||[1,2,3,4] ,gameType:gameType||"default"};
+      const { PlayerActive, gameType } = action.payload || {};
+
+      return { ...initialState, activePlayer: PlayerActive || [1, 2, 3, 4], gameType: gameType || "default" };
     },
     updateDiceNo: (state, action) => {
-       console.log(action.payload ,"updateNUmber")
-    
+
+
       state.diceNo = action.payload.diceNo;
-      
+
       state.isDiceRolled = true;
-      console.log(state.isDiceRolled ,"stateisDiceRolled")
-  
+
+
     },
-     
+
 
     //  Winner code  
     announceWinner: (state, action) => {
@@ -99,7 +99,7 @@ export const gameSlice = createSlice({
 
 
     PlayActivePlayer: (state, action) => {
-    
+
       state.activePlayer = action.payload.PlayingActivePlayer
       state.gameType = action.payload.gameType
     },

@@ -108,8 +108,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    // const newDiceNo = ComputerTrun == true ? 6 : 4;
-    // const newDiceNo = 6
+    
 
 
 

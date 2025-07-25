@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from 'react-native-modal'; // ✅ Using react-native-modal
 import LinearGradient from 'react-native-linear-gradient';
@@ -19,7 +19,10 @@ import Pile from './Pile';
 import GradientButton from './GradientButton';
 
 const WinModal = ({ winner }) => {
-     const PlayerActive = useSelector(state => state.game?.activePlayer)
+
+    const gameType = useSelector(state => state.game.gameType)
+    const PlayerActive = useSelector(state => state.game?.activePlayer)
+ 
     const dispatch = useDispatch();
     const [visible, setVisible] = useState(!!winner);
 
@@ -28,13 +31,16 @@ const WinModal = ({ winner }) => {
     }, [winner]);
 
     const handleNewGame = () => {
-        dispatch(resetGame({}));
+
+
+        dispatch(resetGame({ PlayerActive, gameType }));
+
         dispatch(announceWinner(null));
         playSound('game_start');
     };
 
     const handleHome = () => {
-        dispatch(resetGame());
+        dispatch(resetGame({}));
         dispatch(announceWinner(null));
         resetAndNavigate('HomeScreen');
     };
@@ -100,7 +106,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 0, // important to make full-screen modal
         // marginTop: 4
-         
+
 
     },
     gradientContainer: {
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
         borderColor: 'gold',
         justifyContent: 'center',
         alignItems: 'center',
-         marginBottom:200
+        marginBottom: 200
 
 
 
@@ -148,10 +154,10 @@ const styles = StyleSheet.create({
         // zIndex: -1,
         marginTop: 20,
     },
-    girlAnimation: { 
-        
-        borderWidth:2,
-        borderColor:'red',
+    girlAnimation: {
+
+        borderWidth: 2,
+        borderColor: 'red',
         height: 500,
         width: 380,
         position: 'absolute',

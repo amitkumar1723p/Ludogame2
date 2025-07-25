@@ -17,11 +17,12 @@ import VerticalPath from '../components/path/VerticalPath';
 import HorizontalPath from '../components/path/HorizontalPath';
 import FourTriangles from '../components/FourTriangles';
 import StartGame from '../assets/images/start.png';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Colors } from '../constants/Colors';
 import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
 import { useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 import WinModal from '../components/WinModal';
 import {
@@ -33,7 +34,13 @@ import {
   // selectPlayer4,
 } from '../redux/reducers/gameSelectors';
 import { playSound } from '../helpers/SoundUtility';
+
+
+
 const LudoBoardScreen = () => {
+
+     const { roomId , players} = useRoute().params;
+    console.log(roomId ,players ,"roomId and Player")
   const insets = useSafeAreaInsets();
  
   const winner = useSelector(state => state.game.winner);
@@ -82,6 +89,22 @@ const LudoBoardScreen = () => {
       };
     }
   }, []);
+
+
+
+
+
+  //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
+
+  useEffect(()=>{
+
+  } ,[])
+
+   /// Soket Logic End ----------------------------------------------------
+
+
+
+
 
   return (
     <Wrapper>

@@ -7,6 +7,7 @@ const Stack = createStackNavigator();
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from '../helpers/NavigationUtil';
+import RoomScreen from '../screens/RoomScreen';
 
 // import { navigationRef } from '../helpers/NavigationUtil';
 export default function Navigation() {
@@ -28,6 +29,7 @@ export default function Navigation() {
           />
 
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="RoomScreen" component={RoomScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
