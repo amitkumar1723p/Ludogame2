@@ -20,7 +20,7 @@ import StartGame from '../assets/images/start.png';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Colors } from '../constants/Colors';
 import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
-import { useSelector } from 'react-redux';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -34,15 +34,40 @@ import {
   // selectPlayer4,
 } from '../redux/reducers/gameSelectors';
 import { playSound } from '../helpers/SoundUtility';
+import { PlayActivePlayer } from '../redux/reducers/gameSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { store } from '../redux/reducers/store';
 
-
-
-const LudoBoardScreen = () => {
-
-     const { roomId , players} = useRoute().params;
-    console.log(roomId ,players ,"roomId and Player")
-  const insets = useSafeAreaInsets();
  
+const LudoBoardScreen = () => {
+ console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
+  const route = useRoute();
+
+  // Dummy Room Data 
+
+  let DummyRoomId = "8vcn0wcz"
+  let DummyPlayers = [
+    {
+      PlayerSocketId: '3CZlG0NdHePTIapiAAAB',
+      PlayerName: 'Amit Host',
+      host: true,
+      position: 1
+    },
+    {
+      PlayerSocketId: 'wBCUx4UelU7yQ9q2AAAD',
+      PlayerName: 'Amit 1',
+      host: false,
+      position: 2
+    }
+  ]
+
+  const { roomId = DummyRoomId, players = DummyPlayers } = route.params || {};
+
+
+  console.log(roomId, players)
+  const dispatch = useDispatch()
+  const insets = useSafeAreaInsets();
+
   const winner = useSelector(state => state.game.winner);
   const player1 = useSelector(selectPlayer1);
   const player2 = useSelector(selectPlayer2);
@@ -96,11 +121,22 @@ const LudoBoardScreen = () => {
 
   //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
 
-  useEffect(()=>{
 
-  } ,[])
+  useEffect(() => {
 
-   /// Soket Logic End ----------------------------------------------------
+    if (roomId && Array.isArray(players)) {
+
+      // let activePlayer =    players.map((_, index) => index + 1);
+      let activePlayer = players.map((item) => item.position);
+      //  console.log(activePlayer ,"activePlayer")
+      dispatch(PlayActivePlayer({ PlayingActivePlayer: activePlayer, gameType: "Online" }))
+
+    }
+
+  }, [])
+
+
+  //  / Soket Logic End ----------------------------------------------------
 
 
 
@@ -113,11 +149,11 @@ const LudoBoardScreen = () => {
       {winner != null && <WinModal winner={winner} />}
       {/* <WinModal winner={1} />  */}
 
-      <TouchableOpacity 
-      
-       style={[styles.menuIcon, { top: insets.top+10 }]}
-      
-      onPress={handleMenuPress}>
+      <TouchableOpacity
+
+        style={[styles.menuIcon, { top: insets.top + 10 }]}
+
+        onPress={handleMenuPress}>
         <Image source={MenuIcon} style={styles.menuIconImage} />
       </TouchableOpacity>
 
@@ -201,7 +237,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     // top: 50,
     // top: deviceHeight * 0.07,
-  //  top: insets.top, // ✅ safe & responsive
+    //  top: insets.top, // ✅ safe & responsive
 
     left: 20,
   },

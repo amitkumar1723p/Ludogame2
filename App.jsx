@@ -7,7 +7,12 @@ import 'react-native-gesture-handler';
 import {persistor, store} from './src/redux/reducers/store';
 import {PersistGate} from 'redux-persist/integration/react';
 
+ 
 const App = () => {
+   
+
+ 
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -16,7 +21,7 @@ const App = () => {
       </PersistGate>
     </Provider>
 
-   
+    
   );
 };
 

@@ -21,7 +21,7 @@ import SoundPlayer from 'react-native-sound-player';
 import { playSound } from '../helpers/SoundUtility';
 import { PlayActivePlayer, resetGame } from '../redux/reducers/gameSlice';
 import { useIsFocused } from '@react-navigation/native';
-import socket from '../soket/socket.js'
+import socket from '../socket/socket.js'
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-gesture-handler';
 const HomeScreen = () => {
@@ -34,13 +34,15 @@ const HomeScreen = () => {
 
 
   // Soket Code 
-  const [roomId, setRoomId] = useState('');
+  const [roomId, setRoomId] = useState(''); // Store Room Id
+
+   const [PlayerName , setPlayerName] =useState('')
   const navigation = useNavigation();
 
 
   const handleCreateRoom = () => {
      
-    socket.emit('createRoom', { isNew: true, maxPlayers: 2 }, (response) => {
+    socket.emit('createRoom', { isNew: true, maxPlayers: 2  , PlayerName}, (response) => {
 
       if (response.success) {
 
@@ -55,7 +57,7 @@ const HomeScreen = () => {
 
 
   const handleJoinRoom = () => {
-    socket.emit('joinRoom', { roomId, isNew: false }, (response) => {
+    socket.emit('joinRoom', { roomId, isNew: false ,PlayerName  }, (response) => {
       if (response.success) {
         Alert.alert("Room Screen Create Successfully ......")
         navigation.navigate('RoomScreen', { roomId: response.roomId });
@@ -215,10 +217,21 @@ const HomeScreen = () => {
 
       <View style={{ padding: 20 }}>
         <Text style={{color:"white"}}> Create / Join Room</Text>
-        <Button title="Create Room" onPress={handleCreateRoom} />
+        <Button title="Create Room" onPress={handleCreateRoom}  disabled={!PlayerName.trim()}/>
+         {console.log(PlayerName)}
+          <TextInput
+          placeholder="Enter Name"
+          value={PlayerName}
+          placeholderTextColor="white" 
+          onChangeText={setPlayerName}
+          style={{ borderWidth: 1, marginVertical: 10  , color:"white" }}
+        />
+         
+ {/* // Romm Id  */}
         <TextInput
           placeholder="Enter Room ID"
           value={roomId}
+          placeholderTextColor="white" 
           onChangeText={setRoomId}
           style={{ borderWidth: 1, marginVertical: 10  , color:"white" }}
         />

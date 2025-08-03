@@ -27,6 +27,8 @@ import {
   enableCellSelection,
 } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRoute } from '@react-navigation/native';
+import socket from '../socket/socket';
 
 const Dice = React.memo(({ color, data, player }) => {
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
@@ -44,7 +46,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
   const isDiceRolled = useSelector(selectDiceRolled);
-   
+
   const diceNo = useSelector(selectDiceNo);
   const [diceRolling, setDiceRolling] = useState(false);
   const arrowAnim = useRef(new Animated.Value(0)).current;
@@ -90,25 +92,26 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
   useEffect(() => {
-     
-    const isComputerTurn = gameType === 'UserVsComp' && currentPlayerChance === 3 && player === 3&& !isDiceRolled;
+
+    const isComputerTurn = gameType === 'UserVsComp' && currentPlayerChance === 3 && player === 3 && !isDiceRolled;
 
 
-    if (isComputerTurn ) {
+    if (isComputerTurn) {
 
 
-       handleDicePress() 
+      handleDicePress()
     }
-  }, [currentPlayerChance, gameType, player ,isDiceRolled]);
+  }, [currentPlayerChance, gameType, player, isDiceRolled]);
 
 
-
+  const route = useRoute();
+  const { roomId, players } = route.params || {}
 
   const handleDicePress = async () => {
 
 
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    
+
 
 
 
@@ -117,7 +120,22 @@ const Dice = React.memo(({ color, data, player }) => {
 
     await delay(800); // simulate dice roll animationnpx react-native start --reset-cache
 
-    dispatch(updateDiceNo({ diceNo: newDiceNo }));
+    // dispatch(updateDiceNo({ diceNo: newDiceNo }));
+    //  Play Online Game Logic add 
+  
+    if (gameType === 'Online') {
+      Alert.alert("Press Diece Roll")
+      socket.emit('diceRolled', {
+        roomId: roomId,  // from redux or props
+        playerNo: players.position,
+        PlayerSocketId: players.PlayerSocketId ,
+        diceNo: newDiceNo,
+      });
+       
+    } else {
+      dispatch(updateDiceNo({ diceNo: newDiceNo }));
+    }
+
 
     setDiceRolling(false);
 
@@ -172,6 +190,22 @@ const Dice = React.memo(({ color, data, player }) => {
 
   };
 
+    // Listen for Dice Update 
+    useEffect(() => {
+  socket.on('diceRolled', ({ player, diceNo }) => {
+       Alert.alert(`dice Number aaya hai ${diceNo}`) 
+    dispatch(updateDiceNo({ diceNo }));
+
+    if (player === players.position) {
+      dispatch(enablePileSelection({ playerNo: player }));
+    }
+  });
+
+  return () => {
+    socket.off('diceRolled');
+  };
+}, []);
+
 
 
   return (
@@ -200,7 +234,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
               diceRolling ? null : <TouchableOpacity
 
-                 disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3)}
+                disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3)}
                 // disabled={isDiceRolled}  // ye add karna hai
 
                 activeOpacity={0.4}

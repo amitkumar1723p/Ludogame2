@@ -16,4 +16,29 @@ const reduxStorage = {
     return Promise.resolve();
   },
 };
+
+
+
+// Online Game STorage 
+ 
+
+export const saveRoomData = (roomId, playerId) => {
+  storage.set('roomId', roomId);
+  storage.set('playerId', playerId);
+};
+
+export const getRoomData = () => {
+  return {
+    roomId: storage.getString('roomId'),
+    playerId: storage.getString('playerId')
+  };
+};
+
+export const clearRoomData = () => {
+  storage.delete('roomId');
+  storage.delete('playerId');
+};
+
+
+
 export default reduxStorage;
