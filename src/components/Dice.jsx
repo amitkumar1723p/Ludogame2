@@ -108,7 +108,7 @@ const Dice = React.memo(({ color, data, player }) => {
   const { roomId, players } = route.params || {}
 
   const handleDicePress = async () => {
-
+    Alert.alert("hello")
 
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
 
@@ -122,16 +122,16 @@ const Dice = React.memo(({ color, data, player }) => {
 
     // dispatch(updateDiceNo({ diceNo: newDiceNo }));
     //  Play Online Game Logic add 
-  
+
     if (gameType === 'Online') {
       Alert.alert("Press Diece Roll")
       socket.emit('diceRolled', {
         roomId: roomId,  // from redux or props
         playerNo: players.position,
-        PlayerSocketId: players.PlayerSocketId ,
+        PlayerSocketId: players.PlayerSocketId,
         diceNo: newDiceNo,
       });
-       
+
     } else {
       dispatch(updateDiceNo({ diceNo: newDiceNo }));
     }
@@ -153,7 +153,14 @@ const Dice = React.memo(({ color, data, player }) => {
         let nextIndex = (currentIndex + 1) % PlayerActive.length;
         let chancePlayer = PlayerActive[nextIndex];
         await delay(600);
-        dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
+        // dispatch(updatePlayerChance({ chancePlayer: chancePlayer }));
+        if (gameType === 'Online') {
+          socket.emit('nextTurn', { roomId, chancePlayer });
+        } else {
+          dispatch(updatePlayerChance({ chancePlayer }));
+        }
+
+
       }
     }
 
@@ -190,21 +197,28 @@ const Dice = React.memo(({ color, data, player }) => {
 
   };
 
-    // Listen for Dice Update 
-    useEffect(() => {
-  socket.on('diceRolled', ({ player, diceNo }) => {
-       Alert.alert(`dice Number aaya hai ${diceNo}`) 
-    dispatch(updateDiceNo({ diceNo }));
+  // Listen for Dice Update 
+  useEffect(() => {
 
-    if (player === players.position) {
-      dispatch(enablePileSelection({ playerNo: player }));
-    }
+  // get Dice Number 
+    socket.on('diceRolled', ({ player, diceNo }) => {
+      
+      Alert.alert(`diceRolled soket.on ${diceNo}`)
+      dispatch(updateDiceNo({ diceNo }));
+
+      if (player === players.position) {
+        dispatch(enablePileSelection({ playerNo: player }));
+      }
+    });
+// get new Trun Number 
+      socket.on('nextTurn', ({ chancePlayer }) => {
+    dispatch(updatePlayerChance({ chancePlayer }));
   });
-
-  return () => {
-    socket.off('diceRolled');
-  };
-}, []);
+    return () => {
+      socket.off('diceRolled');
+      socket.off('nextTurn')
+    };
+  }, []);
 
 
 
@@ -234,7 +248,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
               diceRolling ? null : <TouchableOpacity
 
-                disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3)}
+                //  disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3)}
                 // disabled={isDiceRolled}  // ye add karna hai
 
                 activeOpacity={0.4}

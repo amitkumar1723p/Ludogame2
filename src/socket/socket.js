@@ -2,8 +2,9 @@ import { Alert } from 'react-native';
 import { io } from 'socket.io-client';
 
 // ✅ Replace this with your actual local IP or deployed server URL
-let SOCKET_SERVER_URL = 'http://10.210.224.12:3000'; //  default production
+let SOCKET_SERVER_URL = 'http://10.245.99.12:3000'; //  default production
 
+ 
 
 // if (__DEV__) {
 //   import('react-native-network-info').then(({ NetworkInfo }) => {
