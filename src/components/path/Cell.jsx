@@ -14,6 +14,8 @@ import {
 
 import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import Pile from '../Pile';
+import { useRoute } from '@react-navigation/native';
+import socket from '../../socket/socket';
 
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();
@@ -32,9 +34,25 @@ const Cell = ({ id, color = 'black' }) => {
     return plottedPieces.filter(item => item.pos == id);
   }, [plottedPieces, id]);
 
+  const gameType = useSelector(state => state.game?.gameType)
+  const route = useRoute();
+  const { roomId, players } = route.params || {}
+
   const handlePress = (playerNo, pieceId) => {
- 
-    dispatch(handleForwardThunk(playerNo, pieceId, id));
+    if (gameType) {
+      socket.emit('handleForwardThunk', {
+        roomId,  //  from redux or props
+        playerNo,
+        pieceId,
+        id
+
+      });
+    } else {
+      dispatch(handleForwardThunk(playerNo, pieceId, id));
+    }
+
+
+
   };
 
   const isForwardable = (piece, playerPieces) => {
@@ -42,7 +60,20 @@ const Cell = ({ id, color = 'black' }) => {
     return foundPiece && foundPiece.travelCount + diceNo <= 57;
   };
 
- 
+
+  useEffect(() => {
+    socket.on('handleForwardThunk', ({
+      playerNo,
+      pieceId,
+      id }) => {
+      dispatch(handleForwardThunk(playerNo, pieceId, id));
+    });
+
+    return () => {
+      socket.off('handleForwardThunk')
+
+    }
+  }, [])
 
 
   return (
@@ -81,15 +112,15 @@ const Cell = ({ id, color = 'black' }) => {
       {piecesAtPosition.map((piece, index) => {
         const playerNo =
           piece.id.startsWith('A') ? 1 :
-          piece.id.startsWith('B') ? 2 :
-          piece.id.startsWith('C') ? 3 : 4;
+            piece.id.startsWith('B') ? 2 :
+              piece.id.startsWith('C') ? 3 : 4;
 
         const playerPieces = allPlayersPieces[`player${playerNo}`];
 
         const pieceColor =
           piece.id.startsWith('A') ? Colors.red :
-          piece.id.startsWith('B') ? Colors.green :
-          piece.id.startsWith('C') ? Colors.yellow : Colors.blue;
+            piece.id.startsWith('B') ? Colors.green :
+              piece.id.startsWith('C') ? Colors.yellow : Colors.blue;
 
         const isCellEnabled = playerNo === currentPlayerCellSelection && isDiceRolled;
         const forwardable = isForwardable(piece, playerPieces);

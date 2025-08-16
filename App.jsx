@@ -10,7 +10,7 @@ import {PersistGate} from 'redux-persist/integration/react';
  
 const App = () => {
    
-
+ console.log(store.getState() ,'redux store')
  
 
   return (

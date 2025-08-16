@@ -29,7 +29,7 @@ export const gameSlice = createSlice({
 
     //  Winner code  
     announceWinner: (state, action) => {
-      state.winner = action.payload;
+      state.winner = action.payload;d
     },
     updateFireworks: () => {
       state.fireworks = action.payload

@@ -45,26 +45,13 @@ const LudoBoardScreen = () => {
 
   // Dummy Room Data 
 
-  let DummyRoomId = "8vcn0wcz"
-  let DummyPlayers = [
-    {
-      PlayerSocketId: '3CZlG0NdHePTIapiAAAB',
-      PlayerName: 'Amit Host',
-      host: true,
-      position: 1
-    },
-    {
-      PlayerSocketId: 'wBCUx4UelU7yQ9q2AAAD',
-      PlayerName: 'Amit 1',
-      host: false,
-      position: 2
-    }
-  ]
+ 
+   
 
-  const { roomId = DummyRoomId, players = DummyPlayers } = route.params || {};
+  
 
 
-  console.log(roomId, players)
+   
   const dispatch = useDispatch()
   const insets = useSafeAreaInsets();
 
@@ -122,18 +109,18 @@ const LudoBoardScreen = () => {
   //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (roomId && Array.isArray(players)) {
+  //   if (roomId && Array.isArray(players)) {
 
-      // let activePlayer =    players.map((_, index) => index + 1);
-      let activePlayer = players.map((item) => item.position);
-      //  console.log(activePlayer ,"activePlayer")
-      dispatch(PlayActivePlayer({ PlayingActivePlayer: activePlayer, gameType: "Online" }))
+  //     // let activePlayer =    players.map((_, index) => index + 1);
+  //     let activePlayer = players.map((item) => item.position);
+      
+  //     dispatch(PlayActivePlayer({ PlayingActivePlayer: activePlayer, gameType: "Online" }))
 
-    }
+  //   }
 
-  }, [])
+  // }, [])
 
 
   //  / Soket Logic End ----------------------------------------------------

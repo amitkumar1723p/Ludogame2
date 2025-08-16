@@ -218,7 +218,7 @@ const HomeScreen = () => {
       <View style={{ padding: 20 }}>
         <Text style={{color:"white"}}> Create / Join Room</Text>
         <Button title="Create Room" onPress={handleCreateRoom}  disabled={!PlayerName.trim()}/>
-         {console.log(PlayerName)}
+          
           <TextInput
           placeholder="Enter Name"
           value={PlayerName}

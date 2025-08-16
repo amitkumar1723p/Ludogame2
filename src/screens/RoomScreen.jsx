@@ -4,6 +4,8 @@ import socket from '../socket/socket';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { navigate } from '../helpers/NavigationUtil';
 import { getRoomData, saveRoomData } from '../redux/reducers/storage';
+import { resetGame } from '../redux/reducers/gameSlice';
+import { useDispatch } from 'react-redux';
 
 const RoomScreen = () => {
   const { roomId } = useRoute().params;
@@ -11,15 +13,15 @@ const RoomScreen = () => {
   const [players, setPlayers] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
 
+ const dispatch =useDispatch()
 
-
-  console.log("amit")
+ 
 
   useEffect(() => {
     // 🔁 App refresh hone ke baad roomId & playerId MMKV se fetch karke rejoin karo
     const tryRejoin = async () => {
       const { roomId: savedRoomId, playerId } = getRoomData();
-      console.log(playerId, savedRoomId, 'tryRejoin')
+      
 
       // ✅ Room ID match hona chahiye current screen se
       if (savedRoomId === roomId && playerId) {
@@ -52,7 +54,7 @@ ${players.map((p, i) => `Player ${i + 1}: ${p.PlayerName} (${p.PlayerSocketId})`
     // Jab game start hota hai
     socket.on('game-started', ({ players, roomId }) => {
       Alert.alert("🎮 Game Start Ho chuka hai");
-      console.log(players)
+       
       setPlayers(players);
       setGameStarted(true);
 
@@ -61,7 +63,7 @@ ${players.map((p, i) => `Player ${i + 1}: ${p.PlayerName} (${p.PlayerSocketId})`
       // ✅ Get current socket ID
       const playerId = socket.id;
 
-      //  console.log("Befor Navigate" ,playerId ,roomId)
+      
 
       // if (roomId && playerId) {
       //   saveRoomData(roomId, playerId); // Store again in case of new game
@@ -81,15 +83,23 @@ ${players.map((p, i) => `Player ${i + 1}: ${p.PlayerName} (${p.PlayerSocketId})`
 
   function navigateToGameScreen(players, roomId) {
 
+
+    // let activePlayer =    players.map((_, index) => index + 1);
+      let activePlayer = players.map((item) => item.position);
+      
+  //     dispatch(PlayActivePlayer({ PlayingActivePlayer: activePlayer, gameType: "Online" }))
+
     // React Navigation / Router se GameScreen pe jao
-    console.log("Navigating to Game Screen:", players, roomId);
+     
+ 
+    dispatch(resetGame({ PlayerActive:activePlayer, gameType :"Online" }));
     navigate('LudoBoardScreen', { players, roomId });
   }
 
   // Host Start Game button click
   const handleStartGame = () => {
     socket.emit('start-game', { roomId });
-    console.log('Start Game clicked, roomId:', roomId);
+   
   };
 
   return (
