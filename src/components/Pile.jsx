@@ -19,6 +19,7 @@ import PileYellow from '../assets/images/piles/yellow.png';
 import { useSelector } from 'react-redux';
 import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDiceRolled, selectPlayer3, selectCurrentPosition, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
 import { findBestMove, findBestMoveAdvanced, findBestMoveUnbeatable } from '../redux/reducers/gameAction'; // path adjust करना
+import { useRoute } from '@react-navigation/native';
 
 
 const Pile = ({ cell, pieceId, color, player, onPress }) => {
@@ -184,7 +185,8 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   ]);
 
 
-
+  const route = useRoute();
+  const { roomId, players , mePosition } = route.params || {}
 
   return (
     <TouchableOpacity
@@ -192,8 +194,10 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
       style={styles.container}
       disabled={
         (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
-        (gameType === 'UserVsComp' && player === 3)
-      }
+        (gameType === 'UserVsComp' && player === 3) || (
+          gameType === 'Online' &&mePosition.position==player ?false:true
+        )
+      } 
       onPress={onPress}
 
 
