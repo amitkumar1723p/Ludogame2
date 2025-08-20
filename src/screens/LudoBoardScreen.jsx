@@ -61,7 +61,6 @@ const LudoBoardScreen = () => {
   const player3 = useSelector(selectPlayer3);
   const player4 = useSelector(selectPlayer4);
   const isDiceTouch = useSelector(selectDiceTouch);
-  // const isDiceTouch = useSelector(selectDiceTouch);
   const opacity = useRef(new Animated.Value(1)).current;
   const [menuVisible, setMenuVisible] = useState(false);
   const handleMenuPress = useCallback(() => {

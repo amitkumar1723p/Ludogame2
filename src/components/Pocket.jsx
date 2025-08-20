@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import Pile from './Pile';
 import { startingPoints } from '../helpers/PlotData';
@@ -7,16 +7,22 @@ import { unfreezeDice, updatePlayerPieceValue } from '../redux/reducers/gameSlic
 import { useDispatch, useSelector } from 'react-redux';
 import { activePlayer, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
 import { useRoute } from '@react-navigation/native';
-import socket from '../socket/socket';
+import { getSocket } from '../socket/socket';
 const Pocket = ({ color, player, data }) => {
-
+  const socket = getSocket()
   const gameType = useSelector(state => state.game?.gameType)
   const route = useRoute();
   const { roomId, players } = route.params || {}
+  const clickLockRef = useRef(false);
+
   const dispatch = useDispatch();
   const handlePress = async (value) => {
+    if (gameType == "Online") {
+      if (clickLockRef.current) return; // prevent multiple fast clicks
+      clickLockRef.current = true
+    }
 
-
+     console.log("gameType Pocket HandelPRess" , gameType)
     let playerNo = value?.id?.slice(0, 1);
 
 
@@ -67,20 +73,31 @@ const Pocket = ({ color, player, data }) => {
 
   // Online Play Ludo Logic 
   useEffect(() => {
-    socket.on('PileEnableFromPocket', ({ playerNo, pieceId, pos, travelCount }) => {
+    if (gameType == "Online") {
+      socket.on('PileEnableFromPocket', ({ playerNo, pieceId, pos, travelCount }) => {
 
-      dispatch(updatePlayerPieceValue({
-        playerNo,
-        pieceId,
-        pos,
-        travelCount
-      }))
-      dispatch(unfreezeDice())
+        dispatch(updatePlayerPieceValue({
+          playerNo,
+          pieceId,
+          pos,
+          travelCount
+        }))
+        dispatch(unfreezeDice())
 
-    });
-    return () => {
-      socket.off('PileEnableFromPocket')
+        clickLockRef.current = false
+
+      });
+      socket.on('error', () => {
+        clickLockRef.current = false
+
+      });
+      return () => {
+        socket.off('PileEnableFromPocket')
+        socket.off('error')
+      }
     }
+
+
   }, [])
   // Online Play Ludo Logic 
 

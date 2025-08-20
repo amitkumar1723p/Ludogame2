@@ -28,10 +28,11 @@ import {
 } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
-import socket from '../socket/socket';
+import { getSocket } from '../socket/socket';
 import { store } from '../redux/reducers/store';
 
 const Dice = React.memo(({ color, data, player }) => {
+  const socket = getSocket()
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
 
@@ -106,38 +107,40 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
   const route = useRoute();
-  const { roomId, players } = route.params || {}
+  const { roomId, players, mePosition } = route.params || {}
 
-   console.log(route ,"routes")
-  console.log("player" ,player) 
+
+  //    console.log(player ,"Player")
+  //    console.log(currentPlayerChance ,"currentPlayerChance")
+
   //  Pause Handle Press Function ----------------start 
 
-  
-  const pauseLogicRef =useRef()
 
- 
+  const pauseLogicRef = useRef(false)
 
-const waitForPauseLogicFalse = () => {
-  return new Promise((resolve) => {
-    
 
-    // अगर पहले से false है तो तुरंत resolve कर दो
-    if (pauseLogicRef.current === false) {
-      resolve(true);
-      return;
-    }
 
-    // हर 50ms चेक करो
-    const interval = setInterval(() => {
+  const waitForPauseLogicFalse = () => {
+    return new Promise((resolve) => {
+
+
+      // अगर पहले से false है तो तुरंत resolve कर दो
       if (pauseLogicRef.current === false) {
-        clearInterval(interval);
-        resolve(true); // जब false मिले तब resolve करो
+        resolve(true);
+        return;
       }
-    }, 50);
-  });
-};
+
+      // हर 50ms चेक करो
+      const interval = setInterval(() => {
+        if (pauseLogicRef.current === false) {
+          clearInterval(interval);
+          resolve(true); // जब false मिले तब resolve करो
+        }
+      }, 50);
+    });
+  };
   // const waitForPauseLogicFalse = () => {
- 
+
 
   //   return new Promise((resolve) => {
   //     // Agar already false hai to turant resolve(true)
@@ -175,8 +178,9 @@ const waitForPauseLogicFalse = () => {
     //  Play Online Game Logic add 
 
     if (gameType === 'Online') {
-pauseLogicRef.current =true
-    
+        if (pauseLogicRef.current) return;
+      pauseLogicRef.current = true
+
 
       // Alert.alert("Press Diece Roll")
       socket.emit('diceRolled', {
@@ -184,11 +188,11 @@ pauseLogicRef.current =true
         playerNo: player,
         PlayerSocketId: players.PlayerSocketId,
         diceNo: newDiceNo,
-      });
+      }  );
 
-       await waitForPauseLogicFalse()
-        
-      
+      await waitForPauseLogicFalse()
+
+
 
     } else {
       playSound("dice_roll")
@@ -221,6 +225,7 @@ pauseLogicRef.current =true
 
 
         } else {
+          Alert.alert("Enable Pile Selection")
           dispatch(enablePileSelection({ playerNo: player }));
         }
 
@@ -320,53 +325,60 @@ pauseLogicRef.current =true
 
 
 
+    if (gameType == "Online") {
+      socket.on('diceRolling', ({ playerNo }) => {
 
+        if (playerNo === player) {
+          playSound("dice_roll")
+          setDiceRolling(true); // Start animation only for active player section()
 
+          pauseLogicRef.current = true
+        }
+      });
 
-    socket.on('diceRolling', ({ playerNo }) => {
+      socket.on('diceRolled', ({ playerNo, diceNo }) => {
+        dispatch(updateDiceNo({ diceNo }));
+        setDiceRolling(false);
 
-      if (playerNo === player) {
-        playSound("dice_roll")
-        setDiceRolling(true); // Start animation only for active player section()
-     
-        pauseLogicRef.current =true
-      }
-    });
+        pauseLogicRef.current = false
 
-    socket.on('diceRolled', ({ playerNo, diceNo }) => {
-      dispatch(updateDiceNo({ diceNo }));
-      setDiceRolling(false);
-    
-      pauseLogicRef.current =false
-
-    });
+      });
 
 
 
 
-    // get new Trun Number 
-    socket.on('nextTurn', ({ chancePlayer }) => {
-      dispatch(updatePlayerChance({ chancePlayer }));
-    });
+      // get new Trun Number 
+      socket.on('nextTurn', ({ chancePlayer }) => {
+        dispatch(updatePlayerChance({ chancePlayer }));
+      });
 
-    socket.on('enablePileSelection', ({ playerNo }) => {
+      socket.on('enablePileSelection', ({ playerNo }) => {
 
-      dispatch(enablePileSelection({ playerNo: playerNo }));
-    });
-    socket.on('enableCellSelection', ({ playerNo }) => {
+        dispatch(enablePileSelection({ playerNo: playerNo }));
+      });
+      socket.on('enableCellSelection', ({ playerNo }) => {
 
-      dispatch(enableCellSelection({ playerNo: playerNo }));
-    });
+        dispatch(enableCellSelection({ playerNo: playerNo }));
+      });
+      socket.on('error', () => {
+        pauseLogicRef.current = false
+
+      });
 
 
 
-    return () => {
-      socket.off('enablePileSelection')
-      socket.off('enableCellSelection')
-      socket.off('diceRolling');
-      socket.off('diceRolled');
-      socket.off('nextTurn')
-    };
+      return () => {
+        socket.off('enablePileSelection')
+        socket.off('enableCellSelection')
+        socket.off('diceRolling');
+        socket.off('diceRolled');
+        socket.off('nextTurn')
+        socket.off('error')
+      };
+    }
+
+
+
   }, []);
 
 
@@ -391,21 +403,24 @@ pauseLogicRef.current =true
           <View style={styles.diceContainer}>
             {/* jis dice per number show ho rhe hai vo vala dice  */}
 
- 
+
 
 
             {currentPlayerChance == player ?
 
-              diceRolling ? null :
-               <TouchableOpacity
+              (diceRolling) ? null :
+                <TouchableOpacity
 
-                disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3)}
-                // disabled={isDiceRolled}  // ye add karna hai
+                  disabled={isDiceRolled || (gameType === 'UserVsComp' && player === 3) || (
 
-                activeOpacity={0.4}
-                onPress={handleDicePress}>
-                <Image source={diceIcon} style={styles.dice} />
-              </TouchableOpacity>
+                    gameType === 'Online' && (mePosition.position == player ? false : true || pauseLogicRef.current == true ? true : false)
+                  )}
+                  // disabled={isDiceRolled}  // ye add karna hai
+
+                  activeOpacity={0.4}
+                  onPress={handleDicePress}>
+                  <Image source={diceIcon} style={styles.dice} />
+                </TouchableOpacity>
 
 
               : null}

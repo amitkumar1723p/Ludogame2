@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Colors } from '../../constants/Colors';
 import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
 import Iconicons from 'react-native-vector-icons/Ionicons';
@@ -15,11 +15,11 @@ import {
 import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import Pile from '../Pile';
 import { useRoute } from '@react-navigation/native';
-import socket from '../../socket/socket';
+import { getSocket } from '../../socket/socket';
 
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();
-
+  const socket = getSocket()
   const plottedPieces = useSelector(selectCurrentPosition);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const isDiceRolled = useSelector(selectDiceRolled);
@@ -38,8 +38,16 @@ const Cell = ({ id, color = 'black' }) => {
   const route = useRoute();
   const { roomId, players } = route.params || {}
 
+
+  const clickCellLockRef = useRef(false);
+
+
   const handlePress = (playerNo, pieceId) => {
-    if (gameType) {
+    if (gameType == "Online") {
+
+      if (clickCellLockRef.current) return; // prevent multiple fast clicks
+      clickCellLockRef.current = true;
+
       socket.emit('handleForwardThunk', {
         roomId,  //  from redux or props
         playerNo,
@@ -62,17 +70,27 @@ const Cell = ({ id, color = 'black' }) => {
 
 
   useEffect(() => {
-    socket.on('handleForwardThunk', ({
-      playerNo,
-      pieceId,
-      id }) => {
-      dispatch(handleForwardThunk(playerNo, pieceId, id));
-    });
 
-    return () => {
-      socket.off('handleForwardThunk')
+    if (gameType == "Online") {
+      socket.on('handleForwardThunk', ({
+        playerNo,
+        pieceId,
+        id }) => {
+        console.log("handleForwarThunk")
+        dispatch(handleForwardThunk(playerNo, pieceId, id));
+        clickCellLockRef.current = false;
+      });
+        socket.on('error', () => {
+        clickCellLockRef.current = false
 
+      });
+
+      return () => {
+        socket.off('handleForwardThunk')
+        socket.off('error')
+      }
     }
+
   }, [])
 
 
@@ -86,7 +104,7 @@ const Cell = ({ id, color = 'black' }) => {
       {isStartSpot && (
         <Iconicons name="star-outline" size={RFValue(12)} color="grey" />
       )}
-
+      {<Text>{id}</Text>}
       {isArrowSpot && (
         <Iconicons
           name="arrow-forward-outline"
@@ -153,6 +171,7 @@ const Cell = ({ id, color = 'black' }) => {
               },
             ]}
           >
+
             <Pile
               cell={true}
               player={playerNo}

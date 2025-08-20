@@ -1,35 +1,42 @@
-import React, { useCallback } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import GradientButton from './GradientButton';
-import {resetGame} from '../redux/reducers/gameSlice';
+import { resetGame } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { playSound } from '../helpers/SoundUtility';
-import {goBack} from '../helpers/NavigationUtil';
+import { goBack } from '../helpers/NavigationUtil';
+import RoomModal from './RoomModal';
 
-  
-const MenuModal = ({onPressHide, visible}) => {
-
+import { connectSocket, getSocket } from "../socket/socket.js"; // 👈 import
  
- const gameType = useSelector(state => state.game.gameType)
- const PlayerActive = useSelector(state => state.game?.activePlayer)
-   const dispatch = useDispatch()
- const handleNewGame =useCallback(()=>{
-   
-   
+const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
 
 
-   dispatch(resetGame({PlayerActive ,gameType}));
-    
-       playSound('game_start');
+  const gameType = useSelector(state => state.game.gameType)
+  const PlayerActive = useSelector(state => state.game?.activePlayer)
+  const dispatch = useDispatch()
+  const handleNewGame = useCallback(() => {
+
+
+
+
+    dispatch(resetGame({ PlayerActive, gameType }));
+
+    playSound('game_start');
     onPressHide();
- }, [dispatch, onPressHide])
+  }, [dispatch, onPressHide])
 
- const handleHome =useCallback(()=>{
-  goBack();
- } ,[])
+  const handleHome = useCallback(() => {
+    goBack();
+  }, [])
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [Loading, setLoading] = useState(false)
+ 
+console.log(Loading ,"Loading")
   return (
     <Modal
       style={styles.bottomModalView}
@@ -45,14 +52,44 @@ const MenuModal = ({onPressHide, visible}) => {
           colors={['#0f0c29', '#302b63', '#24243e']}
           style={styles.gradientContainer}>
           <View style={styles.subView}>
-            
-            <GradientButton title={'RESUME'}   onPress ={onPressHide} />
-            <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
+            {
+              ModalType == "HomeModal" ? <>
+                <GradientButton title={'Online'} disable={Loading} onPress={() => {
+                  // setModalVisible(true)
+                   setLoading(true)
+                  //                setTimeout(() => {
+                  const socket = connectSocket(); // 👈 connect to backend
+                  console.log(socket ,"socket connect Socket")
+                 
+                  if (socket) {
+                    
+                    setModalVisible(true);
+                    setLoading(false)
+                  } 
+                  setLoading(false)
+                  // console.log(s)
+                  //   console.log("Socket instance:", s.id);
+                  //   // open RoomModal
+                  // }, 300);
+                }} />
+                <GradientButton title={'Offline'} onPress={() => {
+                  startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
+                }} />
+              </> : <>
+                <GradientButton title={'RESUME'} onPress={onPressHide} />
+                <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
 
-            <GradientButton title={'HOME'}  onPress={ handleHome}  />
-            
-             </View>
+                <GradientButton title={'HOME'} onPress={handleHome} />
+              </>
+            }
+            {
+              Loading &&
+              <Text style={{color:"white"}}>Wait STablish connection .....</Text>
+            }
+
+          </View>
         </LinearGradient>
+        <RoomModal visible={modalVisible} onClose={() => setModalVisible(false)} />
       </View>
     </Modal>
   );

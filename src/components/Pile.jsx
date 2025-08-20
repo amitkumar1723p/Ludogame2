@@ -22,7 +22,7 @@ import { findBestMove, findBestMoveAdvanced, findBestMoveUnbeatable } from '../r
 import { useRoute } from '@react-navigation/native';
 
 
-const Pile = ({ cell, pieceId, color, player, onPress }) => {
+const Pile = ({ cell, pieceId, color, player, onPress   }) => {
 
 
 
@@ -187,7 +187,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
 
   const route = useRoute();
   const { roomId, players , mePosition } = route.params || {}
-
+  
   return (
     <TouchableOpacity
       activeOpacity={0.5}
@@ -196,7 +196,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
         (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
         (gameType === 'UserVsComp' && player === 3) || (
           gameType === 'Online' &&mePosition.position==player ?false:true
-        )
+        ) 
       } 
       onPress={onPress}
 

@@ -21,14 +21,16 @@ import SoundPlayer from 'react-native-sound-player';
 import { playSound } from '../helpers/SoundUtility';
 import { PlayActivePlayer, resetGame } from '../redux/reducers/gameSlice';
 import { useIsFocused } from '@react-navigation/native';
-import socket from '../socket/socket.js'
+
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-gesture-handler';
+import MenuModal from '../components/MenuModal.jsx';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
   const Focoused = useIsFocused()
+  const [menuVisible, setMenuVisible] = useState(false);
 
 
 
@@ -145,8 +147,11 @@ const HomeScreen = () => {
     startGame({});
   }, []);
 
+
+ 
   const handleNewGamePress = useCallback(() => {
-    startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
+  setMenuVisible(true)
+    // startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
     // dispatch(PlayActivePlayer({PlayingActivePlayer:[1,2,3,4] ,gameType:"default" }))
 
   }, []);
@@ -215,29 +220,17 @@ const HomeScreen = () => {
 
  {/* Socket code  ----start */}
 
-      <View style={{ padding: 20 }}>
-        <Text style={{color:"white"}}> Create / Join Room</Text>
-        <Button title="Create Room" onPress={handleCreateRoom}  disabled={!PlayerName.trim()}/>
-          
-          <TextInput
-          placeholder="Enter Name"
-          value={PlayerName}
-          placeholderTextColor="white" 
-          onChangeText={setPlayerName}
-          style={{ borderWidth: 1, marginVertical: 10  , color:"white" }}
-        />
-         
- {/* // Romm Id  */}
-        <TextInput
-          placeholder="Enter Room ID"
-          value={roomId}
-          placeholderTextColor="white" 
-          onChangeText={setRoomId}
-          style={{ borderWidth: 1, marginVertical: 10  , color:"white" }}
-        />
-        <Button title="Join Room" onPress={handleJoinRoom} />
-      </View>
+     
  {/* Socket code  ----end */}
+
+  {menuVisible && (
+         <MenuModal
+           ModalType ={"HomeModal"}
+           startGame ={startGame} 
+           onPressHide={() => setMenuVisible(false)}
+           visible={menuVisible}
+         />
+       )}
     </Wrapper>
   );
 };

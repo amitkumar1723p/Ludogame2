@@ -22,9 +22,9 @@ const reduxStorage = {
 // Online Game STorage 
  
 
-export const saveRoomData = (roomId, playerId) => {
-  storage.set('roomId', roomId);
-  storage.set('playerId', playerId);
+export const saveRoomData = (room) => {
+  storage.set('room', room);
+  // storage.set('playerId', playerId);
 };
 
 export const getRoomData = () => {
