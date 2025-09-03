@@ -27,26 +27,26 @@
 
 // // ✅ Check if connected successfully
 // socket.on('connect', () => {
-//   Alert.alert('🟢 Socket connected:', socket.id);
+
 // });
 
 // // ❌ Handle connection errors
 // socket.on('connect_error', (err) => {
-//    console.log(err ,"Soket Error")
-//   Alert.alert('🔴 Socket connection error:', err.message);
+
+
 // });
 
 
 //  socket.on ('error',(err  )=>{
-//       console.log(err ,"Soket Error")
-//   Alert.alert('🔴 Socket connection error:', err.message);
+
+
 
 //  } ),
 
 
 // // 🔌 Disconnected
 // socket.on('disconnect', (reason) => {
-//  Alert.alert('⚠️ Socket disconnected:', reason);
+
 // });
 
 // export default socket;
@@ -60,6 +60,8 @@ import { io } from "socket.io-client";
 import { useSelector } from 'react-redux';
 let socket = null; // initially null
 const SOCKET_SERVER_URL = "http://10.0.2.2:3000"; // apna backend IP
+
+// const SOCKET_SERVER_URL =  "http://10.94.87.12:3000"; // apna backend IP
 
 // ✅ Function to connect socket
 export const connectSocket = () => {
@@ -78,30 +80,32 @@ export const connectSocket = () => {
     timeout: 10000,
   });
 
- 
 
- 
+  // ❌ Handle connection errors
+  socket.on('connect_error', (err) => {
+    console.log(err, "Soket Error")
 
- socket.on ('error',(err  )=>{
-      console.log(err ,"Soket Error")
-  Alert.alert('🔴 Socket connection error:', err.message);
-
- } ),
-
-  socket.on("reconnect", (attemptNumber) => {
-
-
-
- 
-    Alert.alert(" Reconnected after attempts:", attemptNumber);
-
- 
-  })
-  // 🔴 Disconnected
-  socket.on("disconnect", (reason) => {
-    console.log("Socket disconnected:", reason);
-    Alert.alert("⚠️ Disconnected", reason);
   });
+
+
+
+  socket.on('error', (err) => {
+    console.log(err, "Soket Error")
+
+
+  }),
+
+    socket.on("reconnect", (attemptNumber) => {
+
+
+
+
+       
+
+
+    })
+  // 🔴 Disconnected
+
 
   return socket;
 };

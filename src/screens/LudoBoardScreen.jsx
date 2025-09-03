@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Alert,
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
@@ -26,6 +27,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import WinModal from '../components/WinModal';
 import {
+  selectCurrentPlayerChance,
   selectDiceTouch,
   selectPlayer1,
   selectPlayer2,
@@ -34,24 +36,26 @@ import {
   // selectPlayer4,
 } from '../redux/reducers/gameSelectors';
 import { playSound } from '../helpers/SoundUtility';
-import { PlayActivePlayer } from '../redux/reducers/gameSlice';
+import { announceWinner, ManageActivePlayer, PlayActivePlayer, resetGame, updatePlayerChance } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '../redux/reducers/store';
+import { getSocket } from '../socket/socket';
+import { resetAndNavigate } from '../helpers/NavigationUtil';
 
- 
+
 const LudoBoardScreen = () => {
- console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
+  console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
   const route = useRoute();
 
   // Dummy Room Data 
+  const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
- 
-   
+  const socket = getSocket()
 
-  
+  const { roomId } = route.params || {}
 
 
-   
+
   const dispatch = useDispatch()
   const insets = useSafeAreaInsets();
 
@@ -60,6 +64,7 @@ const LudoBoardScreen = () => {
   const player2 = useSelector(selectPlayer2);
   const player3 = useSelector(selectPlayer3);
   const player4 = useSelector(selectPlayer4);
+  const gameType = useSelector(state => state.game?.gameType);
   const isDiceTouch = useSelector(selectDiceTouch);
   const opacity = useRef(new Animated.Value(1)).current;
   const [menuVisible, setMenuVisible] = useState(false);
@@ -108,18 +113,56 @@ const LudoBoardScreen = () => {
   //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
 
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   if (roomId && Array.isArray(players)) {
+    if (gameType == "Online") {
 
-  //     // let activePlayer =    players.map((_, index) => index + 1);
-  //     let activePlayer = players.map((item) => item.position);
-      
-  //     dispatch(PlayActivePlayer({ PlayingActivePlayer: activePlayer, gameType: "Online" }))
+      socket.on('gameOver', ({ winnerPlayer }) => {
 
-  //   }
+        dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
+        dispatch(ManageActivePlayer([winnerPlayer?.position]))
+        dispatch(announceWinner(winnerPlayer?.position));
+      })
+      socket.on('playerLeft', ({ currentPlayers, removePlayer }) => {
+        console.log(currentPlayerChance, "currentPlayerChance")
+        console.log(removePlayer, "removePlayer")
+        if (currentPlayerChance == removePlayer.position) {
+          dispatch(updatePlayerChance({ chancePlayer: currentPlayerChance + 1 }));
 
-  // }, [])
+        }
+
+        let activePlayer = currentPlayers.map((item) => item.position);
+
+
+        //  dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
+        dispatch(ManageActivePlayer(activePlayer))
+      })
+
+
+
+      socket.on('disconnect', () => {
+        socket.emit("leaveRoom", { roomId });
+        dispatch(resetGame({}));
+        resetAndNavigate('HomeScreen')
+      });
+
+
+
+
+      // setModalVisible(false)
+      // dispatch(resetGame({}));
+      // resetAndNavigate('HomeScreen')
+
+
+    }
+
+
+    return () => {
+      socket.off('gameOver')
+      socket.off('disconnect')
+      socket.off('playerLeft')
+    }
+  }, [])
 
 
   //  / Soket Logic End ----------------------------------------------------
@@ -197,6 +240,9 @@ const LudoBoardScreen = () => {
 
       {menuVisible && (
         <MenuModal
+
+
+          ModalType={gameType == "Online" ? "OnlineGameModal" : "OfflineGameModal"}
           onPressHide={() => setMenuVisible(false)}
           visible={menuVisible}
         />

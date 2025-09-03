@@ -16,16 +16,16 @@ const App = () => {
       const { UserCurrentRoomData } = state.room || {};
  
     // const socket = getSocket()
-    //  console.log(socket ,"socket" ,"run")
+     
   // useEffect(() => {
   
   //   if(!socket) return ;
-  //   console.log(socket  , "socket")
+ 
      
   //   socket.on("reconnect", (attemptNumber) => {
-  //     console.log("🔌 Reconnected after attempts:", attemptNumber);
+   
 
-  //     Alert.alert("Wait kar tum vapic Reconnet ho rhe ho Game se")
+  
 
 
       

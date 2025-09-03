@@ -6,13 +6,16 @@ import GradientButton from './GradientButton';
 import { resetGame } from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { playSound } from '../helpers/SoundUtility';
-import { goBack } from '../helpers/NavigationUtil';
+import { goBack, resetAndNavigate } from '../helpers/NavigationUtil';
 import RoomModal from './RoomModal';
 
 import { connectSocket, getSocket } from "../socket/socket.js"; // 👈 import
- 
-const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
+import { useRoute } from '@react-navigation/native';
 
+const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
+  const route = useRoute();
+    const { roomId } = route.params || {}
+  const socket = getSocket()
 
   const gameType = useSelector(state => state.game.gameType)
   const PlayerActive = useSelector(state => state.game?.activePlayer)
@@ -35,8 +38,8 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [Loading, setLoading] = useState(false)
- 
-console.log(Loading ,"Loading")
+
+  
   return (
     <Modal
       style={styles.bottomModalView}
@@ -56,35 +59,43 @@ console.log(Loading ,"Loading")
               ModalType == "HomeModal" ? <>
                 <GradientButton title={'Online'} disable={Loading} onPress={() => {
                   // setModalVisible(true)
-                   setLoading(true)
+                  setLoading(true)
                   //                setTimeout(() => {
                   const socket = connectSocket(); // 👈 connect to backend
-                  console.log(socket ,"socket connect Socket")
-                 
+                  console.log(socket, "socket connect Socket")
+
                   if (socket) {
-                    
+
                     setModalVisible(true);
                     setLoading(false)
-                  } 
+                  }
                   setLoading(false)
-                  // console.log(s)
-                  //   console.log("Socket instance:", s.id);
-                  //   // open RoomModal
-                  // }, 300);
+                   
                 }} />
                 <GradientButton title={'Offline'} onPress={() => {
                   startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
                 }} />
-              </> : <>
-                <GradientButton title={'RESUME'} onPress={onPressHide} />
-                <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
-
-                <GradientButton title={'HOME'} onPress={handleHome} />
               </>
+                :
+                ModalType == "OnlineGameModal" ?
+
+                  <GradientButton title={'Left Game'} onPress={() => {
+                    socket.emit("leaveRoom", { roomId });
+                    setModalVisible(false)
+                    dispatch(resetGame({}));
+                    resetAndNavigate('HomeScreen')
+                  }} />
+
+                  : <>
+                    <GradientButton title={'RESUME'} onPress={onPressHide} />
+                    <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
+
+                    <GradientButton title={'HOME'} onPress={handleHome} />
+                  </>
             }
             {
               Loading &&
-              <Text style={{color:"white"}}>Wait STablish connection .....</Text>
+              <Text style={{ color: "white" }}>Wait STablish connection .....</Text>
             }
 
           </View>

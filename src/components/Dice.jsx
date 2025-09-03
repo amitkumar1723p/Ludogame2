@@ -110,8 +110,7 @@ const Dice = React.memo(({ color, data, player }) => {
   const { roomId, players, mePosition } = route.params || {}
 
 
-  //    console.log(player ,"Player")
-  //    console.log(currentPlayerChance ,"currentPlayerChance")
+   
 
   //  Pause Handle Press Function ----------------start 
 
@@ -162,7 +161,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
   const handleDicePress = async () => {
-    // Alert.alert("hello")
+
 
     // const newDiceNo = Math.floor(Math.random() * 6) + 1;
     const newDiceNo = 6
@@ -178,17 +177,17 @@ const Dice = React.memo(({ color, data, player }) => {
     //  Play Online Game Logic add 
 
     if (gameType === 'Online') {
-        if (pauseLogicRef.current) return;
+      if (pauseLogicRef.current) return;
       pauseLogicRef.current = true
 
 
-      // Alert.alert("Press Diece Roll")
+      
       socket.emit('diceRolled', {
         roomId: roomId,  // from redux or props
         playerNo: player,
         PlayerSocketId: players.PlayerSocketId,
         diceNo: newDiceNo,
-      }  );
+      });
 
       await waitForPauseLogicFalse()
 
@@ -225,7 +224,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
         } else {
-          Alert.alert("Enable Pile Selection")
+          
           dispatch(enablePileSelection({ playerNo: player }));
         }
 
@@ -268,7 +267,6 @@ const Dice = React.memo(({ color, data, player }) => {
 
         await delay(600);
         if (gameType === 'Online') {
-          Alert.alert("hello")
           socket.emit('nextTurn', { roomId, chancePlayer });
         } else {
           dispatch(updatePlayerChance({ chancePlayer }));

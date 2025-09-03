@@ -48,13 +48,13 @@
 
 // `;
 
-//       Alert.alert("🎯 Room Updated", message.trim());
+ 
 //       setPlayers(players);
 //     });
 
 //     // Jab game start hota hai
 //     socket.on('game-started', ({ players, roomId }) => {
-//       Alert.alert("🎮 Game Start Ho chuka hai");
+//      
 
 //       setPlayers(players);
 //       setGameStarted(true);
@@ -75,7 +75,7 @@
 
 //        // ✅ Find my position from players list
 //       const mePosition = players.find(p => p.PlayerSocketId === playerId);
-//        console.log(mePosition ,"RoomScreen")
+//       
 //       // if (me) {
 //       //   dispatch(setMyPlayer(me.position));
 //       // }
@@ -96,7 +96,7 @@
 //     // let activePlayer =    players.map((_, index) => index + 1);
 //       let activePlayer = players.map((item) => item.position);
 
-//   //     dispatch(PlayActivePlayer({ PlayingActivePlayer: activePlayer, gameType: "Online" }))
+ 
 
 //     // React Navigation / Router se GameScreen pe jao
 
@@ -208,8 +208,10 @@ const RoomData = route?.params?.RoomData ?? {};
 
   function navigateToGameScreen(players, roomId, mePosition) {
     let activePlayer = players.map((item) => item.position);
+
     dispatch(resetGame({ PlayerActive: activePlayer, gameType: "Online" }));
     navigate('LudoBoardScreen', { players, roomId, mePosition });
+     playSound('game_start');
   }
 
   // ✅ Host clicks "Start Game"
@@ -218,7 +220,7 @@ const RoomData = route?.params?.RoomData ?? {};
     socket.emit('start-game', { roomId });
   };
 
-  console.log(players, "Players")
+  
   const currentPlayer = players.find(p => p.PlayerSocketId === socket.id);
 
   return (
@@ -244,7 +246,7 @@ const RoomData = route?.params?.RoomData ?? {};
           )}
         />
         {/* {currentPlayer ,"currentPlayer"} */}
-        {console.log(currentPlayer, "currentplayer")}
+     
 
         {/* Controls Section */}
         <View style={styles.footer}>

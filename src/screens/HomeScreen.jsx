@@ -42,32 +42,11 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
 
-  const handleCreateRoom = () => {
-     
-    socket.emit('createRoom', { isNew: true, maxPlayers: 2  , PlayerName}, (response) => {
-
-      if (response.success) {
-
-         Alert.alert("Room Screen Create Successfully ......")
-        navigation.navigate('RoomScreen', { roomId: response.roomId });
-      } else {
-        Alert.alert(response.error || 'Failed to create room');
-      }
-    });
-  };
+ 
 
 
 
-  const handleJoinRoom = () => {
-    socket.emit('joinRoom', { roomId, isNew: false ,PlayerName  }, (response) => {
-      if (response.success) {
-        Alert.alert("Room Screen Create Successfully ......")
-        navigation.navigate('RoomScreen', { roomId: response.roomId });
-      } else {
-        Alert.alert(response.error || 'Failed to join room');
-      }
-    });
-  };
+ 
 
   useEffect(() => {
     const loopAnimation = () => {
@@ -151,15 +130,14 @@ const HomeScreen = () => {
  
   const handleNewGamePress = useCallback(() => {
   setMenuVisible(true)
-    // startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
-    // dispatch(PlayActivePlayer({PlayingActivePlayer:[1,2,3,4] ,gameType:"default" }))
+ 
 
   }, []);
 
   const UserVsComputerGameStart = useCallback(() => {
     startGame({ isNew: true, PlayerActive: [1, 3], gameType: "UserVsComp" });
 
-    //  dispatch(PlayActivePlayer({PlayingActivePlayer:[1,3] ,gameType:"UserVsComp"}))
+ 
   }, [])
 
   // Start new Game

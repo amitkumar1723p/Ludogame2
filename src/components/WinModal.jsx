@@ -22,7 +22,7 @@ const WinModal = ({ winner }) => {
 
     const gameType = useSelector(state => state.game.gameType)
     const PlayerActive = useSelector(state => state.game?.activePlayer)
- 
+
     const dispatch = useDispatch();
     const [visible, setVisible] = useState(!!winner);
 
@@ -83,7 +83,11 @@ const WinModal = ({ winner }) => {
                         style={styles.fireworkAnimation}
                     />
 
-                    <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
+
+                    {
+                        gameType != "Online" ? <GradientButton title={'NEW GAME'} onPress={handleNewGame} /> : ""
+                    }
+
                     <GradientButton title={'HOME'} onPress={handleHome} />
                 </View>
             </LinearGradient>

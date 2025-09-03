@@ -6,6 +6,7 @@ import Iconicons from 'react-native-vector-icons/Ionicons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  activePlayer,
   selectCellSelection,
   selectCurrentPosition,
   selectDiceNo,
@@ -16,9 +17,11 @@ import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import Pile from '../Pile';
 import { useRoute } from '@react-navigation/native';
 import { getSocket } from '../../socket/socket';
+import { playSound } from '../../helpers/SoundUtility';
 
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();
+  const activePlayPlayers = useSelector(activePlayer);
   const socket = getSocket()
   const plottedPieces = useSelector(selectCurrentPosition);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
@@ -40,13 +43,14 @@ const Cell = ({ id, color = 'black' }) => {
 
 
   const clickCellLockRef = useRef(false);
-
+  
 
   const handlePress = (playerNo, pieceId) => {
     if (gameType == "Online") {
-
+ 
       if (clickCellLockRef.current) return; // prevent multiple fast clicks
       clickCellLockRef.current = true;
+       
 
       socket.emit('handleForwardThunk', {
         roomId,  //  from redux or props
@@ -74,13 +78,13 @@ const Cell = ({ id, color = 'black' }) => {
     if (gameType == "Online") {
       socket.on('handleForwardThunk', ({
         playerNo,
-        pieceId,
+        pieceId,  
         id }) => {
-        console.log("handleForwarThunk")
+         
         dispatch(handleForwardThunk(playerNo, pieceId, id));
         clickCellLockRef.current = false;
       });
-        socket.on('error', () => {
+      socket.on('error', () => {
         clickCellLockRef.current = false
 
       });
@@ -104,7 +108,7 @@ const Cell = ({ id, color = 'black' }) => {
       {isStartSpot && (
         <Iconicons name="star-outline" size={RFValue(12)} color="grey" />
       )}
-      {<Text>{id}</Text>}
+       
       {isArrowSpot && (
         <Iconicons
           name="arrow-forward-outline"
@@ -171,14 +175,18 @@ const Cell = ({ id, color = 'black' }) => {
               },
             ]}
           >
+            
+            {
 
-            <Pile
-              cell={true}
-              player={playerNo}
-              onPress={() => handlePress(playerNo, piece.id)}
-              pieceId={piece.id}
-              color={pieceColor}
-            />
+              activePlayPlayers?.includes(playerNo) && <Pile
+                cell={true}
+                player={playerNo}
+                onPress={() => handlePress(playerNo, piece.id)}
+                pieceId={piece.id}
+                color={pieceColor}
+              />
+            }
+
           </View>
         );
       })}

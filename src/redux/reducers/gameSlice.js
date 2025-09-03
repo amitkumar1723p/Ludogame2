@@ -29,7 +29,7 @@ export const gameSlice = createSlice({
 
     //  Winner code  
     announceWinner: (state, action) => {
-      state.winner = action.payload;d
+      state.winner = action.payload
     },
     updateFireworks: () => {
       state.fireworks = action.payload
@@ -105,6 +105,12 @@ export const gameSlice = createSlice({
     },
 
 
+     ManageActivePlayer: (state, action) => {
+
+      state.activePlayer = action.payload 
+ 
+    },
+
 
 
 
@@ -126,5 +132,6 @@ export const {
   updateFireworks,
   announceWinner,
   PlayActivePlayer,
+  ManageActivePlayer
 } = gameSlice.actions;
 export default gameSlice.reducer;

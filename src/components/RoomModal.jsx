@@ -30,7 +30,7 @@ const RoomModal = ({ visible, onClose }) => {
     // ✅ Create Room
     const handleCreateRoom = () => {
 
-        console.log(socket, "socket")
+       
 
         if (!PlayerName.trim()) {
             Alert.alert("Error", "Please enter your name");
