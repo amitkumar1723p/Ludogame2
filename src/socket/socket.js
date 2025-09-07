@@ -59,6 +59,7 @@ import { Alert } from "react-native";
 import { io } from "socket.io-client";
 import { useSelector } from 'react-redux';
 let socket = null; // initially null
+// const SOCKET_SERVER_URL = "https://ludogame2-backend.onrender.com"; // apna backend IP
 const SOCKET_SERVER_URL = "http://10.0.2.2:3000"; // apna backend IP
 
 // const SOCKET_SERVER_URL =  "http://10.94.87.12:3000"; // apna backend IP

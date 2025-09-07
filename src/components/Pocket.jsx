@@ -22,7 +22,7 @@ const Pocket = ({ color, player, data }) => {
       clickLockRef.current = true
     }
 
-     console.log("gameType Pocket HandelPRess" , gameType)
+
     let playerNo = value?.id?.slice(0, 1);
 
 
@@ -99,7 +99,19 @@ const Pocket = ({ color, player, data }) => {
 
 
   }, [])
+
+
+
+  const [PlayerData, setPlayerData] = useState([])
+  useEffect(() => {
+    let PlayerData = players.filter((playerdata) => { return playerdata.position == player })
+    setPlayerData(PlayerData)
+  }, [players])
+
+
+
   // Online Play Ludo Logic 
+
 
 
   return (
@@ -124,7 +136,26 @@ const Pocket = ({ color, player, data }) => {
           <Plot pieceNo={2} player={player} color={color} data={data} handlePress={handlePress} />
           <Plot pieceNo={3} player={player} color={color} data={data} handlePress={handlePress} />
         </View>
+
       </View>
+ 
+      {/* {
+        PlayerData.map((player) => { return <Text>{`${player?.PlayerName}  ${player.host?`(host)`:""} `}</Text> })
+      } */}
+<View style={styles.playerInfoContainer}>
+  {PlayerData.map((player, index) => (
+    <View key={index} style={styles.playerTag}>
+      <Text style={styles.playerName}>
+        {player?.PlayerName}
+        {player.host ? " (Host)" : ""}
+      </Text>
+    </View>
+  ))}
+</View>
+
+
+
+
     </View>
   );
 };
@@ -156,6 +187,7 @@ const Plot = ({ pieceNo, player, color, data, handlePress }) => {
 
 const styles = StyleSheet.create({
   container: {
+    position:'relative',
     borderWidth: 0.4,
     justifyContent: 'center',
     alignItems: 'center',
@@ -187,4 +219,32 @@ const styles = StyleSheet.create({
     width: '36%',
     borderRadius: 50,
   },
+
+  playerInfoContainer: {
+  marginTop: 10,
+  flexDirection: 'column', // stack vertically
+  alignItems: 'center',
+  justifyContent: 'center',
+  position:"absolute",
+  top:'-7%'
+},
+
+// playerTag: {
+//   backgroundColor: Colors.primary, // ya koi theme color
+//   paddingHorizontal: 10,
+//   paddingVertical: 4,
+//   borderRadius: 12,
+//   marginVertical: 2
+//   shadowColor: '#000',
+//   shadowOpacity: 0.1,
+//   shadowRadius: 3,
+//   elevation: 2,
+// },
+
+playerName: {
+  fontSize: 14,
+  fontWeight: '600',
+  color: 'white',
+},
+
 });

@@ -27,7 +27,7 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
 
     dispatch(resetGame({ PlayerActive, gameType }));
 
-    playSound('game_start');
+    playSound('game_start');  
     onPressHide();
   }, [dispatch, onPressHide])
 
