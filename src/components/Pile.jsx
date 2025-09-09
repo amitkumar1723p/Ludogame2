@@ -22,7 +22,7 @@ import { findBestMove, findBestMoveAdvanced, findBestMoveUnbeatable } from '../r
 import { useRoute } from '@react-navigation/native';
 
 
-const Pile = ({ cell, pieceId, color, player, onPress   }) => {
+const Pile = ({ cell, pieceId, color, player, onPress }) => {
 
 
 
@@ -138,14 +138,7 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
       currentPlayerChance == 3
 
     ) {
-      // const opponentPieces = currentPositions.filter(p => !p.id.startsWith('C'));
 
-      // const bestMove = findBestMove({
-      //   playerPieces: player3,
-      //   dice: diceNo,
-      //   playerNo: 3,
-      //   opponentPieces,
-      // });
 
       const bestMove = findBestMoveUnbeatable({
         playerPieces: player3,             // ✅ Already declared
@@ -184,20 +177,61 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
     currentPlayerChance,
   ]);
 
+  // cell ? (isCellEnabled && isForwardable()) : isPileEnabled
+//  if only one pile enagle run automatic 9
+
+
+function getSinglePieceId(currentPositions, pieceId) {
+  // prefix nikal lo (first letter)
+  const prefix = pieceId.charAt(0);
+
+  // us prefix ke saare pieces filter karo
+  const relatedPieces = currentPositions.filter(item => item.id.startsWith(prefix));
+
+  if (relatedPieces.length === 1) {
+    return relatedPieces[0].id;  // ek hi hai toh return karo
+  }
+  return false; // agar 0 ya multiple hain toh false
+}
+let singleId = getSinglePieceId(currentPositions, pieceId);
+
+  
+
+useEffect(() => {
+  console.log(cell ,"cell" , isCellEnabled ,"isCellEnabled"  , isForwardable(),"isForwardable()")
+  if (cell && isCellEnabled && isForwardable()) {
+    if (singleId !== false &&diceNo!=6) { // fix
+       onPress(pieceId);
+    }
+  }
+}, [cell, isCellEnabled, isForwardable, isDiceRolled, pieceId ,diceNo])
+
 
   const route = useRoute();
-  const { roomId, players , mePosition } = route.params || {}
-  
+  const { roomId, players, mePosition } = route.params || {}
+
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       style={styles.container}
-      disabled={
-        (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
-        (gameType === 'UserVsComp' && player === 3) || (
-          gameType === 'Online' &&mePosition.position==player ?false:true
-        ) 
-      } 
+      // disabled={
+      //   (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
+      //   (gameType === 'UserVsComp' && player === 3) || (
+      //     gameType === 'Online' &&mePosition.position==player ?false:true
+      //   ) 
+      // } 
+      // disabled={
+      //   (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
+      //   (gameType === 'UserVsComp' && player === 3) ||
+      //   (cell && isCellEnabled && isForwardable()&&singleId !== false) ||
+      //   (gameType === 'Online' && mePosition.position !== player)
+      // }
+       disabled={
+    (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
+    (gameType === 'UserVsComp' && player === 3) ||
+    (cell && isCellEnabled && isForwardable() && singleId !== false &&diceNo!=6) || // fix
+    (gameType === 'Online' && mePosition.position !== player)
+  }
       onPress={onPress}
 
 

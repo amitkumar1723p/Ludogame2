@@ -158,9 +158,9 @@ const LudoBoardScreen = () => {
 
 
     return () => {
-      socket.off('gameOver')
-      socket.off('disconnect')
-      socket.off('playerLeft')
+      socket?.off('gameOver')
+      socket?.off('disconnect')
+      socket?.off('playerLeft')
     }
   }, [])
 
@@ -219,8 +219,8 @@ const LudoBoardScreen = () => {
         </View>
 
         <View style={styles.flexRow}>
-          <Dice color={Colors.green} player={1} data={player1} />
-          <Dice color={Colors.yellow} player={4} data={player4} />
+          <Dice color={Colors.red} player={1} data={player1} />
+          <Dice color={Colors.blue} player={4} data={player4} />
         </View>
         {/* // ludobard end */}
       </View>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: 'center',
     justifyContent: 'center',
-    height: deviceHeight * 0.5,
+    height: deviceHeight * 0.55,
     width: deviceWidth,
     marginTop: deviceHeight * 0.08,
 

@@ -11,10 +11,11 @@ import RoomModal from './RoomModal';
 
 import { connectSocket, getSocket } from "../socket/socket.js"; // 👈 import
 import { useRoute } from '@react-navigation/native';
+import OfflinePlayerModal from './PlayerModal.jsx';
 
 const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
   const route = useRoute();
-    const { roomId } = route.params || {}
+  const { roomId } = route.params || {}
   const socket = getSocket()
 
   const gameType = useSelector(state => state.game.gameType)
@@ -27,7 +28,7 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
 
     dispatch(resetGame({ PlayerActive, gameType }));
 
-    playSound('game_start');  
+    playSound('game_start');
     onPressHide();
   }, [dispatch, onPressHide])
 
@@ -35,11 +36,24 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
     goBack();
   }, [])
 
+  const [OfflinePlayerModeModalVisible, setOfflinePlayerModeModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   const [Loading, setLoading] = useState(false)
 
-  
+  const onSelect = (count) => {
+    let acivePlayer = []
+
+    if (count === 2) {
+      acivePlayer = [1, 3];  // 2 player opposite seats
+    } else {
+      acivePlayer = Array.from({ length: count }, (_, i) => i + 1);
+    }
+
+
+    startGame({ isNew: true, PlayerActive: acivePlayer });
+  }
+
   return (
     <Modal
       style={styles.bottomModalView}
@@ -70,10 +84,11 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
                     setLoading(false)
                   }
                   setLoading(false)
-                   
+
                 }} />
                 <GradientButton title={'Offline'} onPress={() => {
-                  startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
+                  setOfflinePlayerModeModalVisible(true)
+                  // startGame({ isNew: true, PlayerActive: [1, 2, 3, 4] });
                 }} />
               </>
                 :
@@ -100,6 +115,9 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
 
           </View>
         </LinearGradient>
+
+
+        <OfflinePlayerModal visible={OfflinePlayerModeModalVisible} onClose={() => { setOfflinePlayerModeModalVisible(false) }} onSelect={onSelect} />
         <RoomModal visible={modalVisible} onClose={() => setModalVisible(false)} />
       </View>
     </Modal>

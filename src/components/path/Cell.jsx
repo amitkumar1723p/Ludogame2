@@ -90,8 +90,8 @@ const Cell = ({ id, color = 'black' }) => {
       });
 
       return () => {
-        socket.off('handleForwardThunk')
-        socket.off('error')
+        socket?.off('handleForwardThunk')
+        socket?.off('error')
       }
     }
 

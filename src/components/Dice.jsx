@@ -55,6 +55,8 @@ const Dice = React.memo(({ color, data, player }) => {
 
   const pileIcon = BackgroundImage.GetImage(color);
   const diceIcon = BackgroundImage.GetImage(diceNo);
+   
+   console.log(pileIcon ,"pileIcon")
 
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -164,7 +166,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    // const newDiceNo = 6
+    // const newDiceNo = 5
 
 
 
@@ -176,7 +178,7 @@ const Dice = React.memo(({ color, data, player }) => {
     // dispatch(updateDiceNo({ diceNo: newDiceNo }));
     //  Play Online Game Logic add 
 
-    if (gameType === 'Online') {
+    if (gameType == 'Online') {
       if (pauseLogicRef.current) return;
       pauseLogicRef.current = true
 
@@ -366,12 +368,12 @@ const Dice = React.memo(({ color, data, player }) => {
 
 
       return () => {
-        socket.off('enablePileSelection')
-        socket.off('enableCellSelection')
-        socket.off('diceRolling');
-        socket.off('diceRolled');
-        socket.off('nextTurn')
-        socket.off('error')
+        socket?.off('enablePileSelection')
+        socket?.off('enableCellSelection')
+        socket?.off('diceRolling');
+        socket?.off('diceRolled');
+        socket?.off('nextTurn')
+        socket?.off('error')
       };
     }
 

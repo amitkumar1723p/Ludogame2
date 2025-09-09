@@ -84,8 +84,8 @@
 //     });
 
 //     return () => {
-//       socket.off('roomUpdate');
-//       socket.off('game-started');
+//       socket?.off('roomUpdate');
+//       socket?.off('game-started');
 //     };
 //   }, []);
 
@@ -198,8 +198,8 @@ const RoomData = route?.params?.RoomData ?? {};
     setPlayers(RoomPlayers)
 
     return () => {
-      socket.off('roomUpdate');
-      socket.off('game-started');
+      socket?.off('roomUpdate');
+      socket?.off('game-started');
     };
   }, []);
 

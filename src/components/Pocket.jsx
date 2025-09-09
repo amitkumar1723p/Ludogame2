@@ -8,23 +8,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { activePlayer, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
 import { useRoute } from '@react-navigation/native';
 import { getSocket } from '../socket/socket';
+
 const Pocket = ({ color, player, data }) => {
-  const socket = getSocket()
-  const gameType = useSelector(state => state.game?.gameType)
+  const socket = getSocket();
+  const gameType = useSelector(state => state.game?.gameType);
   const route = useRoute();
-  const { roomId, players } = route.params || {}
+  const { roomId, players } = route.params || {};
   const clickLockRef = useRef(false);
 
   const dispatch = useDispatch();
+
   const handlePress = async (value) => {
+      
     if (gameType == "Online") {
       if (clickLockRef.current) return; // prevent multiple fast clicks
-      clickLockRef.current = true
+      clickLockRef.current = true;
     }
 
-
     let playerNo = value?.id?.slice(0, 1);
-
 
     switch (playerNo) {
       case 'A':
@@ -41,11 +42,7 @@ const Pocket = ({ color, player, data }) => {
         break;
     }
 
-
-
-
     if (gameType == "Online") {
-
       socket.emit('PileEnableFromPocket', {
         roomId: roomId,  // from redux or props
         playerNo: playerNo,
@@ -53,70 +50,56 @@ const Pocket = ({ color, player, data }) => {
         travelCount: 1,
         pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1]
       });
-
     } else {
-
       dispatch(updatePlayerPieceValue({
         playerNo: playerNo,
         pieceId: value.id,
         pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1],
         travelCount: 1,
-      }))
+      }));
 
-      dispatch(unfreezeDice())
+      dispatch(unfreezeDice());
     }
-
-
-
-
-  }
+  };
 
   // Online Play Ludo Logic 
   useEffect(() => {
     if (gameType == "Online") {
       socket.on('PileEnableFromPocket', ({ playerNo, pieceId, pos, travelCount }) => {
-
         dispatch(updatePlayerPieceValue({
           playerNo,
           pieceId,
           pos,
           travelCount
-        }))
-        dispatch(unfreezeDice())
+        }));
+        dispatch(unfreezeDice());
 
-        clickLockRef.current = false
-
+        clickLockRef.current = false;
       });
+
       socket.on('error', () => {
-        clickLockRef.current = false
-
+        clickLockRef.current = false;
       });
+
       return () => {
-        socket.off('PileEnableFromPocket')
-        socket.off('error')
-      }
+        socket?.off('PileEnableFromPocket');
+        socket?.off('error');
+      };
+    }
+  }, []);
+
+  const [PlayerData, setPlayerData] = useState([]);
+  useEffect(() => {
+    if (gameType == "Online") {
+      let PlayerData = players?.filter((playerdata) => playerdata.position == player);
+      setPlayerData(PlayerData);
     }
 
-
-  }, [])
-
-
-
-  const [PlayerData, setPlayerData] = useState([])
-  useEffect(() => {
-    let PlayerData = players.filter((playerdata) => { return playerdata.position == player })
-    setPlayerData(PlayerData)
-  }, [players])
-
-
-
-  // Online Play Ludo Logic 
-
-
+  }, [players]);
 
   return (
     <View style={[styles.container, { backgroundColor: color }]}>
-
+      {/* Center frame */}
       <View style={styles.childFrame}>
         <View style={styles.flexRow}>
           <Plot
@@ -124,7 +107,6 @@ const Pocket = ({ color, player, data }) => {
             pieceNo={0}
             player={player}
             color={color}
-
             data={data}
           />
           <Plot pieceNo={1} player={player} color={color}
@@ -136,25 +118,22 @@ const Pocket = ({ color, player, data }) => {
           <Plot pieceNo={2} player={player} color={color} data={data} handlePress={handlePress} />
           <Plot pieceNo={3} player={player} color={color} data={data} handlePress={handlePress} />
         </View>
-
       </View>
- 
-      {/* {
-        PlayerData.map((player) => { return <Text>{`${player?.PlayerName}  ${player.host?`(host)`:""} `}</Text> })
-      } */}
-<View style={styles.playerInfoContainer}>
-  {PlayerData.map((player, index) => (
-    <View key={index} style={styles.playerTag}>
-      <Text style={styles.playerName}>
-        {player?.PlayerName}
-        {player.host ? " (Host)" : ""}
-      </Text>
-    </View>
-  ))}
-</View>
+      {
+        gameType == "Online" && <>
+          {/* Player Name Section */}
+          <View style={styles.playerInfoContainer}>
+            {PlayerData.map((player, index) => (
+              <View key={index} style={styles.playerTag}>
+                <Text style={styles.playerName}>
+                  {player?.PlayerName} {player.host ? "(Host) - You" : ""}
+                </Text>
+              </View>
+            ))}
+          </View>
 
-
-
+        </>
+      }
 
     </View>
   );
@@ -162,41 +141,36 @@ const Pocket = ({ color, player, data }) => {
 
 export default memo(Pocket);
 
-{
-  /* <Plot /> Component  */
-}
-
+/* <Plot /> Component  */
 const Plot = ({ pieceNo, player, color, data, handlePress }) => {
   const activePlayPlayers = useSelector(activePlayer);
 
-
-
   return (
     <View style={[styles.plot, { backgroundColor: color }]}>
-
-
-      {data && data[pieceNo]?.pos === 0 && activePlayPlayers?.includes(player) && <Pile player={player} color={color} pieceId={data[pieceNo]?.id} onPress={() => {
-
-        handlePress(data[pieceNo])
-
-      }} />}
-
+      {data && data[pieceNo]?.pos === 0 && activePlayPlayers?.includes(player) && (
+        <Pile
+          player={player}
+          color={color}
+          pieceId={data[pieceNo]?.id}
+          onPress={() => handlePress(data[pieceNo])}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position:'relative',
     borderWidth: 0.4,
     justifyContent: 'center',
     alignItems: 'center',
-
     width: '40%',
     height: '100%',
-    borderColor: Colors.borderColor,
-  },
+    // borderColor: Colors.borderColor,
 
+
+    // paddingVertical: 8,
+  },
   childFrame: {
     backgroundColor: 'white',
     borderWidth: 0.4,
@@ -212,39 +186,44 @@ const styles = StyleSheet.create({
     height: '40%',
     flexDirection: 'row',
   },
-
   plot: {
     backgroundColor: Colors.green,
     height: '80%',
     width: '36%',
     borderRadius: 50,
   },
-
   playerInfoContainer: {
-  marginTop: 10,
-  flexDirection: 'column', // stack vertically
-  alignItems: 'center',
-  justifyContent: 'center',
-  position:"absolute",
-  top:'-7%'
-},
 
-// playerTag: {
-//   backgroundColor: Colors.primary, // ya koi theme color
-//   paddingHorizontal: 10,
-//   paddingVertical: 4,
-//   borderRadius: 12,
-//   marginVertical: 2
-//   shadowColor: '#000',
-//   shadowOpacity: 0.1,
-//   shadowRadius: 3,
-//   elevation: 2,
-// },
+    // marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    flexDirection: 'row',
 
-playerName: {
-  fontSize: 14,
-  fontWeight: '600',
-  color: 'white',
-},
+    paddingHorizontal: 2,
+    position: "relative",
+    top: 5,
+  },
+  playerTag: {
 
+
+
+    backgroundColor: "rgba(0,0,0,0.7)", // ✅ semi-transparent black
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 14,
+    margin: 2,
+    minWidth: 65,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  playerName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'center',
+  },
 });
