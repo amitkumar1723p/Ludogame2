@@ -56,7 +56,7 @@ const Dice = React.memo(({ color, data, player }) => {
   const pileIcon = BackgroundImage.GetImage(color);
   const diceIcon = BackgroundImage.GetImage(diceNo);
    
-   console.log(pileIcon ,"pileIcon")
+   
 
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -165,8 +165,9 @@ const Dice = React.memo(({ color, data, player }) => {
   const handleDicePress = async () => {
 
 
-    const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    // const newDiceNo = 5
+    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    const newDiceNo =6
+    
 
 
 
