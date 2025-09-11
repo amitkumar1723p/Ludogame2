@@ -47,7 +47,7 @@ const LudoBoardScreen = () => {
   console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
   const route = useRoute();
 
-  // Dummy Room Data 
+  // Dummy Room Data
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
   const socket = getSocket()
@@ -124,8 +124,8 @@ const LudoBoardScreen = () => {
         dispatch(announceWinner(winnerPlayer?.position));
       })
       socket.on('playerLeft', ({ currentPlayers, removePlayer }) => {
-        console.log(currentPlayerChance, "currentPlayerChance")
-        console.log(removePlayer, "removePlayer")
+
+    
         if (currentPlayerChance == removePlayer.position) {
           dispatch(updatePlayerChance({ chancePlayer: currentPlayerChance + 1 }));
 
@@ -158,9 +158,9 @@ const LudoBoardScreen = () => {
 
 
     return () => {
-      socket.off('gameOver')
-      socket.off('disconnect')
-      socket.off('playerLeft')
+      socket?.off('gameOver')
+      socket?.off('disconnect')
+      socket?.off('playerLeft')
     }
   }, [])
 
@@ -219,8 +219,8 @@ const LudoBoardScreen = () => {
         </View>
 
         <View style={styles.flexRow}>
-          <Dice color={Colors.green} player={1} data={player1} />
-          <Dice color={Colors.yellow} player={4} data={player4} />
+          <Dice color={Colors.red} player={1} data={player1} />
+          <Dice color={Colors.blue} player={4} data={player4} />
         </View>
         {/* // ludobard end */}
       </View>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: 'center',
     justifyContent: 'center',
-    height: deviceHeight * 0.5,
+    height: deviceHeight * 0.55,
     width: deviceWidth,
     marginTop: deviceHeight * 0.08,
 

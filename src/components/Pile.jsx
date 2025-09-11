@@ -6,9 +6,15 @@ import {
   Easing,
   StyleSheet,
   Image,
-  Alert,
+  Alert
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { Svg, Circle } from 'react-native-svg';
 import { Colors } from '../constants/Colors';
 
@@ -17,59 +23,48 @@ import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
 import PileYellow from '../assets/images/piles/yellow.png';
 import { useSelector } from 'react-redux';
-import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDiceRolled, selectPlayer3, selectCurrentPosition, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
-import { findBestMove, findBestMoveAdvanced, findBestMoveUnbeatable } from '../redux/reducers/gameAction'; // path adjust करना
+import {
+  selectPocketPileSelection,
+  selectCellSelection,
+  selectDiceNo,
+  selectDiceRolled,
+  selectPlayer3,
+  selectCurrentPosition,
+  selectCurrentPlayerChance
+} from '../redux/reducers/gameSelectors';
+import {
+  findBestMove,
+  findBestMoveAdvanced,
+  findBestMoveUnbeatable
+} from '../redux/reducers/gameAction'; // path adjust करना
 import { useRoute } from '@react-navigation/native';
 
-
-const Pile = ({ cell, pieceId, color, player, onPress   }) => {
-
-
-
-
+const Pile = ({ cell, pieceId, color, player, onPress }) => {
   const player3 = useSelector(selectPlayer3);
-
-
-
-
-
 
   const rotation = useRef(new Animated.Value(0)).current;
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
-  const gameType = useSelector(state => state.game?.gameType
-  );
+  const gameType = useSelector(state => state.game?.gameType);
   const isDiceRolled = useSelector(selectDiceRolled);
 
   const currentPositions = useSelector(selectCurrentPosition);
   const isPileEnabled = useMemo(
     () => player == currentPlayerPileSelection,
-    [player, currentPlayerPileSelection],
+    [player, currentPlayerPileSelection]
   );
-
-
 
   const isCellEnabled = useMemo(
     () => player === currentPlayerCellSelection && isDiceRolled === true,
     [isDiceRolled, player, currentPlayerCellSelection]
   );
 
-
-
-
   const isForwardable = useCallback(() => {
-
     const piece = playerPieces?.find(item => item.id === pieceId);
     return piece && piece.travelCount + diceNo <= 57;
   }, [playerPieces, diceNo, pieceId]);
-
-
-
-
-
-
 
   const getPileImage = useMemo(() => {
     switch (color) {
@@ -86,11 +81,7 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
     }
   }, [color]);
 
-
-
-
-
-  const isHighlighted = cell ? (isCellEnabled && isForwardable()) : isPileEnabled;
+  const isHighlighted = cell ? isCellEnabled && isForwardable() : isPileEnabled;
 
   useEffect(() => {
     if (isHighlighted) {
@@ -100,8 +91,8 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
           toValue: 1,
           duration: 1000,
           easing: Easing.linear,
-          useNativeDriver: true,
-        }),
+          useNativeDriver: true
+        })
       );
       rotateAnimation.start();
       return () => rotateAnimation.stop();
@@ -112,18 +103,11 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
     () =>
       rotation.interpolate({
         inputRange: [0, 1],
-        outputRange: ['0deg', '360deg'],
+        outputRange: ['0deg', '360deg']
       }),
 
-    [rotation],
+    [rotation]
   );
-
-
-
-
-
-
-
 
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
   const player1 = useSelector(state => state.game.player1);
@@ -136,21 +120,11 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
       player === 3 &&
       isDiceRolled &&
       currentPlayerChance == 3
-
     ) {
-      // const opponentPieces = currentPositions.filter(p => !p.id.startsWith('C'));
-
-      // const bestMove = findBestMove({
-      //   playerPieces: player3,
-      //   dice: diceNo,
-      //   playerNo: 3,
-      //   opponentPieces,
-      // });
-
       const bestMove = findBestMoveUnbeatable({
-        playerPieces: player3,             // ✅ Already declared
-        dice: diceNo,                      // ✅ Dice rolled
-        playerNo: 3,                       // ✅ Computer's player number
+        playerPieces: player3, // ✅ Already declared
+        dice: diceNo, // ✅ Dice rolled
+        playerNo: 3, // ✅ Computer's player number
         opponentPieces: [...player1, ...player2, ...player4], // ✅ Flatten all opponents
         allOpponentsActive: [
           { playerNo: 1, unlocked: true },
@@ -181,39 +155,82 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
     diceNo,
     onPress,
     currentPositions, // ⬅️ Important dependency
-    currentPlayerChance,
+    currentPlayerChance
   ]);
 
+  // cell ? (isCellEnabled && isForwardable()) : isPileEnabled
+  //  if only one pile enagle run automatic 9
+
+  function getSinglePieceId(currentPositions, pieceId) {
+    // prefix nikal lo (first letter)
+    const prefix = pieceId.charAt(0);
+
+    // us prefix ke saare pieces filter karo
+    const relatedPieces = currentPositions.filter(
+      item => item.id.startsWith(prefix) && item.travelCount + diceNo <= 57
+    );
+
+    if (relatedPieces.length === 1) {
+      return relatedPieces[0].id; // ek hi hai toh return karo
+    }
+    return false; // agar 0 ya multiple hain toh false
+  }
+  let singleId = getSinglePieceId(currentPositions, pieceId);
+
+
+
+
+
+ 
+  useEffect(() => {
+    if (cell && isCellEnabled && isForwardable()) {
+      if (singleId !== false && diceNo != 6) {
+        // fix
+        onPress(pieceId);
+      }
+    }
+  }, [cell, isCellEnabled, isForwardable, isDiceRolled, pieceId, diceNo]);
 
   const route = useRoute();
-  const { roomId, players , mePosition } = route.params || {}
-  
+  const { roomId, players, mePosition } = route.params || {};
+
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       style={styles.container}
+      // disabled={
+      //   (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
+      //   (gameType === 'UserVsComp' && player === 3) || (
+      //     gameType === 'Online' &&mePosition.position==player ?false:true
+      //   )
+      // }
+      // disabled={
+      //   (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
+      //   (gameType === 'UserVsComp' && player === 3) ||
+      //   (cell && isCellEnabled && isForwardable()&&singleId !== false) ||
+      //   (gameType === 'Online' && mePosition.position !== player)
+      // }
       disabled={
-        (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
-        (gameType === 'UserVsComp' && player === 3) || (
-          gameType === 'Online' &&mePosition.position==player ?false:true
-        ) 
-      } 
+        !(cell ? isCellEnabled && isForwardable() : isPileEnabled) ||
+        (gameType === 'UserVsComp' && player === 3) ||
+        (cell &&
+          isCellEnabled &&
+          isForwardable() &&
+          singleId !== false &&
+          diceNo != 6) || // fix
+        (gameType === 'Online' && mePosition.position !== player)
+      }
       onPress={onPress}
-
-
-
-
     >
       <View style={styles.holloCircle}>
-
-
-        {(cell ? (isCellEnabled && isForwardable()) : isPileEnabled) ? (
+        {(cell ? isCellEnabled && isForwardable() : isPileEnabled) ? (
           <View style={styles.dashedCircleContainer}>
             <Animated.View
               style={[
                 styles.dashedCircle,
-                { transform: [{ rotate: rotateInterpolate }] },
-              ]}>
+                { transform: [{ rotate: rotateInterpolate }] }
+              ]}
+            >
               <Svg height={'18'} width={'18'}>
                 <Circle
                   cx="9"
@@ -229,8 +246,6 @@ const Pile = ({ cell, pieceId, color, player, onPress   }) => {
             </Animated.View>
           </View>
         ) : null}
-
-
       </View>
 
       <Image
@@ -248,7 +263,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    alignSelf: 'center',
+    alignSelf: 'center'
   },
   holloCircle: {
     width: 15,
@@ -258,8 +273,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'black',
     justifyContent: 'center',
-    alignItems: 'center',
-
+    alignItems: 'center'
   },
   dashedCircleContainer: {
     position: 'absolute',
@@ -267,13 +281,13 @@ const styles = StyleSheet.create({
     height: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    top: -8,
+    top: -8
   },
   dashedCircle: {
     width: 25,
     height: 25,
     // backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
+    justifyContent: 'center'
+  }
 });

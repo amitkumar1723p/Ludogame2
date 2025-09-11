@@ -46,6 +46,7 @@ import { io } from 'socket.io-client';
 import { useSelector } from 'react-redux';
 let socket = null; // initially null
 const SOCKET_SERVER_URL = 'https://ludogame2-backend.onrender.com'; // apna backend IP
+// const SOCKET_SERVER_URL = "http://10.0.2.2:3000"; // apna backend IP
 
 // const SOCKET_SERVER_URL =  "http://10.94.87.12:3000"; // apna backend IP
 
@@ -68,10 +69,10 @@ export const connectSocket = () => {
     console.log(err, 'Soket Error');
   });
 
-  socket.on('error', err => {
+  (socket.on('error', err => {
     console.log(err, 'Soket Error');
   }),
-    socket.on('reconnect', attemptNumber => {});
+    socket.on('reconnect', attemptNumber => {}));
   // 🔴 Disconnected
 
   return socket;

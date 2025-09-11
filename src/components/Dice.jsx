@@ -136,16 +136,43 @@ const Dice = React.memo(({ color, data, player }) => {
   //   });
   // };
 
+  function getBiasedDiceRoll(sixProbability = 0.3) {
+    // sixProbability => 0 to 1 (e.g. 0.3 = 30% chance for 6)
+
+    // Total remaining probability for numbers 1–5
+    const otherProbability = (1 - sixProbability) / 5;
+
+    const diceNumbers = [1, 2, 3, 4, 5, 6];
+    const weights = [
+      otherProbability,
+      otherProbability,
+      otherProbability,
+      otherProbability,
+      otherProbability,
+      sixProbability
+    ];
+
+    let random = Math.random();
+    let cumulative = 0;
+
+    for (let i = 0; i < diceNumbers.length; i++) {
+      cumulative += weights[i];
+      if (random < cumulative) {
+        return diceNumbers[i];
+      }
+    }
+  }
+
   const handleDicePress = async () => {
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    // const newDiceNo = 6
+    // const newDiceNo = getBiasedDiceRoll();
 
     // simulate dice roll animationnpx react-native start --reset-cache
 
     // dispatch(updateDiceNo({ diceNo: newDiceNo }));
     //  Play Online Game Logic add
 
-    if (gameType === 'Online') {
+    if (gameType == 'Online') {
       if (pauseLogicRef.current) return;
       pauseLogicRef.current = true;
 
@@ -277,12 +304,12 @@ const Dice = React.memo(({ color, data, player }) => {
       });
 
       return () => {
-        socket.off('enablePileSelection');
-        socket.off('enableCellSelection');
-        socket.off('diceRolling');
-        socket.off('diceRolled');
-        socket.off('nextTurn');
-        socket.off('error');
+        socket?.off('enablePileSelection');
+        socket?.off('enableCellSelection');
+        socket?.off('diceRolling');
+        socket?.off('diceRolled');
+        socket?.off('nextTurn');
+        socket?.off('error');
       };
     }
   }, []);

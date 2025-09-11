@@ -22,7 +22,7 @@ import { playSound } from '../../helpers/SoundUtility';
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();
   const activePlayPlayers = useSelector(activePlayer);
-  const socket = getSocket()
+  const socket = getSocket();
   const plottedPieces = useSelector(selectCurrentPosition);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const isDiceRolled = useSelector(selectDiceRolled);
@@ -37,34 +37,26 @@ const Cell = ({ id, color = 'black' }) => {
     return plottedPieces.filter(item => item.pos == id);
   }, [plottedPieces, id]);
 
-  const gameType = useSelector(state => state.game?.gameType)
+  const gameType = useSelector(state => state.game?.gameType);
   const route = useRoute();
-  const { roomId, players } = route.params || {}
-
+  const { roomId, players } = route.params || {};
 
   const clickCellLockRef = useRef(false);
-  
 
   const handlePress = (playerNo, pieceId) => {
-    if (gameType == "Online") {
- 
+    if (gameType == 'Online') {
       if (clickCellLockRef.current) return; // prevent multiple fast clicks
       clickCellLockRef.current = true;
-       
 
       socket.emit('handleForwardThunk', {
-        roomId,  //  from redux or props
+        roomId, //  from redux or props
         playerNo,
         pieceId,
         id
-
       });
     } else {
       dispatch(handleForwardThunk(playerNo, pieceId, id));
     }
-
-
-
   };
 
   const isForwardable = (piece, playerPieces) => {
@@ -72,43 +64,34 @@ const Cell = ({ id, color = 'black' }) => {
     return foundPiece && foundPiece.travelCount + diceNo <= 57;
   };
 
-
   useEffect(() => {
-
-    if (gameType == "Online") {
-      socket.on('handleForwardThunk', ({
-        playerNo,
-        pieceId,  
-        id }) => {
-         
+    if (gameType == 'Online') {
+      socket.on('handleForwardThunk', ({ playerNo, pieceId, id }) => {
         dispatch(handleForwardThunk(playerNo, pieceId, id));
         clickCellLockRef.current = false;
       });
       socket.on('error', () => {
-        clickCellLockRef.current = false
-
+        clickCellLockRef.current = false;
       });
 
       return () => {
-        socket.off('handleForwardThunk')
-        socket.off('error')
-      }
+        socket?.off('handleForwardThunk');
+        socket?.off('error');
+      };
     }
-
-  }, [])
-
+  }, []);
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: isSafeSpot ? color : 'white' },
+        { backgroundColor: isSafeSpot ? color : 'white' }
       ]}
     >
       {isStartSpot && (
         <Iconicons name="star-outline" size={RFValue(12)} color="grey" />
       )}
-       
+
       {isArrowSpot && (
         <Iconicons
           name="arrow-forward-outline"
@@ -122,9 +105,9 @@ const Cell = ({ id, color = 'black' }) => {
                       ? '90deg'
                       : id == 51
                         ? '-90deg'
-                        : '0deg',
-              },
-            ],
+                        : '0deg'
+              }
+            ]
           }}
           size={RFValue(12)}
           color={color}
@@ -132,19 +115,26 @@ const Cell = ({ id, color = 'black' }) => {
       )}
 
       {piecesAtPosition.map((piece, index) => {
-        const playerNo =
-          piece.id.startsWith('A') ? 1 :
-            piece.id.startsWith('B') ? 2 :
-              piece.id.startsWith('C') ? 3 : 4;
+        const playerNo = piece.id.startsWith('A')
+          ? 1
+          : piece.id.startsWith('B')
+            ? 2
+            : piece.id.startsWith('C')
+              ? 3
+              : 4;
 
         const playerPieces = allPlayersPieces[`player${playerNo}`];
 
-        const pieceColor =
-          piece.id.startsWith('A') ? Colors.red :
-            piece.id.startsWith('B') ? Colors.green :
-              piece.id.startsWith('C') ? Colors.yellow : Colors.blue;
+        const pieceColor = piece.id.startsWith('A')
+          ? Colors.red
+          : piece.id.startsWith('B')
+            ? Colors.green
+            : piece.id.startsWith('C')
+              ? Colors.yellow
+              : Colors.blue;
 
-        const isCellEnabled = playerNo === currentPlayerCellSelection && isDiceRolled;
+        const isCellEnabled =
+          playerNo === currentPlayerCellSelection && isDiceRolled;
         const forwardable = isForwardable(piece, playerPieces);
 
         return (
@@ -154,42 +144,43 @@ const Cell = ({ id, color = 'black' }) => {
               styles.pileContainer,
               {
                 transform: [
-                  { scale: piecesAtPosition.length === 1 ? 1 : isCellEnabled && forwardable ? 1 : 0.7 },
+                  {
+                    scale:
+                      piecesAtPosition.length === 1
+                        ? 1
+                        : isCellEnabled && forwardable
+                          ? 1
+                          : 0.7
+                  },
                   {
                     translateX:
                       piecesAtPosition.length === 1
                         ? 0
                         : index % 2 === 0
                           ? -6
-                          : 6,
+                          : 6
                   },
                   {
                     translateY:
-                      piecesAtPosition.length === 1
-                        ? 0
-                        : index < 2
-                          ? -6
-                          : 6,
-                  },
-                ],
-              },
+                      piecesAtPosition.length === 1 ? 0 : index < 2 ? -6 : 6
+                  }
+                ]
+              }
             ]}
           >
-            
-            {
-
-              activePlayPlayers?.includes(playerNo) && <Pile
+            {activePlayPlayers?.includes(playerNo) && (
+              <Pile
                 cell={true}
                 player={playerNo}
                 onPress={() => handlePress(playerNo, piece.id)}
                 pieceId={piece.id}
                 color={pieceColor}
               />
-            }
-
+            )}
           </View>
         );
       })}
+      <Text>{id}</Text>
     </View>
   );
 };
@@ -201,14 +192,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   pileContainer: {
     position: 'absolute',
     top: 0,
     bottom: 0,
-    zIndex: 99,
-  },
+    zIndex: 99
+  }
 });
 
 export default Cell;
