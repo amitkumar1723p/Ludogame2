@@ -8,7 +8,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Svg, Circle } from 'react-native-svg';
 import { Colors } from '../constants/Colors';
 
@@ -17,49 +17,57 @@ import PileRed from '../assets/images/piles/red.png';
 import PileBlue from '../assets/images/piles/blue.png';
 import PileYellow from '../assets/images/piles/yellow.png';
 import { useSelector } from 'react-redux';
-import { selectPocketPileSelection, selectCellSelection, selectDiceNo } from '../redux/reducers/gameSelectors';
+import { selectPocketPileSelection, selectCellSelection, selectDiceNo, selectDiceRolled, selectPlayer3, selectCurrentPosition, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
+import { findBestMove, findBestMoveAdvanced, findBestMoveUnbeatable } from '../redux/reducers/gameAction'; // path adjust करना
+import { useRoute } from '@react-navigation/native';
 
 
-const Pile = ({ cell, pieceId, color, player, onPress }) => {
-  //  console.log(cell ,pieceId ,color ,player ,onPress ,"============================cell=========PieceId====S========color=========player")
-  //  console.log(cell ,pieceId ,color ,player ,onPress ,"Hello") 
+const Pile = ({ cell, pieceId, color, player, onPress   }) => {
+
+
+
+
+  const player3 = useSelector(selectPlayer3);
+
+
+
+
+
 
   const rotation = useRef(new Animated.Value(0)).current;
   const currentPlayerPileSelection = useSelector(selectPocketPileSelection);
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
+  const gameType = useSelector(state => state.game?.gameType
+  );
+  const isDiceRolled = useSelector(selectDiceRolled);
 
-  //  console.log(playerPieces)
-
-
-
+  const currentPositions = useSelector(selectCurrentPosition);
   const isPileEnabled = useMemo(
     () => player == currentPlayerPileSelection,
     [player, currentPlayerPileSelection],
   );
-  // const isCellEnabled = useMemo( 
-  //   () => player === currentPlayerCellSelection,
-  //      [player, currentPlayerPileSelection],
-  // );
-
-  const isCellEnabled = useMemo(() => player === currentPlayerCellSelection, [player, currentPlayerCellSelection]);
 
 
-  //   console.log(pieceId)
-  // console.log(playerPieces ,"player")
+
+  const isCellEnabled = useMemo(
+    () => player === currentPlayerCellSelection && isDiceRolled === true,
+    [isDiceRolled, player, currentPlayerCellSelection]
+  );
+
+
+
 
   const isForwardable = useCallback(() => {
+
     const piece = playerPieces?.find(item => item.id === pieceId);
     return piece && piece.travelCount + diceNo <= 57;
   }, [playerPieces, diceNo, pieceId]);
 
-  // const isForwardable = useCallback(() => {
-  //   const piece = playerPieces?.find(item => item.id === pieceId);
-  //   if (!piece) return false;
-  //   return piece.travelCount + diceNo <= 57;
-  // }, [playerPieces, diceNo, pieceId]);
-  // console.log(isForwardable() ,isCellEnabled ,"isCellEnabled && isForwadable")
+
+
+
 
 
 
@@ -78,19 +86,27 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     }
   }, [color]);
 
-  useEffect(() => {
-    const rotateAnimation = Animated.loop(
-      Animated.timing(rotation, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    );
 
-    rotateAnimation.start();
-    return () => rotateAnimation.stop();
-  }, [rotation]);
+
+
+
+  const isHighlighted = cell ? (isCellEnabled && isForwardable()) : isPileEnabled;
+
+  useEffect(() => {
+    if (isHighlighted) {
+      rotation.setValue(0); // Reset
+      const rotateAnimation = Animated.loop(
+        Animated.timing(rotation, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      );
+      rotateAnimation.start();
+      return () => rotateAnimation.stop();
+    }
+  }, [rotation, isHighlighted]);
 
   const rotateInterpolate = useMemo(
     () =>
@@ -103,27 +119,89 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
   );
 
 
-  // const rotateInterpolate = useMemo(
-  //   () =>
-  //     rotation.rotateInterpolate({
-  //       inputRange: [0, 1],
-  //       outputRange: ['0deg', '360deg'],
-  //     }),
-
-  //   [rotation],
-  // );
 
 
 
 
 
 
+  const currentPlayerChance = useSelector(selectCurrentPlayerChance);
+  const player1 = useSelector(state => state.game.player1);
+  const player2 = useSelector(state => state.game.player2);
+  const player4 = useSelector(state => state.game.player4);
+
+  useEffect(() => {
+    if (
+      gameType === 'UserVsComp' &&
+      player === 3 &&
+      isDiceRolled &&
+      currentPlayerChance == 3
+
+    ) {
+      // const opponentPieces = currentPositions.filter(p => !p.id.startsWith('C'));
+
+      // const bestMove = findBestMove({
+      //   playerPieces: player3,
+      //   dice: diceNo,
+      //   playerNo: 3,
+      //   opponentPieces,
+      // });
+
+      const bestMove = findBestMoveUnbeatable({
+        playerPieces: player3,             // ✅ Already declared
+        dice: diceNo,                      // ✅ Dice rolled
+        playerNo: 3,                       // ✅ Computer's player number
+        opponentPieces: [...player1, ...player2, ...player4], // ✅ Flatten all opponents
+        allOpponentsActive: [
+          { playerNo: 1, unlocked: true },
+          { playerNo: 2, unlocked: true },
+          { playerNo: 4, unlocked: true }
+        ]
+      });
+
+      // ✅ AI move on cell selection
+      if (cell && isCellEnabled && pieceId === bestMove) {
+        onPress(pieceId);
+      }
+
+      // ✅ AI move on pile selection (unlock new piece)
+      if (!cell && isPileEnabled && pieceId === bestMove) {
+        onPress(pieceId);
+      }
+    }
+  }, [
+    gameType,
+    player,
+    cell,
+    pieceId,
+    isCellEnabled,
+    isPileEnabled,
+    player3,
+    isDiceRolled,
+    diceNo,
+    onPress,
+    currentPositions, // ⬅️ Important dependency
+    currentPlayerChance,
+  ]);
+
+
+  const route = useRoute();
+  const { roomId, players , mePosition } = route.params || {}
+  
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       style={styles.container}
-      disabled={!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)}
+      disabled={
+        (!(cell ? (isCellEnabled && isForwardable()) : isPileEnabled)) ||
+        (gameType === 'UserVsComp' && player === 3) || (
+          gameType === 'Online' &&mePosition.position==player ?false:true
+        ) 
+      } 
       onPress={onPress}
+
+
+
 
     >
       <View style={styles.holloCircle}>
@@ -181,6 +259,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
+
   },
   dashedCircleContainer: {
     position: 'absolute',

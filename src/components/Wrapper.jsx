@@ -1,5 +1,5 @@
-import {View, Text, ImageBackground, StyleSheet} from 'react-native';
-import React, {Children} from 'react';
+import { ImageBackground, StyleSheet} from 'react-native';
+import React from 'react';
 import BG from '../assets/images/bg.jpeg';
 import {deviceHeight, deviceWidth} from '../constants/Scaling.js';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -12,7 +12,7 @@ const Wrapper = ({children, style}) => {
       <SafeAreaView style={[styles.SafeAreaView, style]}>
         {children}
       </SafeAreaView>
-    </ImageBackground>
+      </ImageBackground>
   );
 };
 

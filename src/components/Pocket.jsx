@@ -1,14 +1,28 @@
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Colors } from '../constants/Colors';
 import Pile from './Pile';
 import { startingPoints } from '../helpers/PlotData';
 import { unfreezeDice, updatePlayerPieceValue } from '../redux/reducers/gameSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { activePlayer, selectCurrentPlayerChance } from '../redux/reducers/gameSelectors';
+import { useRoute } from '@react-navigation/native';
+import { getSocket } from '../socket/socket';
 const Pocket = ({ color, player, data }) => {
+  const socket = getSocket()
+  const gameType = useSelector(state => state.game?.gameType)
+  const route = useRoute();
+  const { roomId, players } = route.params || {}
+  const clickLockRef = useRef(false);
+
   const dispatch = useDispatch();
   const handlePress = async (value) => {
+    if (gameType == "Online") {
+      if (clickLockRef.current) return; // prevent multiple fast clicks
+      clickLockRef.current = true
+    }
 
+     console.log("gameType Pocket HandelPRess" , gameType)
     let playerNo = value?.id?.slice(0, 1);
 
 
@@ -29,17 +43,65 @@ const Pocket = ({ color, player, data }) => {
 
 
 
-    dispatch(updatePlayerPieceValue({
-      playerNo: playerNo,
-      pieceId: value.id,
-      pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1],
-      travelCount: 1,
-    }))
 
-    dispatch(unfreezeDice())
+    if (gameType == "Online") {
+
+      socket.emit('PileEnableFromPocket', {
+        roomId: roomId,  // from redux or props
+        playerNo: playerNo,
+        pieceId: value.id,
+        travelCount: 1,
+        pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1]
+      });
+
+    } else {
+
+      dispatch(updatePlayerPieceValue({
+        playerNo: playerNo,
+        pieceId: value.id,
+        pos: startingPoints[parseInt(playerNo.match(/\d+/)[0], 10) - 1],
+        travelCount: 1,
+      }))
+
+      dispatch(unfreezeDice())
+    }
+
+
 
 
   }
+
+  // Online Play Ludo Logic 
+  useEffect(() => {
+    if (gameType == "Online") {
+      socket.on('PileEnableFromPocket', ({ playerNo, pieceId, pos, travelCount }) => {
+
+        dispatch(updatePlayerPieceValue({
+          playerNo,
+          pieceId,
+          pos,
+          travelCount
+        }))
+        dispatch(unfreezeDice())
+
+        clickLockRef.current = false
+
+      });
+      socket.on('error', () => {
+        clickLockRef.current = false
+
+      });
+      return () => {
+        socket.off('PileEnableFromPocket')
+        socket.off('error')
+      }
+    }
+
+
+  }, [])
+  // Online Play Ludo Logic 
+
+
   return (
     <View style={[styles.container, { backgroundColor: color }]}>
 
@@ -74,18 +136,18 @@ export default memo(Pocket);
 }
 
 const Plot = ({ pieceNo, player, color, data, handlePress }) => {
+  const activePlayPlayers = useSelector(activePlayer);
+
+
+
   return (
     <View style={[styles.plot, { backgroundColor: color }]}>
 
 
-      {data && data[pieceNo]?.pos === 0 && <Pile player={player} color={color} onPress={() => {
+      {data && data[pieceNo]?.pos === 0 && activePlayPlayers?.includes(player) && <Pile player={player} color={color} pieceId={data[pieceNo]?.id} onPress={() => {
 
-
-
-        //  Alert.alert(`Player${player} pieceNo ${pieceNo},`)
         handlePress(data[pieceNo])
-        // Alert.alert(`PiceNO : ${pieceNo} && 
-        //   data[pieceNo] : ${data[pieceNo]}`)
+
       }} />}
 
     </View>

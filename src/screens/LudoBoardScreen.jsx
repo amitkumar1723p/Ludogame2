@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Alert,
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
@@ -17,11 +18,16 @@ import VerticalPath from '../components/path/VerticalPath';
 import HorizontalPath from '../components/path/HorizontalPath';
 import FourTriangles from '../components/FourTriangles';
 import StartGame from '../assets/images/start.png';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Colors } from '../constants/Colors';
 import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
-import { useSelector } from 'react-redux';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+
+import WinModal from '../components/WinModal';
 import {
+  selectCurrentPlayerChance,
   selectDiceTouch,
   selectPlayer1,
   selectPlayer2,
@@ -29,17 +35,41 @@ import {
   selectPlayer4,
   // selectPlayer4,
 } from '../redux/reducers/gameSelectors';
-const LudoBoardScreen = () => {
+import { playSound } from '../helpers/SoundUtility';
+import { announceWinner, ManageActivePlayer, PlayActivePlayer, resetGame, updatePlayerChance } from '../redux/reducers/gameSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { store } from '../redux/reducers/store';
+import { getSocket } from '../socket/socket';
+import { resetAndNavigate } from '../helpers/NavigationUtil';
 
+
+const LudoBoardScreen = () => {
+  console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
+  const route = useRoute();
+
+  // Dummy Room Data 
+  const currentPlayerChance = useSelector(selectCurrentPlayerChance);
+
+  const socket = getSocket()
+
+  const { roomId } = route.params || {}
+
+
+
+  const dispatch = useDispatch()
+  const insets = useSafeAreaInsets();
+
+  const winner = useSelector(state => state.game.winner);
   const player1 = useSelector(selectPlayer1);
   const player2 = useSelector(selectPlayer2);
   const player3 = useSelector(selectPlayer3);
   const player4 = useSelector(selectPlayer4);
+  const gameType = useSelector(state => state.game?.gameType);
   const isDiceTouch = useSelector(selectDiceTouch);
-  // const isDiceTouch = useSelector(selectDiceTouch);
   const opacity = useRef(new Animated.Value(1)).current;
   const [menuVisible, setMenuVisible] = useState(false);
   const handleMenuPress = useCallback(() => {
+    playSound('ui');
     setMenuVisible(true);
   }, []);
 
@@ -76,45 +106,121 @@ const LudoBoardScreen = () => {
     }
   }, []);
 
+
+
+
+
+  //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
+
+
+  useEffect(() => {
+
+    if (gameType == "Online") {
+
+      socket.on('gameOver', ({ winnerPlayer }) => {
+
+        dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
+        dispatch(ManageActivePlayer([winnerPlayer?.position]))
+        dispatch(announceWinner(winnerPlayer?.position));
+      })
+      socket.on('playerLeft', ({ currentPlayers, removePlayer }) => {
+        console.log(currentPlayerChance, "currentPlayerChance")
+        console.log(removePlayer, "removePlayer")
+        if (currentPlayerChance == removePlayer.position) {
+          dispatch(updatePlayerChance({ chancePlayer: currentPlayerChance + 1 }));
+
+        }
+
+        let activePlayer = currentPlayers.map((item) => item.position);
+
+
+        //  dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
+        dispatch(ManageActivePlayer(activePlayer))
+      })
+
+
+
+      socket.on('disconnect', () => {
+        socket.emit("leaveRoom", { roomId });
+        dispatch(resetGame({}));
+        resetAndNavigate('HomeScreen')
+      });
+
+
+
+
+      // setModalVisible(false)
+      // dispatch(resetGame({}));
+      // resetAndNavigate('HomeScreen')
+
+
+    }
+
+
+    return () => {
+      socket.off('gameOver')
+      socket.off('disconnect')
+      socket.off('playerLeft')
+    }
+  }, [])
+
+
+  //  / Soket Logic End ----------------------------------------------------
+
+
+
+
+
   return (
     <Wrapper>
-      <TouchableOpacity style={styles.menuIcon} onPress={handleMenuPress}>
+
+
+      {winner != null && <WinModal winner={winner} />}
+      {/* <WinModal winner={1} />  */}
+
+      <TouchableOpacity
+
+        style={[styles.menuIcon, { top: insets.top + 10 }]}
+
+        onPress={handleMenuPress}>
         <Image source={MenuIcon} style={styles.menuIconImage} />
       </TouchableOpacity>
 
       {/* <LudoBoad Screen Start  */}
 
       <View style={styles.container}>
-        <View  style={styles.flexRow}  pointerEvents={isDiceTouch ? 'none' : 'auto'}>
-          <Dice  color={Colors.green} player={2} data={player2}  />
-          <Dice color={Colors.yellow} player={3} data={player3} rotate={false}  />
+        <View style={styles.flexRow} pointerEvents={isDiceTouch ? 'none' : 'auto'}>
+          <Dice color={Colors.green} player={2} data={player2} />
+          <Dice color={Colors.yellow} player={3} data={player3} rotate={false} />
         </View>
         <View style={styles.ludoBoard}>
 
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
-           <Pocket color={Colors.green} player={2} data={player2} />
+            <Pocket color={Colors.green} player={2} data={player2} />
             <VerticalPath color={Colors.yellow} cells={Plot2Data} />
             <Pocket color={Colors.yellow} player={3} data={player3} />
           </View>
           <View style={styles.pathContainer}>
             <HorizontalPath color={Colors.green} cells={Plot1Data} />
-            <FourTriangles    
-             player1={1}
-              player2={2}
-              player3={3}
-              player4={4} />
+            <FourTriangles
+              player1={player1}
+              player2={player2}
+              player3={player3}
+              player4={player4} />
             <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>
-           <Pocket color={Colors.red} data={player1} player={1} />
+            <Pocket color={Colors.red} data={player1} player={1} />
             <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
-          <Pocket color={Colors.blue} data={player4} player={4} />
+            <Pocket color={Colors.blue} data={player4} player={4} />
           </View>
-          <View style={styles.flexRow}>
-            <Dice color={Colors.green} player={1} data={player1} />
-            <Dice  color={Colors.yellow} player={4} data={player4} />
-          </View>
+
+        </View>
+
+        <View style={styles.flexRow}>
+          <Dice color={Colors.green} player={1} data={player1} />
+          <Dice color={Colors.yellow} player={4} data={player4} />
         </View>
         {/* // ludobard end */}
       </View>
@@ -134,10 +240,14 @@ const LudoBoardScreen = () => {
 
       {menuVisible && (
         <MenuModal
+
+
+          ModalType={gameType == "Online" ? "OnlineGameModal" : "OfflineGameModal"}
           onPressHide={() => setMenuVisible(false)}
           visible={menuVisible}
         />
       )}
+
     </Wrapper>
   );
 };
@@ -150,12 +260,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: deviceHeight * 0.5,
     width: deviceWidth,
+    marginTop: deviceHeight * 0.08,
+
   },
   // LudoBoad Css end
 
   menuIcon: {
     position: 'absolute',
-    top: 60,
+    // top: 50,
+    // top: deviceHeight * 0.07,
+    //  top: insets.top, // ✅ safe & responsive
+
     left: 20,
   },
   menuIconImage: {
@@ -187,6 +302,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
   },
 });

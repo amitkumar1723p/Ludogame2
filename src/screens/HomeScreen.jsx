@@ -6,23 +6,47 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  Button,
 } from 'react-native';
 import Witch from '../assets/animation/witch.json';
-import React, {useCallback, useEffect, useRef} from 'react';
-import {useDispatch} from 'react-redux';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Wrapper from '../components/Wrapper';
 import Logo from '../assets/images/logo.png';
 import LottieView from 'lottie-react-native';
-import {deviceHeight, deviceWidth} from '../constants/Scaling';
+import { deviceHeight, deviceWidth } from '../constants/Scaling';
 import GradientButton from '../components/GradienthButton';
-import {navigate} from '../helpers/NavigationUtil';
+import { navigate } from '../helpers/NavigationUtil';
 import SoundPlayer from 'react-native-sound-player';
-import {playSound} from '../helpers/SoundUtility';
-import {resetGame} from '../redux/reducers/gameSlice';
+import { playSound } from '../helpers/SoundUtility';
+import { PlayActivePlayer, resetGame } from '../redux/reducers/gameSlice';
+import { useIsFocused } from '@react-navigation/native';
+
+import { useNavigation } from '@react-navigation/native';
+import { TextInput } from 'react-native-gesture-handler';
+import MenuModal from '../components/MenuModal.jsx';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
+  const Focoused = useIsFocused()
+  const [menuVisible, setMenuVisible] = useState(false);
+
+
+
+
+  // Soket Code 
+  const [roomId, setRoomId] = useState(''); // Store Room Id
+
+   const [PlayerName , setPlayerName] =useState('')
+  const navigation = useNavigation();
+
+
+ 
+
+
+
+ 
 
   useEffect(() => {
     const loopAnimation = () => {
@@ -98,23 +122,44 @@ const HomeScreen = () => {
   );
 
   const handleResumePress = useCallback(() => {
-    startGame();
+    
+    startGame({});
   }, []);
 
+
+ 
   const handleNewGamePress = useCallback(() => {
-    startGame(true);
+  setMenuVisible(true)
+ 
+
   }, []);
+
+  const UserVsComputerGameStart = useCallback(() => {
+    startGame({ isNew: true, PlayerActive: [1, 3], gameType: "UserVsComp" });
+
+ 
+  }, [])
 
   // Start new Game
-  const startGame = async (isNew = false) => {
+  const startGame = async ({ isNew = false, PlayerActive = {}, gameType = "default" }) => {
+     
+
     SoundPlayer.stop();
     if (isNew) {
-      dispatch(resetGame());
+      dispatch(resetGame({ PlayerActive, gameType }));
     }
+
+     
 
     navigate('LudoBoardScreen');
     playSound('game_start');
   };
+
+  useEffect(() => {
+    if (Focoused) {
+      playSound('home')
+    }
+  }, [Focoused])
   //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>
@@ -124,18 +169,22 @@ const HomeScreen = () => {
 
       {renderButton('RESUME', handleResumePress)}
       {renderButton('NEW GAME', handleNewGamePress)}
-      {renderButton('VS CPU', () => {
-        Alert.alert('Comming Soon! Click New Game');
-      })}
-      {renderButton('2 Vs 2', handleResumePress)}
+      {renderButton('VS CPU', UserVsComputerGameStart)}
+      {/* {renderButton('2 Vs 2', handleResumePress)} */}
       <Animated.View
         style={[
           styles.witchcontainer,
           {
-            transform: [{translateX: witchAnim}, {scaleX: scaleXAnim}],
+            transform: [{ translateX: witchAnim }, { scaleX: scaleXAnim }],
           },
         ]}>
-        <Pressable>
+        <Pressable onPress={() => {
+          const random = Math.floor(Math.random() * 3) + 1;
+          playSound(`girl${random}`)
+
+
+
+        }}>
           <LottieView
             hardwareAccelerationAndroid
             source={Witch}
@@ -146,6 +195,20 @@ const HomeScreen = () => {
         </Pressable>
       </Animated.View>
       <Text style={styles.artist}> Made By - Amit </Text>
+
+ {/* Socket code  ----start */}
+
+     
+ {/* Socket code  ----end */}
+
+  {menuVisible && (
+         <MenuModal
+           ModalType ={"HomeModal"}
+           startGame ={startGame} 
+           onPressHide={() => setMenuVisible(false)}
+           visible={menuVisible}
+         />
+       )}
     </Wrapper>
   );
 };
@@ -186,6 +249,6 @@ const styles = StyleSheet.create({
   witch: {
     height: 240,
     width: 240,
-    transform: [{rotate: '20deg'}],
+    transform: [{ rotate: '20deg' }],
   },
 });

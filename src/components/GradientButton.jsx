@@ -5,10 +5,11 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import {playSound} from '../helpers/SoundUtility';
 const iconSize = RFValue(18);
 
-const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
+const GradientButton = ({title, onPress, iconColor = '#d5be3e' , disable=false}) => {
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity
+      disabled={disable}
         activeOpacity={0.8}
         onPress={() => {
           playSound('ui');
