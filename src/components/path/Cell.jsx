@@ -180,7 +180,7 @@ const Cell = ({ id, color = 'black' }) => {
           </View>
         );
       })}
-      <Text>{id}</Text>
+      {/* <Text>{id}</Text> */}
     </View>
   );
 };
