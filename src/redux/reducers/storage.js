@@ -1,4 +1,4 @@
-import {MMKV} from 'react-native-mmkv';
+import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
 const reduxStorage = {
@@ -14,13 +14,13 @@ const reduxStorage = {
   removeItem: key => {
     storage.delete(key);
     return Promise.resolve();
-  },
+  }
 };
 
 
 
-// Online Game STorage 
- 
+// Online Game STorage
+
 
 export const saveRoomData = (room) => {
   storage.set('room', room);

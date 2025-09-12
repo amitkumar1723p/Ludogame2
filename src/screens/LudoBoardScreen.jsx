@@ -47,7 +47,7 @@ const LudoBoardScreen = () => {
   console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
   const route = useRoute();
 
-  // Dummy Room Data 
+  // Dummy Room Data
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
   const socket = getSocket()
@@ -124,8 +124,8 @@ const LudoBoardScreen = () => {
         dispatch(announceWinner(winnerPlayer?.position));
       })
       socket.on('playerLeft', ({ currentPlayers, removePlayer }) => {
-        console.log(currentPlayerChance, "currentPlayerChance")
-        console.log(removePlayer, "removePlayer")
+
+    
         if (currentPlayerChance == removePlayer.position) {
           dispatch(updatePlayerChance({ chancePlayer: currentPlayerChance + 1 }));
 
