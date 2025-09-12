@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Alert,
+  Alert
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
@@ -18,12 +18,20 @@ import VerticalPath from '../components/path/VerticalPath';
 import HorizontalPath from '../components/path/HorizontalPath';
 import FourTriangles from '../components/FourTriangles';
 import StartGame from '../assets/images/start.png';
-import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { Colors } from '../constants/Colors';
-import { Plot1Data, Plot2Data, Plot3Data, Plot4Data } from '../helpers/PlotData';
+import {
+  Plot1Data,
+  Plot2Data,
+  Plot3Data,
+  Plot4Data
+} from '../helpers/PlotData';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 
 import WinModal from '../components/WinModal';
 import {
@@ -32,16 +40,21 @@ import {
   selectPlayer1,
   selectPlayer2,
   selectPlayer3,
-  selectPlayer4,
+  selectPlayer4
   // selectPlayer4,
 } from '../redux/reducers/gameSelectors';
 import { playSound } from '../helpers/SoundUtility';
-import { announceWinner, ManageActivePlayer, PlayActivePlayer, resetGame, updatePlayerChance } from '../redux/reducers/gameSlice';
+import {
+  announceWinner,
+  ManageActivePlayer,
+  PlayActivePlayer,
+  resetGame,
+  updatePlayerChance
+} from '../redux/reducers/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '../redux/reducers/store';
 import { getSocket } from '../socket/socket';
 import { resetAndNavigate } from '../helpers/NavigationUtil';
-
 
 const LudoBoardScreen = () => {
   console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
@@ -50,13 +63,11 @@ const LudoBoardScreen = () => {
   // Dummy Room Data
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
 
-  const socket = getSocket()
+  const socket = getSocket();
 
-  const { roomId } = route.params || {}
+  const { roomId } = route.params || {};
 
-
-
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
 
   const winner = useSelector(state => state.game.winner);
@@ -84,14 +95,14 @@ const LudoBoardScreen = () => {
           Animated.timing(opacity, {
             toValue: 0,
             duration: 500,
-            useNativeDriver: true,
+            useNativeDriver: true
           }),
           Animated.timing(opacity, {
             toValue: 1,
             duration: 500,
-            useNativeDriver: true,
-          }),
-        ]),
+            useNativeDriver: true
+          })
+        ])
       );
       blinkAnimation.start();
       const timeout = setTimeout(() => {
@@ -106,95 +117,75 @@ const LudoBoardScreen = () => {
     }
   }, []);
 
-
-
-
-
   //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
 
-
   useEffect(() => {
-
-    if (gameType == "Online") {
-
+    if (gameType == 'Online') {
       socket.on('gameOver', ({ winnerPlayer }) => {
-
         dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
-        dispatch(ManageActivePlayer([winnerPlayer?.position]))
+        dispatch(ManageActivePlayer([winnerPlayer?.position]));
         dispatch(announceWinner(winnerPlayer?.position));
-      })
+      });
       socket.on('playerLeft', ({ currentPlayers, removePlayer }) => {
-
-    
         if (currentPlayerChance == removePlayer.position) {
-          dispatch(updatePlayerChance({ chancePlayer: currentPlayerChance + 1 }));
-
+          dispatch(
+            updatePlayerChance({ chancePlayer: currentPlayerChance + 1 })
+          );
         }
 
-        let activePlayer = currentPlayers.map((item) => item.position);
-
+        let activePlayer = currentPlayers.map(item => item.position);
 
         //  dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
-        dispatch(ManageActivePlayer(activePlayer))
-      })
-
-
-
-      socket.on('disconnect', () => {
-        socket.emit("leaveRoom", { roomId });
-        dispatch(resetGame({}));
-        resetAndNavigate('HomeScreen')
+        dispatch(ManageActivePlayer(activePlayer));
       });
 
-
-
+      socket.on('disconnect', () => {
+        socket.emit('leaveRoom', { roomId });
+        dispatch(resetGame({}));
+        resetAndNavigate('HomeScreen');
+      });
 
       // setModalVisible(false)
       // dispatch(resetGame({}));
       // resetAndNavigate('HomeScreen')
-
-
     }
-
 
     return () => {
-      socket?.off('gameOver')
-      socket?.off('disconnect')
-      socket?.off('playerLeft')
-    }
-  }, [])
-
+      socket?.off('gameOver');
+      socket?.off('disconnect');
+      socket?.off('playerLeft');
+    };
+  }, []);
 
   //  / Soket Logic End ----------------------------------------------------
 
-
-
-
-
   return (
     <Wrapper>
-
-
       {winner != null && <WinModal winner={winner} />}
-      {/* <WinModal winner={1} />  */}
 
       <TouchableOpacity
-
         style={[styles.menuIcon, { top: insets.top + 10 }]}
-
-        onPress={handleMenuPress}>
+        onPress={handleMenuPress}
+      >
         <Image source={MenuIcon} style={styles.menuIconImage} />
       </TouchableOpacity>
 
       {/* <LudoBoad Screen Start  */}
 
       <View style={styles.container}>
-        <View style={styles.flexRow} pointerEvents={isDiceTouch ? 'none' : 'auto'}>
+        <View
+          style={styles.flexRow}
+          pointerEvents={isDiceTouch ? 'none' : 'auto'}
+        >
           <Dice color={Colors.green} player={2} data={player2} />
-          <Dice color={Colors.yellow} player={3} data={player3} rotate={false} />
+          <Dice
+            color={Colors.yellow}
+            player={3}
+            data={player3}
+            rotate={false}
+          />
         </View>
         <View style={styles.ludoBoard}>
-
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
             <Pocket color={Colors.green} player={2} data={player2} />
@@ -207,7 +198,8 @@ const LudoBoardScreen = () => {
               player1={player1}
               player2={player2}
               player3={player3}
-              player4={player4} />
+              player4={player4}
+            />
             <HorizontalPath color={Colors.blue} cells={Plot3Data} />
           </View>
           <View style={styles.plotContainer}>
@@ -215,7 +207,6 @@ const LudoBoardScreen = () => {
             <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
             <Pocket color={Colors.blue} data={player4} player={4} />
           </View>
-
         </View>
 
         <View style={styles.flexRow}>
@@ -233,21 +224,20 @@ const LudoBoardScreen = () => {
             width: deviceHeight * 0.5,
             height: deviceHeight * 0.2,
             position: 'absolute',
-            opacity,
+            opacity
           }}
         />
       )}
 
       {menuVisible && (
         <MenuModal
-
-
-          ModalType={gameType == "Online" ? "OnlineGameModal" : "OfflineGameModal"}
+          ModalType={
+            gameType == 'Online' ? 'OnlineGameModal' : 'OfflineGameModal'
+          }
           onPressHide={() => setMenuVisible(false)}
           visible={menuVisible}
         />
       )}
-
     </Wrapper>
   );
 };
@@ -260,8 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: deviceHeight * 0.55,
     width: deviceWidth,
-    marginTop: deviceHeight * 0.08,
-
+    marginTop: deviceHeight * 0.08
   },
   // LudoBoad Css end
 
@@ -271,24 +260,24 @@ const styles = StyleSheet.create({
     // top: deviceHeight * 0.07,
     //  top: insets.top, // ✅ safe & responsive
 
-    left: 20,
+    left: 20
   },
   menuIconImage: {
     width: 30,
-    height: 40,
+    height: 40
   },
   ludoBoard: {
     width: '100%',
     height: '100%',
     alignSelf: 'center',
-    padding: 10,
+    padding: 10
   },
   plotContainer: {
     width: '100%',
     height: '40%',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    backgroundColor: '#ccc',
+    backgroundColor: '#ccc'
   },
 
   pathContainer: {
@@ -296,12 +285,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '20%',
     justifyContent: 'space-between',
-    backgroundColor: '#1E5162',
+    backgroundColor: '#1E5162'
   },
   flexRow: {
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 10,
-  },
+    paddingHorizontal: 10
+  }
 });

@@ -171,7 +171,7 @@ export const handleForwardThunk =
 
     let travelCount = beforePlayerPieces.travelCount;
 
-    // for (let i = 0; i < 10; i++) {
+    // for (let i = 0; i < 53; i++) {
     for (let i = 0; i < diceNo; i++) {
       const updatePosition = getState();
       const playerPiece = updatePosition.game[`player${playerNo}`].find(

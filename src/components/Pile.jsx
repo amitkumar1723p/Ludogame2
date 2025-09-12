@@ -163,11 +163,11 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
 
   function getSinglePieceId(currentPositions, pieceId) {
     // prefix nikal lo (first letter)
-    const prefix = pieceId.charAt(0);
+    const prefix = pieceId?.charAt(0);
 
     // us prefix ke saare pieces filter karo
     const relatedPieces = currentPositions.filter(
-      item => item.id.startsWith(prefix) && item.travelCount + diceNo <= 57
+      item => item?.id?.startsWith(prefix) && item.travelCount + diceNo <= 57
     );
 
     if (relatedPieces.length === 1) {
@@ -176,21 +176,52 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
     return false; // agar 0 ya multiple hain toh false
   }
   let singleId = getSinglePieceId(currentPositions, pieceId);
+  const CurrentPlayerPieces = useSelector(
+    state => state.game[`player${currentPlayerChance}`]
+  );
 
+  //  auto Pile Logic Start
 
+  const [enableAutoPileAferDice6, setenableAutoPileAferDice6] = useState(false);
+  useEffect(() => {
+    // if (diceNo != 6) return;
+    if (diceNo == 6) {
+      let matchCount = 0;
+      for (const piece of CurrentPlayerPieces) {
+        if (piece.travelCount + diceNo <= 57) {
+          matchCount++;
+        }
+      }
+      console.log(matchCount);
+      const result = matchCount === 1;
 
+      let enablePileDiceNUmber6 = result;
+      setenableAutoPileAferDice6(enablePileDiceNUmber6);
+    } else {
+      setenableAutoPileAferDice6(true);
+    }
 
+    // setenableAutoPileAferDice6(enablePileDiceNUmber6);
+  }, [CurrentPlayerPieces, diceNo]);
 
- 
   useEffect(() => {
     if (cell && isCellEnabled && isForwardable()) {
-      if (singleId !== false && diceNo != 6) {
+      if (singleId !== false && enableAutoPileAferDice6) {
         // fix
         onPress(pieceId);
       }
     }
-  }, [cell, isCellEnabled, isForwardable, isDiceRolled, pieceId, diceNo]);
+  }, [
+    cell,
+    isCellEnabled,
+    isForwardable,
+    isDiceRolled,
+    pieceId,
+    diceNo,
+    enableAutoPileAferDice6
+  ]);
 
+  //  auto Pile Logic End
   const route = useRoute();
   const { roomId, players, mePosition } = route.params || {};
 
@@ -217,7 +248,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
           isCellEnabled &&
           isForwardable() &&
           singleId !== false &&
-          diceNo != 6) || // fix
+          enableAutoPileAferDice6) || // fix
         (gameType === 'Online' && mePosition.position !== player)
       }
       onPress={onPress}

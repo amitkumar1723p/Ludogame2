@@ -154,7 +154,7 @@ const Pocket = ({ color, player, data }) => {
             {PlayerData.map((player, index) => (
               <View key={index} style={styles.playerTag}>
                 <Text style={styles.playerName}>
-                  {player?.PlayerName} {player.host ? '(Host) - You' : ''}
+                  {player?.PlayerName} {player.host ? '(Host) ' : ''}
                 </Text>
               </View>
             ))}

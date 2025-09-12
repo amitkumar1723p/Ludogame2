@@ -164,9 +164,11 @@ const Dice = React.memo(({ color, data, player }) => {
   }
 
   const handleDicePress = async () => {
-    const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    // const newDiceNo = getBiasedDiceRoll();
+    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    const newDiceNo = 6;
+    // const newDiceNo6 = getBiasedDiceRoll();
 
+    // simulate dice roll animationnpx react-native start --reset-cache
     // simulate dice roll animationnpx react-native start --reset-cache
 
     // dispatch(updateDiceNo({ diceNo: newDiceNo }));

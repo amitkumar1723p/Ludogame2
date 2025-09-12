@@ -19,154 +19,143 @@ import Pile from './Pile';
 import GradientButton from './GradientButton';
 
 const WinModal = ({ winner }) => {
+  const gameType = useSelector(state => state.game.gameType);
+  const PlayerActive = useSelector(state => state.game?.activePlayer);
 
-    const gameType = useSelector(state => state.game.gameType)
-    const PlayerActive = useSelector(state => state.game?.activePlayer)
+  const dispatch = useDispatch();
+  const [visible, setVisible] = useState(!!winner);
 
-    const dispatch = useDispatch();
-    const [visible, setVisible] = useState(!!winner);
+  useEffect(() => {
+    setVisible(!!winner);
+  }, [winner]);
 
-    useEffect(() => {
-        setVisible(!!winner);
-    }, [winner]);
+  const handleNewGame = () => {
+    dispatch(resetGame({ PlayerActive, gameType }));
 
-    const handleNewGame = () => {
+    dispatch(announceWinner(null));
+    playSound('game_start');
+  };
 
+  const handleHome = () => {
+    dispatch(resetGame({}));
+    dispatch(announceWinner(null));
+    resetAndNavigate('HomeScreen');
+  };
 
-        dispatch(resetGame({ PlayerActive, gameType }));
+  return (
+    <Modal
+      isVisible={visible}
+      backdropColor={'black'}
+      backdropOpacity={0.8}
+      animationIn="zoomIn"
+      animationOut="zoomOut"
+      onBackdropPress={handleHome}
+      onBackButtonPress={handleHome}
+      style={styles.modal}
+    >
+      <LinearGradient
+        colors={['#0f0c29', '#302b63', '#24243e']}
+        style={styles.gradientContainer}
+      >
+        <View style={styles.content}>
+          <View style={styles.pileContainer}>
+            <Pile player={winner} color={colorPlayer[winner - 1]} />
+          </View>
 
-        dispatch(announceWinner(null));
-        playSound('game_start');
-    };
+          <Text style={styles.congratsText}>
+            Congratulations! PLAYER {winner}
+          </Text>
 
-    const handleHome = () => {
-        dispatch(resetGame({}));
-        dispatch(announceWinner(null));
-        resetAndNavigate('HomeScreen');
-    };
+          <LottieView
+            autoPlay
+            loop={false}
+            source={Trophy}
+            style={styles.trophyAnimation}
+          />
 
-    return (
-        <Modal
-            isVisible={visible}
-            backdropColor={'black'}
-            backdropOpacity={0.8}
-            animationIn="zoomIn"
-            animationOut="zoomOut"
-            onBackdropPress={handleHome}
-            onBackButtonPress={handleHome}
-            style={styles.modal}
-        >
-            <LinearGradient
-                colors={['#0f0c29', '#302b63', '#24243e']}
-                style={styles.gradientContainer}
-            >
-                <View style={styles.content}>
-                    <View style={styles.pileContainer}>
-                        <Pile player={winner} color={colorPlayer[winner - 1]} />
-                    </View>
+          <LottieView
+            autoPlay
+            loop={true}
+            source={Firework}
+            style={styles.fireworkAnimation}
+          />
 
-                    <Text style={styles.congratsText}>
-                        Congratulations! PLAYER {winner}
-                    </Text>
+          {gameType != 'Online' ? (
+            <GradientButton title={'NEW GAME'} onPress={handleNewGame} />
+          ) : (
+            ''
+          )}
 
-                    <LottieView
-                        autoPlay
-                        loop={false}
-                        source={Trophy}
-                        style={styles.trophyAnimation}
-                    />
+          <GradientButton title={'HOME'} onPress={handleHome} />
+        </View>
+      </LinearGradient>
 
-                    <LottieView
-                        autoPlay
-                        loop={true}
-                        source={Firework}
-                        style={styles.fireworkAnimation}
-                    />
-
-
-                    {
-                        gameType != "Online" ? <GradientButton title={'NEW GAME'} onPress={handleNewGame} /> : ""
-                    }
-
-                    <GradientButton title={'HOME'} onPress={handleHome} />
-                </View>
-            </LinearGradient>
-
-            <LottieView
-                autoPlay
-                loop
-                source={HeartGirl}
-                style={styles.girlAnimation}
-            />
-        </Modal>
-    );
+      <LottieView
+        autoPlay
+        loop
+        source={HeartGirl}
+        style={styles.girlAnimation}
+      />
+    </Modal>
+  );
 };
 
 export default WinModal;
 
 const styles = StyleSheet.create({
-    modal: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 0, // important to make full-screen modal
-        // marginTop: 4
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 0 // important to make full-screen modal
+    // marginTop: 4
+  },
+  gradientContainer: {
+    borderRadius: 20,
+    width: '90%',
+    borderWidth: 2,
 
-
-    },
-    gradientContainer: {
-        borderRadius: 20,
-        width: '90%',
-        borderWidth: 2,
-
-        borderColor: 'gold',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 200
-
-
-
-
-
-
-    },
-    content: {
-        width: '100%',
-        alignItems: 'center',
-    },
-    pileContainer: {
-        marginTop: 20,
-        width: 90,
-        height: 20,
-        justifyContent: "center",
-        alignItems: 'center'
-    },
-    congratsText: {
-        fontSize: 18,
-        color: 'white',
-        fontFamily: 'Philosopher-Bold',
-        marginTop: 10,
-    },
-    trophyAnimation: {
-        height: 200,
-        width: 200,
-        marginTop: 20,
-    },
-    fireworkAnimation: {
-        height: 200,
-        width: 500,
-        position: 'absolute',
-        // zIndex: -1,
-        marginTop: 20,
-    },
-    girlAnimation: {
-
-        borderWidth: 2,
-        borderColor: 'red',
-        height: 500,
-        width: 380,
-        position: 'absolute',
-        bottom: -200,
-        right: -120,
-        zIndex: 99,
-    },
+    borderColor: 'gold',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 200
+  },
+  content: {
+    width: '100%',
+    alignItems: 'center'
+  },
+  pileContainer: {
+    marginTop: 20,
+    width: 90,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  congratsText: {
+    fontSize: 18,
+    color: 'white',
+    fontFamily: 'Philosopher-Bold',
+    marginTop: 10
+  },
+  trophyAnimation: {
+    height: 200,
+    width: 200,
+    marginTop: 20
+  },
+  fireworkAnimation: {
+    height: 200,
+    width: 500,
+    position: 'absolute',
+    // zIndex: -1,
+    marginTop: 20
+  },
+  girlAnimation: {
+    borderWidth: 2,
+    borderColor: 'red',
+    height: 500,
+    width: 380,
+    position: 'absolute',
+    bottom: -200,
+    right: -120,
+    zIndex: 99
+  }
 });
