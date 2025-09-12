@@ -198,15 +198,22 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
       let enablePileDiceNUmber6 = result;
       setenableAutoPileAferDice6(enablePileDiceNUmber6);
     } else {
-      setenableAutoPileAferDice6(true);
+      setenableAutoPileAferDice6(false);
     }
+
+    // else if ([1, 2, 3, 4, 5].includes(diceNo)) {
+    //   setenableAutoPileAferDice6(true);
+    //   console.log('dice is 1 se 5 tak');
+
+    //   //
+    // }
 
     // setenableAutoPileAferDice6(enablePileDiceNUmber6);
   }, [CurrentPlayerPieces, diceNo]);
-
+  console.log('enableAutoPileAferDice6', enableAutoPileAferDice6);
   useEffect(() => {
     if (cell && isCellEnabled && isForwardable()) {
-      if (singleId !== false && enableAutoPileAferDice6) {
+      if (singleId !== false && (enableAutoPileAferDice6 || diceNo !== 6)) {
         // fix
         onPress(pieceId);
       }
@@ -248,7 +255,7 @@ const Pile = ({ cell, pieceId, color, player, onPress }) => {
           isCellEnabled &&
           isForwardable() &&
           singleId !== false &&
-          enableAutoPileAferDice6) || // fix
+          (enableAutoPileAferDice6 || diceNo !== 6)) || // fix
         (gameType === 'Online' && mePosition.position !== player)
       }
       onPress={onPress}

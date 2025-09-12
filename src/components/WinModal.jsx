@@ -23,11 +23,12 @@ const WinModal = ({ winner }) => {
   const PlayerActive = useSelector(state => state.game?.activePlayer);
 
   const dispatch = useDispatch();
-  const [visible, setVisible] = useState(!!winner);
+  let winnerPlayer = PlayerActive?.length == 2 && winner == 3 ? 2 : winner;
+  const [visible, setVisible] = useState(!!winnerPlayer);
 
   useEffect(() => {
-    setVisible(!!winner);
-  }, [winner]);
+    setVisible(!!winnerPlayer);
+  }, [winnerPlayer]);
 
   const handleNewGame = () => {
     dispatch(resetGame({ PlayerActive, gameType }));
@@ -59,11 +60,11 @@ const WinModal = ({ winner }) => {
       >
         <View style={styles.content}>
           <View style={styles.pileContainer}>
-            <Pile player={winner} color={colorPlayer[winner - 1]} />
+            <Pile player={winnerPlayer} color={colorPlayer[winnerPlayer - 1]} />
           </View>
 
           <Text style={styles.congratsText}>
-            Congratulations! PLAYER {winner}
+            Congratulations! PLAYER {winnerPlayer}
           </Text>
 
           <LottieView
