@@ -30,7 +30,6 @@ const RoomModal = ({ visible, onClose }) => {
     // ✅ Create Room
     const handleCreateRoom = () => {
 
-       
 
         if (!PlayerName.trim()) {
             Alert.alert("Error", "Please enter your name");
@@ -74,7 +73,7 @@ const RoomModal = ({ visible, onClose }) => {
             if (response.success) {
                     //   dispatch(setUserCurrentRoomData(response.room))
                 navigation.navigate('RoomScreen', { RoomData: response.room });
-                
+
             } else {
 
                 Alert.alert(response.error || 'Failed to join room');

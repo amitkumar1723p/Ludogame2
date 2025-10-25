@@ -6,7 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Alert,
-  Button,
+  Button
 } from 'react-native';
 import Witch from '../assets/animation/witch.json';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,28 +25,19 @@ import { useIsFocused } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-gesture-handler';
 import MenuModal from '../components/MenuModal.jsx';
+import BannerAdds from '../components/AddComponents/BannerAdds.jsx';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   const scaleXAnim = useRef(new Animated.Value(-1)).current;
-  const Focoused = useIsFocused()
+  const Focoused = useIsFocused();
   const [menuVisible, setMenuVisible] = useState(false);
 
-
-
-
-  // Soket Code 
+  // Soket Code
   const [roomId, setRoomId] = useState(''); // Store Room Id
 
-   const [PlayerName , setPlayerName] =useState('')
+  const [PlayerName, setPlayerName] = useState('');
   const navigation = useNavigation();
-
-
- 
-
-
-
- 
 
   useEffect(() => {
     const loopAnimation = () => {
@@ -56,13 +47,13 @@ const HomeScreen = () => {
             Animated.timing(witchAnim, {
               toValue: deviceWidth * 0.02,
               duration: 2000,
-              useNativeDriver: true,
+              useNativeDriver: true
             }),
             Animated.timing(scaleXAnim, {
               toValue: -1,
               duration: 0,
-              useNativeDriver: true,
-            }),
+              useNativeDriver: true
+            })
           ]),
           Animated.delay(3000), // 3 seconds delay ,
 
@@ -70,40 +61,40 @@ const HomeScreen = () => {
             Animated.timing(witchAnim, {
               toValue: deviceWidth * 2,
               duration: 8000,
-              useNativeDriver: true,
+              useNativeDriver: true
             }),
             Animated.timing(scaleXAnim, {
               toValue: -1,
               duration: 0,
-              useNativeDriver: true,
-            }),
+              useNativeDriver: true
+            })
           ]),
           Animated.parallel([
             Animated.timing(witchAnim, {
               toValue: deviceWidth * 0.05,
               duration: 3000,
-              useNativeDriver: true,
+              useNativeDriver: true
             }),
             Animated.timing(scaleXAnim, {
               toValue: 1,
               duration: 0,
-              useNativeDriver: true,
-            }),
+              useNativeDriver: true
+            })
           ]),
           Animated.delay(3000), // 3 seconds delay ,
           Animated.parallel([
             Animated.timing(witchAnim, {
               toValue: -deviceWidth * 2,
               duration: 8000,
-              useNativeDriver: true,
+              useNativeDriver: true
             }),
             Animated.timing(scaleXAnim, {
               toValue: 1,
               duration: 0,
-              useNativeDriver: true,
-            }),
-          ]),
-        ]),
+              useNativeDriver: true
+            })
+          ])
+        ])
       ).start();
     };
 
@@ -118,38 +109,31 @@ const HomeScreen = () => {
 
   const renderButton = useCallback(
     (title, onPress) => <GradientButton title={title} onPress={onPress} />,
-    [],
+    []
   );
 
   const handleResumePress = useCallback(() => {
-    
     startGame({});
   }, []);
 
-
- 
   const handleNewGamePress = useCallback(() => {
-  setMenuVisible(true)
- 
-
+    setMenuVisible(true);
   }, []);
 
   const UserVsComputerGameStart = useCallback(() => {
-    startGame({ isNew: true, PlayerActive: [1, 3], gameType: "UserVsComp" });
-
- 
-  }, [])
+    startGame({ isNew: true, PlayerActive: [1, 3], gameType: 'UserVsComp' });
+  }, []);
 
   // Start new Game
-  const startGame = async ({ isNew = false, PlayerActive = {}, gameType = "default" }) => {
-     
-
+  const startGame = async ({
+    isNew = false,
+    PlayerActive = {},
+    gameType = 'default'
+  }) => {
     SoundPlayer.stop();
     if (isNew) {
       dispatch(resetGame({ PlayerActive, gameType }));
     }
-
-     
 
     navigate('LudoBoardScreen');
     playSound('game_start');
@@ -157,9 +141,9 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (Focoused) {
-      playSound('home')
+      playSound('home');
     }
-  }, [Focoused])
+  }, [Focoused]);
   //  const renderButton =useCallback((title ,onPress)=>   )
   return (
     <Wrapper style={styles.mainContainer}>
@@ -175,16 +159,16 @@ const HomeScreen = () => {
         style={[
           styles.witchcontainer,
           {
-            transform: [{ translateX: witchAnim }, { scaleX: scaleXAnim }],
-          },
-        ]}>
-        <Pressable onPress={() => {
-          const random = Math.floor(Math.random() * 3) + 1;
-          playSound(`girl${random}`)
-
-
-
-        }}>
+            transform: [{ translateX: witchAnim }, { scaleX: scaleXAnim }]
+          }
+        ]}
+      >
+        <Pressable
+          onPress={() => {
+            const random = Math.floor(Math.random() * 3) + 1;
+            playSound(`girl${random}`);
+          }}
+        >
           <LottieView
             hardwareAccelerationAndroid
             source={Witch}
@@ -196,19 +180,22 @@ const HomeScreen = () => {
       </Animated.View>
       <Text style={styles.artist}> Made By - Amit </Text>
 
- {/* Socket code  ----start */}
+      {/* Socket code  ----start */}
 
-     
- {/* Socket code  ----end */}
+      {/* Socket code  ----end */}
 
-  {menuVisible && (
-         <MenuModal
-           ModalType ={"HomeModal"}
-           startGame ={startGame} 
-           onPressHide={() => setMenuVisible(false)}
-           visible={menuVisible}
-         />
-       )}
+      {menuVisible && (
+        <MenuModal
+          ModalType={'HomeModal'}
+          startGame={startGame}
+          onPressHide={() => setMenuVisible(false)}
+          visible={menuVisible}
+        />
+      )}
+
+      <View style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+        <BannerAdds />
+      </View>
     </Wrapper>
   );
 };
@@ -217,7 +204,7 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-start'
   },
   imgContainer: {
     width: deviceWidth * 0.6,
@@ -225,12 +212,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 40,
-    alignSelf: 'center',
+    alignSelf: 'center'
   },
   img: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'contain'
   },
 
   artist: {
@@ -238,17 +225,17 @@ const styles = StyleSheet.create({
     bottom: 40,
     color: 'white',
     opacity: 0.5,
-    fontStyle: 'italic',
+    fontStyle: 'italic'
   },
 
   witchcontainer: {
     position: 'absolute',
     top: '70%',
-    left: '24%',
+    left: '24%'
   },
   witch: {
     height: 240,
     width: 240,
-    transform: [{ rotate: '20deg' }],
-  },
+    transform: [{ rotate: '20deg' }]
+  }
 });
