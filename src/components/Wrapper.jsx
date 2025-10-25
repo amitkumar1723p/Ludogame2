@@ -1,23 +1,29 @@
-import { ImageBackground, StyleSheet} from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
 import React from 'react';
 import BG from '../assets/images/bg.jpeg';
-import {deviceHeight, deviceWidth} from '../constants/Scaling.js';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { deviceHeight, deviceWidth } from '../constants/Scaling.js';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-const Wrapper = ({children, style}) => {
-   
- 
+const Wrapper = ({ children, style }) => {
   return (
     <ImageBackground source={BG} resizeMode="cover" style={styles.container}>
-      <SafeAreaView style={[styles.SafeAreaView, style]}>
-        {children}
-      </SafeAreaView>
-      </ImageBackground>
+      <SafeAreaProvider>
+        <SafeAreaView style={[styles.SafeAreaView, style]}>
+          {children}
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, justifyContent: 'center', alignItems: 'center'},
-  SafeAreaView: {flex: 1, height: deviceHeight, width: deviceWidth ,justifyContent:"center" ,alignItems:"center"},
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  SafeAreaView: {
+    flex: 1,
+    height: deviceHeight,
+    width: deviceWidth,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });
 export default Wrapper;

@@ -54,10 +54,13 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '../redux/reducers/store';
 import { getSocket } from '../socket/socket';
-import { resetAndNavigate } from '../helpers/NavigationUtil';
+import { goBack, resetAndNavigate } from '../helpers/NavigationUtil';
+import BannerAdds from '../components/AddComponents/BannerAdds';
+import { BannerAdSize } from 'react-native-google-mobile-ads';
+import InterstitialAdComponent from '../components/AddComponents/InterstitialAd';
 
 const LudoBoardScreen = () => {
-  console.log('🧠 Full Redux Store at launch:', store.getState()); // ✅ This wor
+  const [showAd, setShowAd] = useState(false);
   const route = useRoute();
 
   // Dummy Room Data
@@ -115,6 +118,10 @@ const LudoBoardScreen = () => {
         blinkAnimation.stop();
       };
     }
+
+    return () => {
+      setShowAd(true);
+    };
   }, []);
 
   //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
@@ -161,6 +168,14 @@ const LudoBoardScreen = () => {
 
   return (
     <Wrapper>
+      <BannerAdds
+        size={BannerAdSize.FLUID}
+        style={{
+          position: 'absolute',
+          zIndex: -1,
+          top: insets.top
+        }}
+      />
       {winner != null && <WinModal winner={winner} />}
 
       <TouchableOpacity
@@ -236,6 +251,15 @@ const LudoBoardScreen = () => {
           }
           onPressHide={() => setMenuVisible(false)}
           visible={menuVisible}
+        />
+      )}
+      {showAd && (
+        <InterstitialAdComponent
+          showAd={showAd}
+          onAdClosed={() => {
+            setShowAd(false);
+            goBack();
+          }}
         />
       )}
     </Wrapper>

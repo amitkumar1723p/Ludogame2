@@ -6,7 +6,8 @@ import {
   Pressable,
   StyleSheet,
   Alert,
-  Button
+  Button,
+  useWindowDimensions
 } from 'react-native';
 import Witch from '../assets/animation/witch.json';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -26,6 +27,8 @@ import { useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native-gesture-handler';
 import MenuModal from '../components/MenuModal.jsx';
 import BannerAdds from '../components/AddComponents/BannerAdds.jsx';
+import { BannerAdSize } from 'react-native-google-mobile-ads';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
@@ -144,9 +147,14 @@ const HomeScreen = () => {
       playSound('home');
     }
   }, [Focoused]);
-  //  const renderButton =useCallback((title ,onPress)=>   )
+  const insets = useSafeAreaInsets(); // top, bottom, left, right
+  // const { width } = useWindowDimensions();
   return (
     <Wrapper style={styles.mainContainer}>
+      <BannerAdds
+        size={BannerAdSize.FLUID}
+        style={{ position: 'absolute', zIndex: 2, top: insets.top }}
+      />
       <View style={styles.imgContainer}>
         <Image source={Logo} style={styles.img} />
       </View>
@@ -178,7 +186,9 @@ const HomeScreen = () => {
           />
         </Pressable>
       </Animated.View>
-      <Text style={styles.artist}> Made By - Amit </Text>
+      <Text style={[styles.artist, { bottom: insets.bottom + 10 }]}>
+        Made By - Amit
+      </Text>
 
       {/* Socket code  ----start */}
 
@@ -193,9 +203,7 @@ const HomeScreen = () => {
         />
       )}
 
-      <View style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-        <BannerAdds />
-      </View>
+      {/* <View style={{ position: 'absolute', top: 0, width: '100%' }}></View> */}
     </Wrapper>
   );
 };
@@ -212,7 +220,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 40,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    position: 'relative'
   },
   img: {
     width: '100%',
