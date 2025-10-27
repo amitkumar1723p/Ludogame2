@@ -27,9 +27,9 @@ const WinModal = ({ winner }) => {
   let winnerPlayer = PlayerActive?.length == 2 && winner == 3 ? 2 : winner;
   const [visible, setVisible] = useState(!!winnerPlayer);
 
-  // useEffect(() => {
-  //   setVisible(!!winnerPlayer);
-  // }, [winnerPlayer]);
+  useEffect(() => {
+    setVisible(!!winnerPlayer);
+  }, [winnerPlayer]);
 
   useEffect(() => {
     setTimeout(() => {

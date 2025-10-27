@@ -180,8 +180,8 @@ const LudoBoardScreen = () => {
           top: insets.top
         }}
       />
-      {/* {winner != null && <WinModal winner={winner} />} */}
-      {<WinModal winner={true} />}
+      {winner != null && <WinModal winner={winner} />}
+      {/* {<WinModal winner={true} />} */}
 
       <TouchableOpacity
         style={[styles.menuIcon, { top: insets.top + 10 }]}
