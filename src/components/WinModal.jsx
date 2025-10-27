@@ -17,6 +17,7 @@ import Firework from '../assets/animation/firework.json';
 
 import Pile from './Pile';
 import GradientButton from './GradientButton';
+import { InterstitialAdShow } from '../redux/reducers/RoomSlice';
 
 const WinModal = ({ winner }) => {
   const gameType = useSelector(state => state.game.gameType);
@@ -26,9 +27,15 @@ const WinModal = ({ winner }) => {
   let winnerPlayer = PlayerActive?.length == 2 && winner == 3 ? 2 : winner;
   const [visible, setVisible] = useState(!!winnerPlayer);
 
+  // useEffect(() => {
+  //   setVisible(!!winnerPlayer);
+  // }, [winnerPlayer]);
+
   useEffect(() => {
-    setVisible(!!winnerPlayer);
-  }, [winnerPlayer]);
+    setTimeout(() => {
+      dispatch(InterstitialAdShow({ showAdd: true }));
+    }, 5 * 1000);
+  }, []);
 
   const handleNewGame = () => {
     dispatch(resetGame({ PlayerActive, gameType }));

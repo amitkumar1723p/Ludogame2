@@ -57,10 +57,9 @@ import { getSocket } from '../socket/socket';
 import { goBack, resetAndNavigate } from '../helpers/NavigationUtil';
 import BannerAdds from '../components/AddComponents/BannerAdds';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
-import InterstitialAdComponent from '../components/AddComponents/InterstitialAd';
+import { InterstitialAdShow } from '../redux/reducers/RoomSlice';
 
 const LudoBoardScreen = () => {
-  const [showAd, setShowAd] = useState(false);
   const route = useRoute();
 
   // Dummy Room Data
@@ -118,9 +117,13 @@ const LudoBoardScreen = () => {
         blinkAnimation.stop();
       };
     }
+  }, []);
 
+  useEffect(() => {
     return () => {
-      setShowAd(true);
+      dispatch(
+        InterstitialAdShow({ showAdd: true, navigateScreen: 'HomeScreen' })
+      );
     };
   }, []);
 
@@ -173,10 +176,12 @@ const LudoBoardScreen = () => {
         style={{
           position: 'absolute',
           zIndex: -1,
+          right: insets.right,
           top: insets.top
         }}
       />
-      {winner != null && <WinModal winner={winner} />}
+      {/* {winner != null && <WinModal winner={winner} />} */}
+      {<WinModal winner={true} />}
 
       <TouchableOpacity
         style={[styles.menuIcon, { top: insets.top + 10 }]}
@@ -251,15 +256,6 @@ const LudoBoardScreen = () => {
           }
           onPressHide={() => setMenuVisible(false)}
           visible={menuVisible}
-        />
-      )}
-      {showAd && (
-        <InterstitialAdComponent
-          showAd={showAd}
-          onAdClosed={() => {
-            setShowAd(false);
-            goBack();
-          }}
         />
       )}
     </Wrapper>

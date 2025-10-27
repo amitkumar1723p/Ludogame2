@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Witch from '../assets/animation/witch.json';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Wrapper from '../components/Wrapper';
 import Logo from '../assets/images/logo.png';
 import LottieView from 'lottie-react-native';
@@ -107,6 +107,7 @@ const HomeScreen = () => {
     };
 
     loopAnimation();
+
     return cleanupAnimation;
   }, []);
 
@@ -137,14 +138,24 @@ const HomeScreen = () => {
     if (isNew) {
       dispatch(resetGame({ PlayerActive, gameType }));
     }
-
+    setMenuVisible(false);
     navigate('LudoBoardScreen');
     playSound('game_start');
   };
 
+  const { showAdd, navigateScreen } = useSelector(state => {
+    return state.room;
+  });
+  // const [ ,setPlayHomeSound] = useState(false)
   useEffect(() => {
-    if (Focoused) {
+    if (Focoused && !showAdd) {
       playSound('home');
+
+      const timer = setTimeout(() => {
+        SoundPlayer.stop(); // ✅ sound stop after 3 seconds
+      }, 3000);
+
+      return () => clearTimeout(timer); // cleanup jab component unmount ho
     }
   }, [Focoused]);
   const insets = useSafeAreaInsets(); // top, bottom, left, right

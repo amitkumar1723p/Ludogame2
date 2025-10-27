@@ -12,6 +12,8 @@ import RoomModal from './RoomModal';
 import { connectSocket, getSocket } from '../socket/socket.js'; // 👈 import
 import { useRoute } from '@react-navigation/native';
 import OfflinePlayerModal from './PlayerModal.jsx';
+import SoundPlayer from 'react-native-sound-player';
+import { InterstitialAdShow } from '../redux/reducers/RoomSlice.js';
 
 const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
   const route = useRoute();
@@ -29,6 +31,7 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
   }, [dispatch, onPressHide]);
 
   const handleHome = useCallback(() => {
+    // dispatch(InterstitialAdShow({ showAdd: true }));
     goBack();
   }, []);
 
