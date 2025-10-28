@@ -220,29 +220,7 @@ const RoomScreen = () => {
         </Text>
 
         <FlatList
-          data={[
-            {
-              PlayerSocketId: 'PlayerSocketId',
-              position: 'position',
-              PlayerName: 'PlayerName'
-            },
-            {
-              PlayerSocketId: 'PlayerSocketId',
-              position: 'position',
-              PlayerName: 'PlayerName'
-            },
-            {
-              PlayerSocketId: 'PlayerSocketId',
-              position: 'position',
-              PlayerName: 'PlayerName'
-            },
-            {
-              PlayerSocketId: 'PlayerSocketId',
-              position: 'position',
-              PlayerName: 'PlayerName'
-            }
-          ]}
-          // data={players}
+          data={players}
           keyExtractor={item => item.PlayerSocketId}
           renderItem={({ item }) => (
             <View style={styles.playerCard}>

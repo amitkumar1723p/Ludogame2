@@ -28,7 +28,7 @@ const RoomModal = ({ visible, onClose }) => {
 
   // ✅ Create Room
   const handleCreateRoom = () => {
-    o;
+
 
     if (!PlayerName.trim()) {
       Alert.alert('Error', 'Please enter your name');

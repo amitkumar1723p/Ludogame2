@@ -150,7 +150,7 @@ const HomeScreen = () => {
   useEffect(() => {
     if (Focoused && !showAdd) {
       playSound('home');
-
+      Alert.alert('play song');
       const timer = setTimeout(() => {
         SoundPlayer.stop(); // ✅ sound stop after 3 seconds
       }, 3000);
