@@ -1,34 +1,30 @@
+import { useIsFocused } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
   Animated,
+  Image,
   Pressable,
   StyleSheet,
-  Alert,
-  Button,
-  useWindowDimensions
+  Text,
+  View
 } from 'react-native';
-import Witch from '../assets/animation/witch.json';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Wrapper from '../components/Wrapper';
-import Logo from '../assets/images/logo.png';
-import LottieView from 'lottie-react-native';
-import { deviceHeight, deviceWidth } from '../constants/Scaling';
-import GradientButton from '../components/GradienthButton';
-import { navigate } from '../helpers/NavigationUtil';
 import SoundPlayer from 'react-native-sound-player';
+import { useDispatch, useSelector } from 'react-redux';
+import Witch from '../assets/animation/witch.json';
+import Logo from '../assets/images/logo.png';
+import GradientButton from '../components/GradienthButton';
+import Wrapper from '../components/Wrapper';
+import { deviceHeight, deviceWidth } from '../constants/Scaling';
+import { navigate } from '../helpers/NavigationUtil';
 import { playSound } from '../helpers/SoundUtility';
-import { PlayActivePlayer, resetGame } from '../redux/reducers/gameSlice';
-import { useIsFocused } from '@react-navigation/native';
+import { resetGame } from '../redux/reducers/gameSlice';
 
 import { useNavigation } from '@react-navigation/native';
-import { TextInput } from 'react-native-gesture-handler';
-import MenuModal from '../components/MenuModal.jsx';
-import BannerAdds from '../components/AddComponents/BannerAdds.jsx';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BannerAdds from '../components/AddComponents/BannerAdds.jsx';
+import MenuModal from '../components/MenuModal.jsx';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
@@ -146,18 +142,24 @@ const HomeScreen = () => {
   const { showAdd, navigateScreen } = useSelector(state => {
     return state.room;
   });
+
   // const [ ,setPlayHomeSound] = useState(false)
   useEffect(() => {
-    if (Focoused && !showAdd) {
+    // console.log(showAdd, 'showAdd');
+    if (Focoused) {
       playSound('home');
-      Alert.alert('play song');
       const timer = setTimeout(() => {
         SoundPlayer.stop(); // ✅ sound stop after 3 seconds
       }, 3000);
 
       return () => clearTimeout(timer); // cleanup jab component unmount ho
     }
-  }, [Focoused]);
+
+    if (showAdd) {
+      SoundPlayer.stop();
+    }
+  }, [Focoused, showAdd]);
+
   const insets = useSafeAreaInsets(); // top, bottom, left, right
   // const { width } = useWindowDimensions();
   return (
