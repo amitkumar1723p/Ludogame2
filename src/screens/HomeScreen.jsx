@@ -148,7 +148,7 @@ const HomeScreen = () => {
   });
   // const [ ,setPlayHomeSound] = useState(false)
   useEffect(() => {
-    if (Focoused && !showAdd) {
+    if (Focoused) {
       playSound('home');
       const timer = setTimeout(() => {
         SoundPlayer.stop(); // ✅ sound stop after 3 seconds
@@ -157,6 +157,12 @@ const HomeScreen = () => {
       return () => clearTimeout(timer); // cleanup jab component unmount ho
     }
   }, [Focoused]);
+
+  useEffect(() => {
+    if (showAdd) {
+      SoundPlayer.stop();
+    }
+  }, [showAdd]);
   const insets = useSafeAreaInsets(); // top, bottom, left, right
   // const { width } = useWindowDimensions();
   return (
