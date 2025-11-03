@@ -27,8 +27,8 @@
 # Optional: Firebase or other specific SDKs (add rules as needed)
 
 # Keep MainActivity and MainApplication classes
--keep class com.awesomeproject.MainActivity { *; }
--keep class com.awesomeproject.MainApplication { *; }
+-keep class com.webpagewalla.ludogame.MainActivity { *; }
+-keep class com.webpagewalla.ludogame.MainApplication { *; }
 
 # Do not strip enum classes
 -keepclassmembers enum * {

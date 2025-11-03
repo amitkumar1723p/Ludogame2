@@ -24,10 +24,10 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     // 🆔 App package name (namespace)
-    namespace "com.awesomeproject"
+    namespace "com.webpagewalla.ludogame"
 
     defaultConfig {
-        applicationId "com.awesomeproject"
+        applicationId "com.webpagewalla.ludogame"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
