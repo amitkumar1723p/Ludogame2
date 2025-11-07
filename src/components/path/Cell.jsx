@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
+import Iconicons from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../../constants/Colors';
 import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
-import Iconicons from 'react-native-vector-icons/Ionicons';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   activePlayer,
   selectCellSelection,
@@ -13,11 +13,10 @@ import {
   selectDiceRolled
 } from '../../redux/reducers/gameSelectors';
 
-import { handleForwardThunk } from '../../redux/reducers/gameAction';
-import Pile from '../Pile';
 import { useRoute } from '@react-navigation/native';
+import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import { getSocket } from '../../socket/socket';
-import { playSound } from '../../helpers/SoundUtility';
+import Pile from '../Pile';
 
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();
@@ -64,22 +63,52 @@ const Cell = ({ id, color = 'black' }) => {
     return foundPiece && foundPiece.travelCount + diceNo <= 57;
   };
 
+  // useEffect(() => {
+  //   if (gameType == 'Online') {
+  //     socket.on('handleForwardThunk', ({ playerNo, pieceId, id }) => {
+  //       dispatch(handleForwardThunk(playerNo, pieceId, id));
+  //       clickCellLockRef.current = false;
+  //     });
+  //     socket.on('error', () => {
+  //       clickCellLockRef.current = false;
+  //     });
+
+  //     return () => {
+  //       socket?.off('handleForwardThunk');
+  //       socket?.off('error');
+  //     };
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (gameType == 'Online') {
+    if (gameType === 'Online' && socket) {
+      // 🧹 Clean old listeners before adding new
+      socket.off('handleForwardThunk');
+      socket.off('error');
+
+      let isLocked = false;
+
       socket.on('handleForwardThunk', ({ playerNo, pieceId, id }) => {
-        dispatch(handleForwardThunk(playerNo, pieceId, id));
-        clickCellLockRef.current = false;
+        // 🔒 Prevent double dispatch if event fires twice
+        if (isLocked) return;
+        isLocked = true;
+
+        dispatch(handleForwardThunk(playerNo, pieceId, id)).finally(() => {
+          clickCellLockRef.current = false;
+          isLocked = false;
+        });
       });
+
       socket.on('error', () => {
         clickCellLockRef.current = false;
       });
 
       return () => {
-        socket?.off('handleForwardThunk');
-        socket?.off('error');
+        socket.off('handleForwardThunk');
+        socket.off('error');
       };
     }
-  }, []);
+  }, [socket, gameType]);
 
   return (
     <View
