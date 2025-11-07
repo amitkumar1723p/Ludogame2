@@ -13,13 +13,10 @@ import {
 import Modal from 'react-native-modal';
 import { getSocket } from '../socket/socket.js';
 import { navigate } from '../helpers/NavigationUtil';
-import { useNavigation } from '@react-navigation/native';
-import { saveRoomData } from '../redux/reducers/storage.js';
 import { useDispatch } from 'react-redux';
 import { setUserCurrentRoomData } from '../redux/reducers/RoomSlice.js';
 
 const RoomModal = ({ visible, onClose }) => {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
   const socket = getSocket();
   const [PlayerName, setPlayerName] = useState('');
@@ -49,7 +46,7 @@ const RoomModal = ({ visible, onClose }) => {
           //  saveRoomData(response.room || {} );
 
           // dispatch(setUserCurrentRoomData(response.room))
-          navigation.navigate('RoomScreen', { RoomData: response.room });
+           navigate('RoomScreen', { RoomData: response.room });
 
           // onClose();
         } else {
@@ -70,7 +67,7 @@ const RoomModal = ({ visible, onClose }) => {
       setLoading(false);
       if (response.success) {
         //   dispatch(setUserCurrentRoomData(response.room))
-        navigation.navigate('RoomScreen', { RoomData: response.room });
+        navigate('RoomScreen', { RoomData: response.room });
       } else {
         Alert.alert(response.error || 'Failed to join room');
       }
