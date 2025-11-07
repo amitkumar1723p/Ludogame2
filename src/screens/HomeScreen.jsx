@@ -145,7 +145,6 @@ const HomeScreen = () => {
 
   // const [ ,setPlayHomeSound] = useState(false)
   useEffect(() => {
-    // console.log(showAdd, 'showAdd');
     if (Focoused) {
       playSound('home');
       const timer = setTimeout(() => {
