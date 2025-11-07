@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import {
   SafeSpots,
   StarSpots,
@@ -177,13 +176,19 @@ export const handleForwardThunk =
         item => item.id == id
       );
 
+      if (!playerPiece) break; // 🧠 safety check — agar piece mil hi nahi raha toh loop se bahar
+
       let path = playerPiece.pos + 1;
 
+      // 🌀 Turning point condition
       if (turningPoints.includes(path) && turningPoints[playerNo - 1] == path) {
         path = victoryStart[playerNo - 1];
       }
-      if (path == 53) {
+
+      // 🏁 If piece reached end path
+      if (path > 52 || path === 53) {
         path = 1;
+        break; // ✅ stop loop if path exceeds board range
       }
 
       finalPath = path;
@@ -199,7 +204,13 @@ export const handleForwardThunk =
       );
 
       playSound('pile_move');
-      await delay(200); // ✅ FIXED: valid delay
+
+      await delay(200);
+
+      // ✅ optional: agar kisi reason se stop karna hai (example — reached goal)
+      if (travelCount >= diceNo) {
+        break;
+      }
     }
 
     // ✅ Update state after movement

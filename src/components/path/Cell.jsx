@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
 import React, { useEffect, useMemo, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
+import Iconicons from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../../constants/Colors';
 import { ArrowSpot, SafeSpots, StarSpots } from '../../helpers/PlotData';
-import Iconicons from 'react-native-vector-icons/Ionicons';
-import { RFValue } from 'react-native-responsive-fontsize';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   activePlayer,
   selectCellSelection,
@@ -13,11 +13,10 @@ import {
   selectDiceRolled
 } from '../../redux/reducers/gameSelectors';
 
-import { handleForwardThunk } from '../../redux/reducers/gameAction';
-import Pile from '../Pile';
 import { useRoute } from '@react-navigation/native';
+import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import { getSocket } from '../../socket/socket';
-import { playSound } from '../../helpers/SoundUtility';
+import Pile from '../Pile';
 
 const Cell = ({ id, color = 'black' }) => {
   const dispatch = useDispatch();

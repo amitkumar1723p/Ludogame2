@@ -1,23 +1,21 @@
-
-
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
+  BackHandler,
   FlatList,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  Alert
+  View
 } from 'react-native';
-import { getSocket } from '../socket/socket';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { navigate } from '../helpers/NavigationUtil';
-import { getRoomData, saveRoomData } from '../redux/reducers/storage';
-import { resetGame } from '../redux/reducers/gameSlice';
-import { useDispatch } from 'react-redux';
-import Wrapper from '../components/Wrapper';
-import BannerAdds from '../components/AddComponents/BannerAdds.jsx';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
+import { useDispatch } from 'react-redux';
+import BannerAdds from '../components/AddComponents/BannerAdds.jsx';
+import ShareRoomButton from '../components/ShareRoomButton.jsx';
+import Wrapper from '../components/Wrapper';
+import { navigate } from '../helpers/NavigationUtil';
+import { resetGame } from '../redux/reducers/gameSlice';
+import { getSocket } from '../socket/socket';
 // const MAX_PLAYERS = 4;
 
 const RoomScreen = () => {
@@ -71,6 +69,25 @@ const RoomScreen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const backAction = () => {
+      // 🔹 Option 1: Navigate to previous screen
+      navigation.goBack();
+
+      // 🔹 Option 2 (Alternative): Navigate to a specific screen
+      // navigate('HomeScreen');
+
+      return true; // returning true disables default behavior (exit app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove(); // cleanup on unmount
+  }, []);
+
   function navigateToGameScreen(players, roomId, mePosition) {
     let activePlayer = players.map(item => item.position);
 
@@ -92,7 +109,10 @@ const RoomScreen = () => {
       <View style={styles.container}>
         {/* Room Header */}
         <Text style={styles.roomTitle}>🎲 Room ID</Text>
-        <Text style={styles.roomId}>{roomId}</Text>
+        <View style={styles.roomIdContainer}>
+          <Text style={styles.roomId}>{roomId}</Text>
+          <ShareRoomButton roomId={roomId} />
+        </View>
 
         {/* Players List */}
         <Text style={styles.subtitle}>
@@ -218,5 +238,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#aaa',
     fontSize: 16
+  },
+
+  roomIdContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 5
   }
 });
