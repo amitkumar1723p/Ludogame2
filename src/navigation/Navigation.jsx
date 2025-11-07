@@ -35,7 +35,6 @@ export default function Navigation() {
               headerShown: false
             })}
           />
-          {console.log(showAdd, 'showAdd')}
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="RoomScreen" component={RoomScreen} />
         </Stack.Navigator>

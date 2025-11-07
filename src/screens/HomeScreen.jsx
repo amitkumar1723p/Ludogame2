@@ -103,7 +103,6 @@ const HomeScreen = () => {
     };
 
     loopAnimation();
-
     return cleanupAnimation;
   }, []);
 

@@ -1,22 +1,20 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-  View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
-  StyleSheet,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform
+  View
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { getSocket } from '../socket/socket.js';
-import { navigate } from '../helpers/NavigationUtil';
-import { useNavigation } from '@react-navigation/native';
-import { saveRoomData } from '../redux/reducers/storage.js';
 import { useDispatch } from 'react-redux';
-import { setUserCurrentRoomData } from '../redux/reducers/RoomSlice.js';
+import { navigate } from '../helpers/NavigationUtil';
+import { getSocket } from '../socket/socket.js';
 
 const RoomModal = ({ visible, onClose }) => {
   const navigation = useNavigation();
@@ -28,8 +26,6 @@ const RoomModal = ({ visible, onClose }) => {
 
   // ✅ Create Room
   const handleCreateRoom = () => {
-
-
     if (!PlayerName.trim()) {
       Alert.alert('Error', 'Please enter your name');
       return;
@@ -46,12 +42,7 @@ const RoomModal = ({ visible, onClose }) => {
       response => {
         setLoading(false);
         if (response.success) {
-          //  saveRoomData(response.room || {} );
-
-          // dispatch(setUserCurrentRoomData(response.room))
-          navigation.navigate('RoomScreen', { RoomData: response.room });
-
-          // onClose();
+          navigate('RoomScreen', { RoomData: response.room });
         } else {
           Alert.alert(response.error || 'Failed to create room');
         }
@@ -69,8 +60,7 @@ const RoomModal = ({ visible, onClose }) => {
     socket.emit('joinRoom', { roomId, isNew: false, PlayerName }, response => {
       setLoading(false);
       if (response.success) {
-        //   dispatch(setUserCurrentRoomData(response.room))
-        navigation.navigate('RoomScreen', { RoomData: response.room });
+        navigate('RoomScreen', { RoomData: response.room });
       } else {
         Alert.alert(response.error || 'Failed to join room');
       }
