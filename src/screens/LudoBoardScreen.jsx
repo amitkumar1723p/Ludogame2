@@ -145,7 +145,6 @@ const LudoBoardScreen = () => {
 
         let activePlayer = currentPlayers.map(item => item.position);
 
-        //  dispatch(updatePlayerChance({ chancePlayer: winnerPlayer?.position }));
         dispatch(ManageActivePlayer(activePlayer));
       });
 
@@ -154,10 +153,6 @@ const LudoBoardScreen = () => {
         dispatch(resetGame({}));
         resetAndNavigate('HomeScreen');
       });
-
-      // setModalVisible(false)
-      // dispatch(resetGame({}));
-      // resetAndNavigate('HomeScreen')
     }
 
     return () => {
@@ -276,10 +271,6 @@ const styles = StyleSheet.create({
 
   menuIcon: {
     position: 'absolute',
-    // top: 50,
-    // top: deviceHeight * 0.07,
-    //  top: insets.top, // ✅ safe & responsive
-
     left: 20
   },
   menuIconImage: {

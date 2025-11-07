@@ -148,7 +148,7 @@ const HomeScreen = () => {
       playSound('home');
       const timer = setTimeout(() => {
         SoundPlayer.stop(); // ✅ sound stop after 3 seconds
-      }, 3000);
+      }, 2000);
 
       return () => clearTimeout(timer); // cleanup jab component unmount ho
     }
