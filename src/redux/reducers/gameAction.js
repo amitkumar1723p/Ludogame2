@@ -151,7 +151,7 @@ export const handleForwardThunk =
     const plottedPieces = selectCurrentPosition(state);
     const diceNo = selectDiceNo(state);
     const PlayerActive = state.game.activePlayer;
-
+    console.log('run handleThunk Funciton .... ');
     const piecesAtPosition = plottedPieces.filter(item => item.pos === pos);
 
     let alpha =
@@ -170,12 +170,14 @@ export const handleForwardThunk =
 
     let travelCount = beforePlayerPieces.travelCount;
     let count = diceNo;
+    console.log(diceNo, 'diceNO');
     for (let i = 0; i < diceNo; i++) {
-      if (count <= 0) {
-        break;
-      } else {
-        count = count - 1;
-      }
+      // console.log('run loopp......');
+      // if (count <= 0) {
+      //   break;
+      // } else {
+      //   count = count - 1;
+      // }
       const updatePosition = getState();
       const playerPiece = updatePosition.game[`player${playerNo}`].find(
         item => item.id == id

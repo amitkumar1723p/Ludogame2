@@ -32,9 +32,11 @@ const WinModal = ({ winner }) => {
   }, [winnerPlayer]);
 
   useEffect(() => {
+    playSound('cheer', true);
     setTimeout(() => {
       dispatch(InterstitialAdShow({ showAdd: true }));
-    }, 5 * 1000);
+      SoundPlayer.stop();
+    }, 7 * 1000);
   }, []);
 
   const handleNewGame = () => {

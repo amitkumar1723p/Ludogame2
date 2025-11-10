@@ -11,7 +11,6 @@ import { getSocket } from './src/socket/socket';
 import mobileAds from 'react-native-google-mobile-ads';
 const App = () => {
   const state = store.getState(); // direct store ka access
-
   const { UserCurrentRoomData } = state.room || {};
 
   useEffect(() => {

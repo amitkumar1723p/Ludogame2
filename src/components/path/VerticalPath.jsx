@@ -1,12 +1,11 @@
-import {View, Text} from 'react-native';
-import React, {useMemo} from 'react';
+import { View, Text } from 'react-native';
+import React, { useMemo } from 'react';
 import Cell from './Cell';
-const VerticalPath = ({cells , color}) => {
+const VerticalPath = ({ cells, color, clickCellLockRef }) => {
   const groupedCells = useMemo(() => {
     const groups = [];
     for (let index = 0; index < cells?.length; index += 3) {
-      groups.push(cells.slice(index, index + 3));  // 'i' ko 'index' se replace kiya
-    
+      groups.push(cells.slice(index, index + 3)); // 'i' ko 'index' se replace kiya
     }
     return groups;
   }, [cells]);
@@ -18,29 +17,30 @@ const VerticalPath = ({cells , color}) => {
         alignItems: 'center',
         width: '20%',
         height: '100%',
-        justifyContent: 'center',
-      }}>
+        justifyContent: 'center'
+      }}
+    >
       <View
         style={{
           flexDirection: 'column',
           width: '100%',
-          height: '100%',
-        }}>
+          height: '100%'
+        }}
+      >
         {groupedCells.map((group, groupIndex) => (
-          <View key={`group-${groupIndex}`} 
-          
-          style={{flexDirection: 'row', width: '33.3%', height: '16.7%'}}  >
+          <View
+            key={`group-${groupIndex}`}
+            style={{ flexDirection: 'row', width: '33.3%', height: '16.7%' }}
+          >
             {group.map((id, cellIndex) => (
-              <Cell  
-              key={`cell-${id}`}
-              cell={true}
-              id={id}
-              color={color}
-              
-              
+              <Cell
+                key={`cell-${id}`}
+                cell={true}
+                id={id}
+                color={color}
+                clickCellLockRef={clickCellLockRef}
               />
               // <Text key={cellIndex}>{cell}</Text>
-
             ))}
           </View>
         ))}
@@ -49,4 +49,4 @@ const VerticalPath = ({cells , color}) => {
   );
 };
 
-export default React.memo(VerticalPath) ;
+export default React.memo(VerticalPath);

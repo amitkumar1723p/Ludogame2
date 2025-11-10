@@ -46,6 +46,7 @@ const RoomScreen = () => {
 
     // ✅ Listen for room updates
     socket.on('roomUpdate', ({ players }) => {
+      console.log('roomupdate');
       setPlayers(players);
     });
 
@@ -132,7 +133,7 @@ const RoomScreen = () => {
           )}
         />
         {/* {currentPlayer ,"currentPlayer"} */}
-
+        {console.log(players, 'players')}
         {/* Controls Section */}
         <View style={styles.footer}>
           <BannerAdds size={BannerAdSize.FLUID} style={{ zIndex: 2 }} />

@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Alert
+  Alert,
+  BackHandler
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Wrapper from '../components/Wrapper';
@@ -58,6 +59,7 @@ import { goBack, resetAndNavigate } from '../helpers/NavigationUtil';
 import BannerAdds from '../components/AddComponents/BannerAdds';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
 import { InterstitialAdShow } from '../redux/reducers/RoomSlice';
+import { handleForwardThunk } from '../redux/reducers/gameAction';
 
 const LudoBoardScreen = () => {
   const route = useRoute();
@@ -124,7 +126,30 @@ const LudoBoardScreen = () => {
       dispatch(
         InterstitialAdShow({ showAdd: true, navigateScreen: 'HomeScreen' })
       );
+      if (gameType == 'Online') {
+        socket.emit('leaveRoom', { roomId });
+        dispatch(resetGame({}));
+      }
     };
+  }, []);
+  const clickCellLockRef = useRef(false);
+  useEffect(() => {
+    if (gameType == 'Online') {
+      // socket?.off('handleForwardThunk');
+      socket.on('handleForwardThunk', ({ playerNo, pieceId, id }) => {
+        console.log('click handleforward Thunk ............in cell component');
+        dispatch(handleForwardThunk(playerNo, pieceId, id));
+        clickCellLockRef.current = false;
+      });
+      socket.on('error', () => {
+        clickCellLockRef.current = false;
+      });
+
+      return () => {
+        socket?.off('handleForwardThunk');
+        socket?.off('error');
+      };
+    }
   }, []);
 
   //  Soket logic -----------------STart  like update acitve palyer updte dice number etc
@@ -160,6 +185,22 @@ const LudoBoardScreen = () => {
       socket?.off('disconnect');
       socket?.off('playerLeft');
     };
+  }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      // 🔹 Option 1: Navigate to previous screen
+      resetAndNavigate('HomeScreen');
+
+      return true; // returning true disables default behavior (exit app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove(); // cleanup on unmount
   }, []);
 
   //  / Soket Logic End ----------------------------------------------------
@@ -204,22 +245,39 @@ const LudoBoardScreen = () => {
           {/* // ludobard start */}
           <View style={styles.plotContainer}>
             <Pocket color={Colors.green} player={2} data={player2} />
-            <VerticalPath color={Colors.yellow} cells={Plot2Data} />
+            <VerticalPath
+              color={Colors.yellow}
+              cells={Plot2Data}
+              clickCellLockRef={clickCellLockRef}
+            />
             <Pocket color={Colors.yellow} player={3} data={player3} />
           </View>
           <View style={styles.pathContainer}>
-            <HorizontalPath color={Colors.green} cells={Plot1Data} />
+            <HorizontalPath
+              color={Colors.green}
+              cells={Plot1Data}
+              clickCellLockRef={clickCellLockRef}
+            />
             <FourTriangles
               player1={player1}
               player2={player2}
               player3={player3}
               player4={player4}
             />
-            <HorizontalPath color={Colors.blue} cells={Plot3Data} />
+            <HorizontalPath
+              color={Colors.blue}
+              cells={Plot3Data}
+              clickCellLockRef={clickCellLockRef}
+            />
           </View>
           <View style={styles.plotContainer}>
             <Pocket color={Colors.red} data={player1} player={1} />
-            <VerticalPath player={1} cells={Plot4Data} color={Colors.red} />
+            <VerticalPath
+              player={1}
+              cells={Plot4Data}
+              color={Colors.red}
+              clickCellLockRef={clickCellLockRef}
+            />
             <Pocket color={Colors.blue} data={player4} player={4} />
           </View>
         </View>

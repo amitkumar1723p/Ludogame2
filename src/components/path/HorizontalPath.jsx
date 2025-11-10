@@ -1,8 +1,8 @@
-import {View, Text} from 'react-native';
-import React, {useMemo} from 'react';
+import { View, Text } from 'react-native';
+import React, { useMemo } from 'react';
 import Cell from './Cell';
 
-const HorizontalPath = ({cells = [], color}) => {
+const HorizontalPath = ({ cells = [], color, clickCellLockRef }) => {
   const groupedCells = useMemo(() => {
     const groups = [];
 
@@ -18,15 +18,23 @@ const HorizontalPath = ({cells = [], color}) => {
         flexDirection: 'row',
         alignItems: 'center',
         width: '40%',
-        height: '100%',
-      }}>
-      <View style={{flexDirection: 'column', width: '100%', height: '100%'}}>
+        height: '100%'
+      }}
+    >
+      <View style={{ flexDirection: 'column', width: '100%', height: '100%' }}>
         {groupedCells.map((group, groupIndex) => (
           <View
             key={`group-${groupIndex}`}
-            style={{flexDirection: 'row', height: '33.3%', width: '16.7%'}}>
+            style={{ flexDirection: 'row', height: '33.3%', width: '16.7%' }}
+          >
             {group.map((id, cellIndex) => (
-              <Cell key={`cell-${id}`} cell={true} id={id} color={color} />
+              <Cell
+                key={`cell-${id}`}
+                cell={true}
+                id={id}
+                color={color}
+                clickCellLockRef={clickCellLockRef}
+              />
               // <Text key={cellIndex}>{cell}</Text>
             ))}
           </View>

@@ -145,10 +145,10 @@ const HomeScreen = () => {
   // const [ ,setPlayHomeSound] = useState(false)
   useEffect(() => {
     if (Focoused) {
-      playSound('home');
+      playSound('home'); // stop play sound
       const timer = setTimeout(() => {
         SoundPlayer.stop(); // ✅ sound stop after 3 seconds
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer); // cleanup jab component unmount ho
     }

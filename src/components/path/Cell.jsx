@@ -18,7 +18,7 @@ import { handleForwardThunk } from '../../redux/reducers/gameAction';
 import { getSocket } from '../../socket/socket';
 import Pile from '../Pile';
 
-const Cell = ({ id, color = 'black' }) => {
+const Cell = ({ id, color = 'black', clickCellLockRef }) => {
   const dispatch = useDispatch();
   const activePlayPlayers = useSelector(activePlayer);
   const socket = getSocket();
@@ -40,13 +40,13 @@ const Cell = ({ id, color = 'black' }) => {
   const route = useRoute();
   const { roomId, players } = route.params || {};
 
-  const clickCellLockRef = useRef(false);
+  // const clickCellLockRef = useRef(false);
 
   const handlePress = (playerNo, pieceId) => {
     if (gameType == 'Online') {
       if (clickCellLockRef.current) return; // prevent multiple fast clicks
       clickCellLockRef.current = true;
-
+      console.log('run  which time');
       socket.emit('handleForwardThunk', {
         roomId, //  from redux or props
         playerNo,
@@ -63,22 +63,24 @@ const Cell = ({ id, color = 'black' }) => {
     return foundPiece && foundPiece.travelCount + diceNo <= 57;
   };
 
-  useEffect(() => {
-    if (gameType == 'Online') {
-      socket.on('handleForwardThunk', ({ playerNo, pieceId, id }) => {
-        dispatch(handleForwardThunk(playerNo, pieceId, id));
-        clickCellLockRef.current = false;
-      });
-      socket.on('error', () => {
-        clickCellLockRef.current = false;
-      });
+  // useEffect(() => {
+  //   if (gameType == 'Online') {
+  //     // socket?.off('handleForwardThunk');
+  //     socket.on('handleForwardThunk', ({ playerNo, pieceId, id }) => {
+  //       console.log('click handleforward Thunk ............in cell component');
+  //       dispatch(handleForwardThunk(playerNo, pieceId, id));
+  //       clickCellLockRef.current = false;
+  //     });
+  //     socket.on('error', () => {
+  //       clickCellLockRef.current = false;
+  //     });
 
-      return () => {
-        socket?.off('handleForwardThunk');
-        socket?.off('error');
-      };
-    }
-  }, []);
+  //     return () => {
+  //       socket?.off('handleForwardThunk');
+  //       socket?.off('error');
+  //     };
+  //   }
+  // }, []);
 
   return (
     <View
@@ -171,7 +173,13 @@ const Cell = ({ id, color = 'black' }) => {
               <Pile
                 cell={true}
                 player={playerNo}
-                onPress={() => handlePress(playerNo, piece.id)}
+                onPress={() => {
+                  console.log(playerNo, piece.id);
+                  handlePress(playerNo, piece.id);
+                }}
+                // onPress={() => {
+                //   console.log(playerNo, piece.id);
+                // }}
                 pieceId={piece.id}
                 color={pieceColor}
               />

@@ -100,9 +100,9 @@ const MenuModal = ({ onPressHide, visible, ModalType, startGame }) => {
               <GradientButton
                 title={'Left Game'}
                 onPress={() => {
-                  socket.emit('leaveRoom', { roomId });
+                  // socket.emit('leaveRoom', { roomId });
                   setModalVisible(false);
-                  dispatch(resetGame({}));
+                  // dispatch(resetGame({}));
                   resetAndNavigate('HomeScreen');
                 }}
               />

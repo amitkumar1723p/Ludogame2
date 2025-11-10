@@ -165,6 +165,7 @@ const Dice = React.memo(({ color, data, player }) => {
 
   const handleDicePress = async () => {
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    // const newDiceNo = 6;
 
     //  Play Online Game Logic add
 
