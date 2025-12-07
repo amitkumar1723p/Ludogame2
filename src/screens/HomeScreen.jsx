@@ -153,10 +153,17 @@ const HomeScreen = () => {
       return () => clearTimeout(timer); // cleanup jab component unmount ho
     }
 
+
+  }, [Focoused]);
+
+  useEffect(() => {
     if (showAdd) {
-      SoundPlayer.stop();
+      setTimeout(() => {
+        SoundPlayer.stop();
+      }, 0);
+
     }
-  }, [Focoused, showAdd]);
+  }, [showAdd])
 
   const insets = useSafeAreaInsets(); // top, bottom, left, right
   // const { width } = useWindowDimensions();

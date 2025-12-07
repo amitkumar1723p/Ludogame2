@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  InterstitialAd,
   AdEventType,
+  InterstitialAd,
   TestIds
 } from 'react-native-google-mobile-ads';
 
 // AdMob Interstitial Unit ID
 const interstitialAdUnitId = __DEV__
   ? TestIds.INTERSTITIAL // Test ID (safe in dev)
-  : 'ca-app-pub-4274595540297099/9165469800'; // Replace with your real one
+  : 'ca-app-pub-4274595540297099/7730397345'; // Replace with your real one
 
 // Create Interstitial Instance (singleton pattern)
 const interstitial = InterstitialAd.createForAdRequest(interstitialAdUnitId, {

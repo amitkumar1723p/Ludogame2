@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   BannerAd,
   BannerAdSize,
@@ -8,7 +8,8 @@ import {
 
 const bannerAdUnitId = __DEV__
   ? TestIds.BANNER
-  : 'ca-app-pub-4274595540297099/4391176341';
+  : 'ca-app-pub-4274595540297099/8080098745';
+
 
 const BannerAdds = ({ size = BannerAdSize.BANNER, style }) => {
   return (

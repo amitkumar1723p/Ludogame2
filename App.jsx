@@ -17,7 +17,41 @@ const App = () => {
     mobileAds()
       .initialize()
       .then(adapterStatuses => {
-        console.log('AdMob initialized');
+        console.log('AdMob initialized'); c
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       });
   }, []);
 
